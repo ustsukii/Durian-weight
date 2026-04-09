@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Durian Weight Tracker Pro</title>
+
+<style>
+:root {
+  --green: #2e7d32;
+  --dark-green: #1b5e20;
+  --bg: #f4f6f5;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: var(--bg);
+}
+
+/* TOP */
+.top-bar {
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  flex: 1;
+  padding: 16px;
+  font-size: 20px;
+  border-radius: 12px;
+}
+
+button {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.add-btn {
+  background: var(--green);
+  color: white;
+}
+
+/* GROUP */
+.group {
+  margin: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.group-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.group-total {
+  color: var(--green);
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+/* ROW */
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.actions button {
+  margin-left: 5px;
+}
+
+/* FOOTER */
+.bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: var(--dark-green);
+  color: white;
+  padding: 14px;
+  font-size: 20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+  <input id="input" type="number" placeholder="kg (1-60)">
+  <button class="add-btn" onclick="add()">➕</button>
+</div>
+
+<div id="list" style="padding-bottom:80px;"></div>
+
+<div class="bottom">
+  รวมทั้งหมด: <span id="total">0</span> kg
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("durianData")) || [];
+
+function save() {
+  localStorage.setItem("durianData", JSON.stringify(data));
+}
+
+function add() {
+  const val = parseFloat(input.value);
+  if (!val || val < 1 || val > 60) return alert("1-60 kg");
+
+  data.push({ weight: val, time: Date.now() });
+  input.value = "";
+  input.focus();
+
+  save();
+  render();
+}
+
+function del(i) {
+  if (!confirm("ลบ?")) return;
+  data.splice(i,1);
+  save();
+  render();
+}
+
+function edit(i) {
+  let v = prompt("แก้ไข", data[i].weight);
+  v = parseFloat(v);
+  if (!v || v < 1 || v > 60) return;
+  data[i].weight = v;
+  save();
+  render();
+}
+
+function render() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  let totalAll = 0;
+
+  for (let i = 0; i < data.length; i += 5) {
+    let group = data.slice(i, i+5);
+    let sum = 0;
+
+    const div = document.createElement("div");
+    div.className = "group";
+
+    div.innerHTML = `<div class="group-title">รอบ ${Math.floor(i/5)+1}</div>`;
+
+    group.forEach((d, idx) => {
+      sum += d.weight;
+      totalAll += d.weight;
+
+      div.innerHTML += `
+        <div class="row">
+          <span>#${i+idx+1} - ${d.weight} kg</span>
+          <span class="actions">
+            <button onclick="edit(${i+idx})">✏️</button>
+            <button onclick="del(${i+idx})">❌</button>
+          </span>
+        </div>
+      `;
+    });
+
+    div.innerHTML += `<div class="group-total">รวมรอบ: ${sum.toFixed(2)} kg</div>`;
+    list.appendChild(div);
+  }
+
+  document.getElementById("total").innerText = totalAll.toFixed(2);
+}
+
+render();
+input.focus();
+</script>
+
+</body>
+</html>
