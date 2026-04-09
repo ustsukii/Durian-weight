@@ -3,120 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Durian Pro</title>
+<title>Durian Pro Final</title>
 
 <style>
 body { margin:0; font-family:sans-serif; background:#f4f6f5; }
-.top { display:flex; gap:6px; padding:10px; background:#fff; }
-input { flex:1; padding:16px; font-size:20px; border-radius:10px; }
-button { padding:14px; border:none; border-radius:10px; cursor:pointer; }
+
+/* Sticky Top */
+.header {
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:1000;
+  padding:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.row { display:flex; gap:6px; margin-bottom:6px; }
+
+input {
+  flex:1;
+  padding:16px;
+  font-size:20px;
+  border-radius:10px;
+}
+
+button {
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.addBtn { background:#2e7d32; color:#fff; }
 
 .ab { background:#2e7d32; color:#fff; flex:1; }
 .c { background:#c62828; color:#fff; }
 .d { background:#424242; color:#fff; }
 
-.active { border:3px solid black; }
+.active { outline:3px solid black; }
 
-.group { background:#fff; margin:10px; padding:10px; border-radius:10px; }
-.status { text-align:center; padding:6px; }
+/* Content */
+.block {
+  background:#fff;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+}
 
-.bottom {
- position:fixed; bottom:0; width:100%;
- background:#1b5e20; color:#fff;
- padding:12px;
+/* Sticky Bottom */
+.footer {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#1b5e20;
+  color:#fff;
+  padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="top">
-  <input id="roundName" placeholder="ชื่อรอบ">
-  <button onclick="newRound()">🌳</button>
+<div class="header">
+
+  <div class="row">
+    <input id="roundName" placeholder="ชื่อรอบ (ไม่ใส่ก็ได้)">
+    <button onclick="start()">🌳 เริ่มรอบ</button>
+  </div>
+
+  <div class="row">
+    <input id="weight" type="number" placeholder="กรอกน้ำหนัก 1-60 kg">
+    <button class="addBtn" onclick="add()">➕ เพิ่ม</button>
+  </div>
+
+  <div class="row">
+    <button id="abBtn" class="ab active" onclick="setType('AB')">AB</button>
+    <button id="cBtn" class="c" onclick="setType('C')">C</button>
+    <button id="dBtn" class="d" onclick="setType('D')">D</button>
+  </div>
+
+  <div class="row">
+    <button onclick="endSub()">🔚 จบรอบย่อย</button>
+    <button onclick="undo()">↩️ Undo</button>
+    <button onclick="deleteRound()">🗑️ ลบรอบล่าสุด</button>
+    <button onclick="resetAll()">🧹 ล้างข้อมูล</button>
+  </div>
+
+  <div class="row">
+    <input id="priceInput" type="number" placeholder="บาท/กก">
+    <button onclick="setPrice()">✔️ ยืนยันราคา</button>
+  </div>
+
+  <div class="row">
+    💰 ใช้ราคา: <b id="priceShow">0</b> บาท/กก
+  </div>
+
+  <div class="row">
+    💰 เงินรวม: <b id="money">0</b> บาท
+  </div>
+
+  <div class="row">
+    <button onclick="exportExcel()">📊 Export สรุป</button>
+  </div>
+
 </div>
 
-<div class="status" id="status"></div>
+<div id="list" style="padding-bottom:140px;"></div>
 
-<div class="top">
-  <input id="input" type="number" placeholder="kg 1-60">
-  <button onclick="add()">➕</button>
-</div>
-
-<div class="top">
-  <button id="abBtn" class="ab active" onclick="setMode('AB')">AB</button>
-  <button id="cBtn" class="c" onclick="setMode('C')">C</button>
-  <button id="dBtn" class="d" onclick="setMode('D')">D</button>
-</div>
-
-<div class="top">
-  <button onclick="endRound()">จบรอบ</button>
-  <button onclick="undo()">Undo</button>
-</div>
-
-<div class="top">
-  <input id="price" type="number" placeholder="บาท/กก">
-</div>
-
-<div class="top">
-  💰 เงินรวม: <b id="money">0</b> บาท
-</div>
-
-<div class="top">
-  <button onclick="exportExcel()">📊 Export</button>
-</div>
-
-<div id="list" style="padding-bottom:160px;"></div>
-
-<div class="bottom">
-  🟢AB: <span id="sumAB">0</span> kg<br>
-  🔴C: <span id="sumC">0</span> kg | ⚫D: <span id="sumD">0</span> kg<br>
-  🔥 รวม: <span id="total">0</span> kg
+<div class="footer">
+  AB: <span id="sumAB">0</span> kg<br>
+  C: <span id="sumC">0</span> | D: <span id="sumD">0</span><br>
+  รวม: <span id="sumAll">0</span> kg
 </div>
 
 <script>
-let round = JSON.parse(localStorage.getItem("durianRound")) || null;
-let mode = "AB";
+let data=null;
+let type="AB";
+let confirmedPrice=0;
 
-function save(){ localStorage.setItem("durianRound", JSON.stringify(round)); }
+function save(){ localStorage.setItem("durian",JSON.stringify(data)); }
+function load(){ data=JSON.parse(localStorage.getItem("durian")); }
 
-function newRound(){
-  round = { name: roundName.value, data: [] };
+function start(){
+  let name=roundName.value||("รอบ "+new Date().toLocaleDateString());
+  data={name:name,list:[]};
   save(); render();
 }
 
-function setMode(m){
-  mode=m;
+function setType(t){
+  type=t;
   abBtn.classList.remove("active");
   cBtn.classList.remove("active");
   dBtn.classList.remove("active");
-
-  if(m==="AB") abBtn.classList.add("active");
-  if(m==="C") cBtn.classList.add("active");
-  if(m==="D") dBtn.classList.add("active");
+  if(t==="AB") abBtn.classList.add("active");
+  if(t==="C") cBtn.classList.add("active");
+  if(t==="D") dBtn.classList.add("active");
 }
 
 function add(){
-  if(!round) return alert("เริ่มรอบก่อน");
-  let v=parseFloat(input.value);
+  if(!data) return alert("เริ่มรอบก่อน");
+  let v=parseFloat(weight.value);
   if(!v||v<1||v>60) return alert("1-60 kg");
 
-  round.data.push({w:v,t:mode});
-  input.value="";
-  input.focus();
+  data.list.push({w:v,t:type});
+  weight.value="";
+  weight.focus();
 
   save(); render();
 }
 
 function undo(){
-  if(round && round.data.length){
-    round.data.pop();
+  if(data&&data.list.length){
+    data.list.pop();
     save(); render();
   }
 }
 
-function endRound(){
-  if(round){
-    round.data.push({break:true});
+function endSub(){
+  data.list.push({break:true,t:type});
+  save(); render();
+}
+
+function deleteRound(){
+  for(let i=data.list.length-1;i>=0;i--){
+    if(data.list[i].break){
+      data.list.splice(i);
+      break;
+    }
+  }
+  save(); render();
+}
+
+function resetAll(){
+  if(confirm("ล้างทั้งหมด?")){
+    data=null;
+    localStorage.removeItem("durian");
+    render();
+  }
+}
+
+function setPrice(){
+  let v=parseFloat(priceInput.value);
+  if(!v||v<=0) return alert("กรอกราคาให้ถูก");
+
+  confirmedPrice=v;
+  priceShow.innerText=v;
+  render();
+}
+
+function edit(i){
+  let v=prompt("แก้ kg");
+  if(!v) return;
+  v=parseFloat(v);
+  if(!v||v<1||v>60) return alert("1-60");
+  data.list[i].w=v;
+  save(); render();
+}
+
+function del(i){
+  if(confirm("ลบรายการนี้?")){
+    data.list.splice(i,1);
     save(); render();
   }
 }
@@ -125,84 +211,100 @@ function render(){
   let list=document.getElementById("list");
   list.innerHTML="";
 
-  if(!round) return;
+  if(!data) return;
 
   let sumAB=0,sumC=0,sumD=0;
-  let price=parseFloat(priceInput?.value || document.getElementById("price").value)||0;
+  let basket=0;
 
-  let basketCount=0;
+  let group={AB:[],C:[],D:[]};
+  let roundNo={AB:1,C:1,D:1};
 
-  round.data.forEach((d,i)=>{
+  function block(t){
+    if(group[t].length===0) return;
+
+    let div=document.createElement("div");
+    div.className="block";
+
+    let sum=0;
+    div.innerHTML=`<b>${t} รอบ ${roundNo[t]}</b><br>`;
+
+    group[t].forEach(d=>{
+      basket++;
+      sum+=d.w;
+
+      div.innerHTML+=`
+      เข่ง ${basket} = ${d.w} kg
+      <button onclick="edit(${d.i})">✏️</button>
+      <button onclick="del(${d.i})">❌</button><br>`;
+    });
+
+    div.innerHTML+=`<b>รวม: ${sum.toFixed(2)} kg</b>`;
+    list.appendChild(div);
+
+    group[t]=[];
+    roundNo[t]++;
+  }
+
+  data.list.forEach((d,i)=>{
     if(d.break){
-      let div=document.createElement("div");
-      div.className="group";
-      div.innerHTML="<b>--- จบรอบ ---</b>";
-      list.appendChild(div);
+      block(d.t);
       return;
     }
 
-    basketCount++;
+    group[d.t].push({...d,i});
 
     if(d.t==="AB") sumAB+=d.w;
     if(d.t==="C") sumC+=d.w;
     if(d.t==="D") sumD+=d.w;
 
-    let div=document.createElement("div");
-    div.className="group";
-    div.innerHTML=`${d.t} | เข่ง ${basketCount} = ${d.w} kg`;
-    list.appendChild(div);
+    if(group[d.t].length===5){
+      block(d.t);
+    }
   });
+
+  ["AB","C","D"].forEach(block);
 
   let total=sumAB+sumC+sumD;
 
   document.getElementById("sumAB").innerText=sumAB.toFixed(2);
   document.getElementById("sumC").innerText=sumC.toFixed(2);
   document.getElementById("sumD").innerText=sumD.toFixed(2);
-  document.getElementById("total").innerText=total.toFixed(2);
+  document.getElementById("sumAll").innerText=total.toFixed(2);
 
-  document.getElementById("money").innerText=(total*price).toLocaleString();
+  document.getElementById("money").innerText=(total*confirmedPrice).toLocaleString();
 }
 
 function exportExcel(){
-  if(!round) return;
+  if(!data) return alert("ไม่มีข้อมูล");
 
-  let price=parseFloat(document.getElementById("price").value)||0;
-
-  let csv="รอบ,เกรด,เข่ง,kg,ราคา/กก,เงิน\n";
-
-  let count=0;
+  let countAB=0,countC=0,countD=0;
   let sumAB=0,sumC=0,sumD=0;
 
-  round.data.forEach(d=>{
+  data.list.forEach(d=>{
     if(d.break) return;
 
-    count++;
-
-    let money=d.w*price;
-
-    csv+=`${round.name},${d.t},${count},${d.w},${price},${money}\n`;
-
-    if(d.t==="AB") sumAB+=d.w;
-    if(d.t==="C") sumC+=d.w;
-    if(d.t==="D") sumD+=d.w;
+    if(d.t==="AB"){ countAB++; sumAB+=d.w; }
+    if(d.t==="C"){ countC++; sumC+=d.w; }
+    if(d.t==="D"){ countD++; sumD+=d.w; }
   });
 
-  let total=sumAB+sumC+sumD;
+  let totalCount = countAB+countC+countD;
+  let totalWeight = sumAB+sumC+sumD;
 
-  csv+=`\nสรุป\n`;
-  csv+=`AB,, ,${sumAB},,${sumAB*price}\n`;
-  csv+=`C,, ,${sumC},,${sumC*price}\n`;
-  csv+=`D,, ,${sumD},,${sumD*price}\n`;
-  csv+=`รวมทั้งหมด,, ,${total},,${total*price}\n`;
-  csv+=`ราคา/กก,, ,${price}\n`;
+  let csv="เกรด,จำนวนเข่ง,น้ำหนักรวม(kg),ราคา/กก,เงินรวม\n";
+  csv+=`AB,${countAB},${sumAB},${confirmedPrice},${sumAB*confirmedPrice}\n`;
+  csv+=`C,${countC},${sumC},${confirmedPrice},${sumC*confirmedPrice}\n`;
+  csv+=`D,${countD},${sumD},${confirmedPrice},${sumD*confirmedPrice}\n`;
+  csv+=`\nรวมทั้งหมด,${totalCount},${totalWeight},,${totalWeight*confirmedPrice}\n`;
 
-  let blob=new Blob(["\uFEFF"+csv],{type:"text/csv"});
+  let blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
   let a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="durian_export.csv";
+  a.download="durian_summary.csv";
   a.click();
 }
 
+load();
 render();
 </script>
 
