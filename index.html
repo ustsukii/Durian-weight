@@ -2,311 +2,510 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Durian Pro Final</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ชั่งทุเรียน</title>
 <style>
-body { margin:0; font-family:sans-serif; background:#f4f6f5; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{
+    --green:#2d7a3a;--green-dark:#1e5628;--green-light:#e8f5eb;--green-mid:#4caf63;
+    --bg:#f4f7f4;--card:#fff;--border:#cde0d0;--text:#1a2e1d;--muted:#5a7560;
+    --red:#c0392b;--amber:#d97706;--blue:#1e5fa8;
+    --ab:#2d7a3a;--c:#d97706;--d:#c0392b;
+  }
+  body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  
+  #top-bar{position:sticky;top:0;z-index:100;background:var(--green-dark);padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  #round-label{color:rgba(255,255,255,.7);font-size:11px;font-weight:600;letter-spacing:.5px}
+  #round-name-display{color:#fff;font-size:15px;font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top-actions{display:flex;gap:6px}
+  .btn-sm{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn-sm:active{background:rgba(255,255,255,.3)}
 
-/* Sticky Top */
-.header {
-  position:sticky;
-  top:0;
-  background:#fff;
-  z-index:1000;
-  padding:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
+  .input-row{display:flex;gap:8px;align-items:stretch}
+  #weight-input{flex:1;font-size:28px;font-weight:700;border:2px solid rgba(255,255,255,.4);border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.15);color:#fff;text-align:center;min-width:0;outline:none}
+  #weight-input::placeholder{color:rgba(255,255,255,.5)}
+  #weight-input:focus{border-color:#fff;background:rgba(255,255,255,.22)}
+  #add-btn{background:#fff;color:var(--green-dark);border:none;border-radius:12px;padding:10px 18px;font-size:22px;font-weight:900;cursor:pointer;flex-shrink:0}
+  #add-btn:active{transform:scale(.95)}
 
-.row { display:flex; gap:6px; margin-bottom:6px; }
+  .grade-row{display:flex;gap:6px;margin-top:8px}
+  .grade-btn{flex:1;padding:9px 4px;border-radius:10px;border:2px solid transparent;font-size:16px;font-weight:800;cursor:pointer;transition:.15s}
+  .grade-btn.ab{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+  .grade-btn.c{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+  .grade-btn.d{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)}
+  .grade-btn.active.ab{background:#fff;color:var(--ab)}
+  .grade-btn.active.c{background:#fef3c7;color:var(--c);border-color:#fbbf24}
+  .grade-btn.active.d{background:#fee2e2;color:var(--d);border-color:#f87171}
 
-input {
-  flex:1;
-  padding:16px;
-  font-size:20px;
-  border-radius:10px;
-}
+  #content{padding:12px 12px 0}
 
-button {
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
+  .block-card{background:var(--card);border-radius:14px;border:1.5px solid var(--border);margin-bottom:14px;overflow:hidden}
+  .block-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)}
+  .block-title-left{display:flex;align-items:center;gap:8px}
+  .grade-badge{font-size:13px;font-weight:800;padding:4px 10px;border-radius:20px}
+  .grade-badge.AB{background:#e8f5eb;color:var(--ab)}
+  .grade-badge.C{background:#fef3c7;color:var(--c)}
+  .grade-badge.D{background:#fee2e2;color:var(--d)}
+  .block-subtitle{font-size:12px;color:var(--muted);font-weight:600}
+  .block-total{font-size:14px;font-weight:700;color:var(--text)}
+  
+  .entry-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f0f0;gap:8px}
+  .entry-row:last-child{border-bottom:none}
+  .entry-row.highlight{background:#f0fdf4}
+  .basket-num{font-size:13px;color:var(--muted);font-weight:700;min-width:28px}
+  .entry-weight{font-size:20px;font-weight:800;color:var(--text);flex:1}
+  .entry-weight span{font-size:13px;font-weight:500;color:var(--muted)}
+  .entry-actions{display:flex;gap:6px}
+  .btn-edit{background:var(--green-light);color:var(--green-dark);border:none;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn-del{background:#fee2e2;color:var(--red);border:none;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn-edit:active,.btn-del:active{transform:scale(.95)}
 
-.addBtn { background:#2e7d32; color:#fff; }
+  .ctrl-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .ctrl-btn{flex:1;min-width:80px;background:var(--card);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:11px 8px;font-size:14px;font-weight:700;cursor:pointer}
+  .ctrl-btn:active{background:#e8f5eb}
+  .ctrl-btn.danger{color:var(--red);border-color:#fca5a5}
+  .ctrl-btn.danger:active{background:#fee2e2}
 
-.ab { background:#2e7d32; color:#fff; flex:1; }
-.c { background:#c62828; color:#fff; }
-.d { background:#424242; color:#fff; }
+  .end-subround-btn{width:100%;background:none;border:1.5px dashed var(--border);color:var(--muted);border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px}
+  .end-subround-btn:active{background:var(--green-light)}
 
-.active { outline:3px solid black; }
+  .price-section{background:var(--card);border-radius:14px;border:1.5px solid var(--border);padding:14px;margin-bottom:14px}
+  .price-section h3{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+  .price-row{display:flex;gap:8px;align-items:center}
+  #price-input{flex:1;font-size:22px;font-weight:700;border:2px solid var(--border);border-radius:10px;padding:9px 12px;text-align:center;color:var(--text);background:#fff;outline:none}
+  #price-input:focus{border-color:var(--green)}
+  #confirm-price-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap}
+  #confirm-price-btn:active{background:var(--green-dark)}
+  .confirmed-price{margin-top:8px;font-size:13px;color:var(--muted)}
+  .confirmed-price strong{color:var(--green-dark)}
 
-/* Content */
-.block {
-  background:#fff;
-  margin:10px;
-  padding:10px;
-  border-radius:10px;
-}
+  .spacer{height:170px}
 
-/* Sticky Bottom */
-.footer {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#1b5e20;
-  color:#fff;
-  padding:10px;
-}
+  #summary-bar{position:fixed;bottom:0;left:0;right:0;background:var(--green-dark);padding:10px 14px 14px;z-index:100;box-shadow:0 -3px 12px rgba(0,0,0,.2)}
+  .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+  .sum-cell{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 4px;text-align:center}
+  .sum-cell .label{font-size:10px;color:rgba(255,255,255,.7);font-weight:600;margin-bottom:2px;letter-spacing:.3px}
+  .sum-cell .val{font-size:15px;font-weight:800;color:#fff}
+  .sum-cell.ab .val{color:#7defa0}
+  .sum-cell.c .val{color:#fcd34d}
+  .sum-cell.d .val{color:#fca5a5}
+  .sum-bottom{display:flex;justify-content:space-between;align-items:center}
+  .sum-total{color:#fff}
+  .sum-total .label{font-size:11px;opacity:.75;font-weight:600}
+  .sum-total .val{font-size:22px;font-weight:900}
+  .sum-money{text-align:right;color:#7defa0}
+  .sum-money .label{font-size:11px;opacity:.75;font-weight:600}
+  .sum-money .val{font-size:22px;font-weight:900}
+
+  #new-round-modal,#edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:20px}
+  #new-round-modal.open,#edit-modal.open{display:flex}
+  .modal-box{background:#fff;border-radius:18px;padding:22px;width:100%;max-width:360px}
+  .modal-box h2{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text)}
+  .modal-box input{width:100%;font-size:20px;border:2px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);outline:none;margin-bottom:12px;font-family:inherit}
+  .modal-box input:focus{border-color:var(--green)}
+  .modal-btns{display:flex;gap:8px}
+  .modal-btns button{flex:1;padding:12px;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+  .btn-cancel{background:#f0f0f0;color:var(--muted)}
+  .btn-confirm{background:var(--green);color:#fff}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+  .empty-state .icon{font-size:48px;margin-bottom:12px}
+  .empty-state p{font-size:16px;font-weight:600}
+  .empty-state small{font-size:13px;opacity:.7}
 </style>
 </head>
-
 <body>
 
-<div class="header">
-
-  <div class="row">
-    <input id="roundName" placeholder="ชื่อรอบ (ไม่ใส่ก็ได้)">
-    <button onclick="start()">🌳 เริ่มรอบ</button>
+<div id="top-bar">
+  <div class="top-row">
+    <div>
+      <div id="round-label">รอบตัด</div>
+      <div id="round-name-display">—</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn-sm" onclick="openNewRoundModal()">+ รอบใหม่</button>
+      <button class="btn-sm" onclick="exportCSV()">ส่งออก CSV</button>
+    </div>
   </div>
-
-  <div class="row">
-    <input id="weight" type="number" placeholder="กรอกน้ำหนัก 1-60 kg">
-    <button class="addBtn" onclick="add()">➕ เพิ่ม</button>
+  <div class="input-row">
+    <input type="number" id="weight-input" inputmode="decimal" min="1" max="60" step="0.1" placeholder="น้ำหนัก (กก.)" autocomplete="off">
+    <button id="add-btn" onclick="addEntry()">+</button>
   </div>
-
-  <div class="row">
-    <button id="abBtn" class="ab active" onclick="setType('AB')">AB</button>
-    <button id="cBtn" class="c" onclick="setType('C')">C</button>
-    <button id="dBtn" class="d" onclick="setType('D')">D</button>
+  <div class="grade-row">
+    <button class="grade-btn ab active" id="grade-AB" onclick="setGrade('AB')">AB</button>
+    <button class="grade-btn c" id="grade-C" onclick="setGrade('C')">C</button>
+    <button class="grade-btn d" id="grade-D" onclick="setGrade('D')">D</button>
   </div>
-
-  <div class="row">
-    <button onclick="endSub()">🔚 จบรอบย่อย</button>
-    <button onclick="undo()">↩️ Undo</button>
-    <button onclick="deleteRound()">🗑️ ลบรอบล่าสุด</button>
-    <button onclick="resetAll()">🧹 ล้างข้อมูล</button>
-  </div>
-
-  <div class="row">
-    <input id="priceInput" type="number" placeholder="บาท/กก">
-    <button onclick="setPrice()">✔️ ยืนยันราคา</button>
-  </div>
-
-  <div class="row">
-    💰 ใช้ราคา: <b id="priceShow">0</b> บาท/กก
-  </div>
-
-  <div class="row">
-    💰 เงินรวม: <b id="money">0</b> บาท
-  </div>
-
-  <div class="row">
-    <button onclick="exportExcel()">📊 Export สรุป</button>
-  </div>
-
 </div>
 
-<div id="list" style="padding-bottom:140px;"></div>
+<div id="content">
+  <div style="height:10px"></div>
+  <div class="ctrl-row">
+    <button class="ctrl-btn" onclick="undoLast()">↩ เลิกทำ</button>
+    <button class="ctrl-btn danger" onclick="deleteLastSubRound()">ลบบล็อกล่าสุด</button>
+    <button class="ctrl-btn danger" onclick="resetAll()">รีเซ็ต</button>
+  </div>
+  <div class="price-section">
+    <h3>ราคา / กก.</h3>
+    <div class="price-row">
+      <input type="number" id="price-input" inputmode="decimal" min="0" placeholder="0.00">
+      <button id="confirm-price-btn" onclick="confirmPrice()">ยืนยันราคา</button>
+    </div>
+    <div class="confirmed-price" id="confirmed-price-display"></div>
+  </div>
+  <div id="entries-container"></div>
+  <div class="spacer"></div>
+</div>
 
-<div class="footer">
-  AB: <span id="sumAB">0</span> kg<br>
-  C: <span id="sumC">0</span> | D: <span id="sumD">0</span><br>
-  รวม: <span id="sumAll">0</span> kg
+<div id="summary-bar">
+  <div class="sum-grid">
+    <div class="sum-cell ab"><div class="label">AB (กก.)</div><div class="val" id="sum-ab">0</div></div>
+    <div class="sum-cell c"><div class="label">C (กก.)</div><div class="val" id="sum-c">0</div></div>
+    <div class="sum-cell d"><div class="label">D (กก.)</div><div class="val" id="sum-d">0</div></div>
+    <div class="sum-cell"><div class="label">รวม (กก.)</div><div class="val" id="sum-total">0</div></div>
+  </div>
+  <div class="sum-bottom">
+    <div class="sum-total"><div class="label">น้ำหนักรวมทั้งหมด</div><div class="val" id="sum-grand">0 กก.</div></div>
+    <div class="sum-money"><div class="label">ยอดเงินรวม</div><div class="val" id="sum-money">฿0</div></div>
+  </div>
+</div>
+
+<div id="new-round-modal">
+  <div class="modal-box">
+    <h2>เริ่มรอบตัดใหม่</h2>
+    <input type="text" id="new-round-input" placeholder="ชื่อรอบ (ไม่บังคับ)">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeNewRoundModal()">ยกเลิก</button>
+      <button class="btn-confirm" onclick="createRound()">เริ่มเลย</button>
+    </div>
+  </div>
+</div>
+
+<div id="edit-modal">
+  <div class="modal-box">
+    <h2>แก้ไขน้ำหนัก</h2>
+    <input type="number" id="edit-weight-input" inputmode="decimal" min="1" max="60" step="0.1" placeholder="น้ำหนักใหม่ (กก.)">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEditModal()">ยกเลิก</button>
+      <button class="btn-confirm" onclick="saveEdit()">บันทึก</button>
+    </div>
+  </div>
 </div>
 
 <script>
-let data=null;
-let type="AB";
-let confirmedPrice=0;
+let state = {
+  round: null,
+  entries: [],
+  subRoundBreaks: [],
+  confirmedPrice: null,
+  activeGrade: 'AB',
+  nextBasket: 1
+};
 
-function save(){ localStorage.setItem("durian",JSON.stringify(data)); }
-function load(){ data=JSON.parse(localStorage.getItem("durian")); }
+let editingIndex = null;
 
-function start(){
-  let name=roundName.value||("รอบ "+new Date().toLocaleDateString());
-  data={name:name,list:[]};
-  save(); render();
-}
-
-function setType(t){
-  type=t;
-  abBtn.classList.remove("active");
-  cBtn.classList.remove("active");
-  dBtn.classList.remove("active");
-  if(t==="AB") abBtn.classList.add("active");
-  if(t==="C") cBtn.classList.add("active");
-  if(t==="D") dBtn.classList.add("active");
-}
-
-function add(){
-  if(!data) return alert("เริ่มรอบก่อน");
-  let v=parseFloat(weight.value);
-  if(!v||v<1||v>60) return alert("1-60 kg");
-
-  data.list.push({w:v,t:type});
-  weight.value="";
-  weight.focus();
-
-  save(); render();
-}
-
-function undo(){
-  if(data&&data.list.length){
-    data.list.pop();
-    save(); render();
+function loadState() {
+  const saved = localStorage.getItem('durian_th_v1');
+  if (saved) { try { state = JSON.parse(saved); } catch(e) {} }
+  if (!state.round) {
+    state.round = todayStr();
+    state.entries = [];
+    state.subRoundBreaks = [];
+    state.confirmedPrice = null;
+    state.activeGrade = 'AB';
+    state.nextBasket = 1;
   }
 }
 
-function endSub(){
-  data.list.push({break:true,t:type});
-  save(); render();
+function saveState() {
+  localStorage.setItem('durian_th_v1', JSON.stringify(state));
 }
 
-function deleteRound(){
-  for(let i=data.list.length-1;i>=0;i--){
-    if(data.list[i].break){
-      data.list.splice(i);
-      break;
+function todayStr() {
+  const d = new Date();
+  return d.toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function setGrade(g) {
+  state.activeGrade = g;
+  saveState();
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('grade-' + g).classList.add('active');
+}
+
+function addEntry() {
+  const inp = document.getElementById('weight-input');
+  const val = parseFloat(inp.value);
+  if (isNaN(val) || val < 1 || val > 60) {
+    inp.style.borderColor = '#f87171';
+    setTimeout(() => inp.style.borderColor = '', 800);
+    inp.focus();
+    return;
+  }
+  const entry = {
+    basket: state.nextBasket,
+    weight: Math.round(val * 100) / 100,
+    grade: state.activeGrade,
+    id: Date.now()
+  };
+  state.entries.push(entry);
+  state.nextBasket++;
+  inp.value = '';
+  inp.focus();
+  saveState();
+  if (navigator.vibrate) navigator.vibrate(40);
+  render();
+  setTimeout(() => {
+    const last = document.querySelector('.entry-row.highlight');
+    if (last) last.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 80);
+}
+
+function getSubRounds() {
+  const blocks = [];
+  let i = 0;
+  let subNum = 1;
+  while (i < state.entries.length) {
+    let breakAt = state.entries.length;
+    for (const br of state.subRoundBreaks) {
+      if (br > i && br < breakAt) breakAt = br;
+    }
+    const chunk = state.entries.slice(i, Math.min(i + 5, breakAt));
+    if (chunk.length === 0) { i = breakAt; continue; }
+    blocks.push({ entries: chunk, subNum: subNum, startIndex: i });
+    subNum++;
+    i += chunk.length;
+    if (i === breakAt && breakAt < state.entries.length && state.subRoundBreaks.includes(breakAt)) {
+      i = breakAt;
     }
   }
-  save(); render();
+  return blocks;
 }
 
-function resetAll(){
-  if(confirm("ล้างทั้งหมด?")){
-    data=null;
-    localStorage.removeItem("durian");
-    render();
+function endSubRound() {
+  if (state.entries.length === 0) return;
+  const br = state.entries.length;
+  if (!state.subRoundBreaks.includes(br)) {
+    state.subRoundBreaks.push(br);
+    state.subRoundBreaks.sort((a,b) => a-b);
   }
-}
-
-function setPrice(){
-  let v=parseFloat(priceInput.value);
-  if(!v||v<=0) return alert("กรอกราคาให้ถูก");
-
-  confirmedPrice=v;
-  priceShow.innerText=v;
+  saveState();
   render();
 }
 
-function edit(i){
-  let v=prompt("แก้ kg");
-  if(!v) return;
-  v=parseFloat(v);
-  if(!v||v<1||v>60) return alert("1-60");
-  data.list[i].w=v;
-  save(); render();
+function deleteEntry(id) {
+  if (!confirm('ลบรายการนี้?')) return;
+  const idx = state.entries.findIndex(e => e.id === id);
+  if (idx === -1) return;
+  const basket = state.entries[idx].basket;
+  state.entries.splice(idx, 1);
+  state.entries.forEach(e => { if (e.basket > basket) e.basket--; });
+  state.nextBasket--;
+  state.subRoundBreaks = state.subRoundBreaks.map(br => br > idx ? br - 1 : br).filter(br => br > 0 && br <= state.entries.length);
+  saveState();
+  render();
 }
 
-function del(i){
-  if(confirm("ลบรายการนี้?")){
-    data.list.splice(i,1);
-    save(); render();
+function openEdit(id) {
+  editingIndex = id;
+  const entry = state.entries.find(e => e.id === id);
+  document.getElementById('edit-weight-input').value = entry.weight;
+  document.getElementById('edit-modal').classList.add('open');
+  setTimeout(() => document.getElementById('edit-weight-input').select(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingIndex = null;
+}
+
+function saveEdit() {
+  const val = parseFloat(document.getElementById('edit-weight-input').value);
+  if (isNaN(val) || val < 1 || val > 60) { alert('น้ำหนักต้องอยู่ระหว่าง 1–60 กก.'); return; }
+  const entry = state.entries.find(e => e.id === editingIndex);
+  if (entry) entry.weight = Math.round(val * 100) / 100;
+  closeEditModal();
+  saveState();
+  render();
+}
+
+function undoLast() {
+  if (state.entries.length === 0) return;
+  if (!confirm('ลบรายการล่าสุด?')) return;
+  state.entries.pop();
+  state.nextBasket--;
+  state.subRoundBreaks = state.subRoundBreaks.filter(br => br <= state.entries.length);
+  saveState();
+  render();
+}
+
+function deleteLastSubRound() {
+  if (!confirm('ลบบล็อกล่าสุด?')) return;
+  const blocks = getSubRounds();
+  if (blocks.length === 0) return;
+  const last = blocks[blocks.length - 1];
+  state.entries.splice(last.startIndex);
+  state.nextBasket = state.entries.length > 0 ? state.entries[state.entries.length - 1].basket + 1 : 1;
+  state.subRoundBreaks = state.subRoundBreaks.filter(br => br <= state.entries.length);
+  saveState();
+  render();
+}
+
+function resetAll() {
+  if (!confirm('รีเซ็ตข้อมูลทั้งหมด? ไม่สามารถกู้คืนได้')) return;
+  state.entries = [];
+  state.subRoundBreaks = [];
+  state.nextBasket = 1;
+  state.confirmedPrice = null;
+  document.getElementById('price-input').value = '';
+  saveState();
+  render();
+}
+
+function openNewRoundModal() {
+  document.getElementById('new-round-input').value = '';
+  document.getElementById('new-round-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-round-input').focus(), 100);
+}
+
+function closeNewRoundModal() {
+  document.getElementById('new-round-modal').classList.remove('open');
+}
+
+function createRound() {
+  const name = document.getElementById('new-round-input').value.trim() || todayStr();
+  state.round = name;
+  state.entries = [];
+  state.subRoundBreaks = [];
+  state.nextBasket = 1;
+  state.confirmedPrice = null;
+  document.getElementById('price-input').value = '';
+  closeNewRoundModal();
+  saveState();
+  render();
+}
+
+function confirmPrice() {
+  const val = parseFloat(document.getElementById('price-input').value);
+  if (isNaN(val) || val < 0) { alert('กรุณาใส่ราคาที่ถูกต้อง'); return; }
+  state.confirmedPrice = Math.round(val * 100) / 100;
+  saveState();
+  render();
+}
+
+function calcTotals() {
+  let ab = 0, c = 0, d = 0;
+  state.entries.forEach(e => {
+    if (e.grade === 'AB') ab += e.weight;
+    else if (e.grade === 'C') c += e.weight;
+    else d += e.weight;
+  });
+  return { ab, c, d, total: ab + c + d };
+}
+
+function fmt(n) { return (Math.round(n * 10) / 10).toFixed(1); }
+function fmtMoney(n) { return '฿' + n.toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}); }
+
+function render() {
+  document.getElementById('round-name-display').textContent = state.round || todayStr();
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+  const gb = document.getElementById('grade-' + state.activeGrade);
+  if (gb) gb.classList.add('active');
+  document.getElementById('price-input').value = state.confirmedPrice !== null ? state.confirmedPrice : '';
+  if (state.confirmedPrice !== null) {
+    document.getElementById('confirmed-price-display').innerHTML = 'ยืนยันแล้ว: <strong>' + fmtMoney(state.confirmedPrice) + ' / กก.</strong>';
+  } else {
+    document.getElementById('confirmed-price-display').textContent = 'ยังไม่ได้ยืนยันราคา';
   }
-}
+  const totals = calcTotals();
+  document.getElementById('sum-ab').textContent = fmt(totals.ab);
+  document.getElementById('sum-c').textContent = fmt(totals.c);
+  document.getElementById('sum-d').textContent = fmt(totals.d);
+  document.getElementById('sum-total').textContent = fmt(totals.total);
+  document.getElementById('sum-grand').textContent = fmt(totals.total) + ' กก.';
+  const money = state.confirmedPrice !== null ? totals.total * state.confirmedPrice : 0;
+  document.getElementById('sum-money').textContent = fmtMoney(money);
 
-function render(){
-  let list=document.getElementById("list");
-  list.innerHTML="";
-
-  if(!data) return;
-
-  let sumAB=0,sumC=0,sumD=0;
-  let basket=0;
-
-  let group={AB:[],C:[],D:[]};
-  let roundNo={AB:1,C:1,D:1};
-
-  function block(t){
-    if(group[t].length===0) return;
-
-    let div=document.createElement("div");
-    div.className="block";
-
-    let sum=0;
-    div.innerHTML=`<b>${t} รอบ ${roundNo[t]}</b><br>`;
-
-    group[t].forEach(d=>{
-      basket++;
-      sum+=d.w;
-
-      div.innerHTML+=`
-      เข่ง ${basket} = ${d.w} kg
-      <button onclick="edit(${d.i})">✏️</button>
-      <button onclick="del(${d.i})">❌</button><br>`;
+  const blocks = getSubRounds();
+  const container = document.getElementById('entries-container');
+  if (state.entries.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🌿</div><p>ยังไม่มีรายการ</p><small>ใส่น้ำหนักแล้วกด + ด้านบน</small></div>';
+    return;
+  }
+  const lastId = state.entries[state.entries.length - 1].id;
+  let html = '';
+  blocks.forEach(block => {
+    const blockWeight = block.entries.reduce((s, e) => s + e.weight, 0);
+    const gradeCounts = {};
+    block.entries.forEach(e => { gradeCounts[e.grade] = (gradeCounts[e.grade] || 0) + 1; });
+    const mainGrade = Object.keys(gradeCounts).sort((a,b) => gradeCounts[b]-gradeCounts[a])[0];
+    html += `<div class="block-card" id="block-${block.subNum}">
+      <div class="block-header">
+        <div class="block-title-left">
+          <span class="grade-badge ${mainGrade}">${mainGrade}</span>
+          <span class="block-subtitle">บล็อกที่ ${block.subNum}</span>
+        </div>
+        <span class="block-total">${fmt(blockWeight)} กก.</span>
+      </div>`;
+    block.entries.forEach(e => {
+      html += `<div class="entry-row${e.id === lastId ? ' highlight' : ''}" id="entry-${e.id}">
+        <span class="basket-num">#${e.basket}</span>
+        <div class="entry-weight">${fmt(e.weight)} <span>กก.</span></div>
+        <div class="entry-actions">
+          <button class="btn-edit" onclick="openEdit(${e.id})">แก้ไข</button>
+          <button class="btn-del" onclick="deleteEntry(${e.id})">ลบ</button>
+        </div>
+      </div>`;
     });
-
-    div.innerHTML+=`<b>รวม: ${sum.toFixed(2)} kg</b>`;
-    list.appendChild(div);
-
-    group[t]=[];
-    roundNo[t]++;
+    html += '</div>';
+  });
+  const currentCount = state.entries.length;
+  const lastBreak = state.subRoundBreaks.filter(br => br <= currentCount).sort((a,b) => b-a)[0] || 0;
+  const sinceBreak = currentCount - lastBreak;
+  if (sinceBreak > 0) {
+    html += `<button class="end-subround-btn" onclick="endSubRound()">— จบซับรอบก่อนครบ 5 ใบ —</button>`;
   }
-
-  data.list.forEach((d,i)=>{
-    if(d.break){
-      block(d.t);
-      return;
-    }
-
-    group[d.t].push({...d,i});
-
-    if(d.t==="AB") sumAB+=d.w;
-    if(d.t==="C") sumC+=d.w;
-    if(d.t==="D") sumD+=d.w;
-
-    if(group[d.t].length===5){
-      block(d.t);
-    }
-  });
-
-  ["AB","C","D"].forEach(block);
-
-  let total=sumAB+sumC+sumD;
-
-  document.getElementById("sumAB").innerText=sumAB.toFixed(2);
-  document.getElementById("sumC").innerText=sumC.toFixed(2);
-  document.getElementById("sumD").innerText=sumD.toFixed(2);
-  document.getElementById("sumAll").innerText=total.toFixed(2);
-
-  document.getElementById("money").innerText=(total*confirmedPrice).toLocaleString();
+  container.innerHTML = html;
 }
 
-function exportExcel(){
-  if(!data) return alert("ไม่มีข้อมูล");
-
-  let countAB=0,countC=0,countD=0;
-  let sumAB=0,sumC=0,sumD=0;
-
-  data.list.forEach(d=>{
-    if(d.break) return;
-
-    if(d.t==="AB"){ countAB++; sumAB+=d.w; }
-    if(d.t==="C"){ countC++; sumC+=d.w; }
-    if(d.t==="D"){ countD++; sumD+=d.w; }
+function exportCSV() {
+  const totals = calcTotals();
+  const price = state.confirmedPrice || 0;
+  const abCount = state.entries.filter(e => e.grade === 'AB').length;
+  const cCount = state.entries.filter(e => e.grade === 'C').length;
+  const dCount = state.entries.filter(e => e.grade === 'D').length;
+  let csv = '\uFEFF';
+  csv += 'รอบ,' + state.round + '\n';
+  csv += 'ส่งออกเมื่อ,' + new Date().toLocaleString('th-TH') + '\n\n';
+  csv += 'เกรด,จำนวนตะกร้า,น้ำหนักรวม (กก.),ราคา/กก.,ยอดเงิน\n';
+  const rows = [
+    {g:'AB', cnt:abCount, w:totals.ab},
+    {g:'C',  cnt:cCount,  w:totals.c},
+    {g:'D',  cnt:dCount,  w:totals.d}
+  ];
+  rows.forEach(r => {
+    csv += `${r.g},${r.cnt},${fmt(r.w)},${price},${(r.w * price).toFixed(2)}\n`;
   });
-
-  let totalCount = countAB+countC+countD;
-  let totalWeight = sumAB+sumC+sumD;
-
-  let csv="เกรด,จำนวนเข่ง,น้ำหนักรวม(kg),ราคา/กก,เงินรวม\n";
-  csv+=`AB,${countAB},${sumAB},${confirmedPrice},${sumAB*confirmedPrice}\n`;
-  csv+=`C,${countC},${sumC},${confirmedPrice},${sumC*confirmedPrice}\n`;
-  csv+=`D,${countD},${sumD},${confirmedPrice},${sumD*confirmedPrice}\n`;
-  csv+=`\nรวมทั้งหมด,${totalCount},${totalWeight},,${totalWeight*confirmedPrice}\n`;
-
-  let blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
-  let a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="durian_summary.csv";
+  csv += `\nรวมทั้งหมด,${state.entries.length},${fmt(totals.total)},${price},${(totals.total * price).toFixed(2)}\n`;
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ทุเรียน_' + state.round.replace(/[^ก-๙a-z0-9]/gi,'_') + '.csv';
   a.click();
+  URL.revokeObjectURL(url);
 }
 
-load();
-render();
-</script>
+document.getElementById('weight-input').addEventListener('keydown', e => { if (e.key === 'Enter') addEntry(); });
+document.getElementById('new-round-input').addEventListener('keydown', e => { if (e.key === 'Enter') createRound(); });
+document.getElementById('edit-weight-input').addEventListener('keydown', e => { if (e.key === 'Enter') saveEdit(); });
+document.getElementById('new-round-modal').addEventListener('click', e => { if (e.target === document.getElementById('new-round-modal')) closeNewRoundModal(); });
+document.getElementById('edit-modal').addEventListener('click', e => { if (e.target === document.getElementById('edit-modal')) closeEditModal(); });
 
+loadState();
+render();
+document.getElementById('weight-input').focus();
+</script>
 </body>
 </html>
