@@ -6,6 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ชั่งทุเรียน</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -261,9 +265,14 @@
   
   .w-100 { width: 100%; }
   .mt-2 { margin-top: 8px; }
+
+  /* ป้ายสถานะ Cloud */
+  #cloud-status { position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 12px; z-index: 999; transition: opacity 0.3s; }
 </style>
 </head>
 <body>
+
+<div id="cloud-status">☁️ เชื่อมต่อคลาวด์...</div>
 
 <div id="screen-select" class="screen active">
   <div id="sel-header">
@@ -429,6 +438,24 @@
 
 <script>
 /* ══════════════════════════════════════
+   🔥 FIREBASE CONFIGURATION 🔥
+══════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyA0pCY_tcbGXsnqhUjgKmq3IsauyJdhhKY",
+  authDomain: "durianfarm-e924f.firebaseapp.com",
+  projectId: "durianfarm-e924f",
+  storageBucket: "durianfarm-e924f.firebasestorage.app",
+  messagingSenderId: "307965945526",
+  appId: "1:307965945526:web:05e82947ea4f5e8877e817",
+  measurementId: "G-2PGMW25WE8"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const docRef = db.collection('durian_data').doc('farm_state');
+
+/* ══════════════════════════════════════
    STATE & DATA
 ══════════════════════════════════════ */
 let rounds = [];
@@ -440,37 +467,97 @@ let uiPriceMode = 'single'; // For UI toggle before saving
 
 const LS_ROUNDS = 'durian_rounds';
 const LS_ACTIVE = 'durian_active';
+let isInitialLoad = true;
 
 /* ══════════════════════════════════════
-   PERSISTENCE & MIGRATION
+   PERSISTENCE & SYNC (FIRESTORE)
 ══════════════════════════════════════ */
 function loadData() {
-  try { 
-    const r = localStorage.getItem(LS_ROUNDS); 
-    rounds = r ? JSON.parse(r) : []; 
-  } catch(e) { rounds = []; }
-  
-  activeRoundId = localStorage.getItem(LS_ACTIVE) ? parseInt(localStorage.getItem(LS_ACTIVE)) : null;
-
-  // Data Migration for Pricing System & Ordering
-  rounds.forEach((r, idx) => {
-    if (r.priceMode === undefined) {
-      r.priceMode = 'single';
-      r.priceSingle = (r.confirmedPrice && r.confirmedPrice > 0) ? r.confirmedPrice : null;
-      r.priceAB = null;
-      r.priceC = null;
-      r.priceD = null;
+  // ดึงข้อมูลจากคลาวด์ตลอดเวลาที่มีการเปลี่ยนแปลง
+  docRef.onSnapshot((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      rounds = data.rounds || [];
+      activeRoundId = data.activeRoundId || null;
+    } else {
+      // ครั้งแรกสุด ดึงข้อมูลเก่าที่ค้างอยู่ในเครื่องขึ้นไปเก็บบนคลาวด์ด้วย
+      try { 
+        const r = localStorage.getItem(LS_ROUNDS); 
+        rounds = r ? JSON.parse(r) : []; 
+        activeRoundId = localStorage.getItem(LS_ACTIVE) ? parseInt(localStorage.getItem(LS_ACTIVE)) : null;
+      } catch(e) { rounds = []; }
+      
+      if(rounds.length > 0) saveData();
     }
-    if (r.order === undefined) {
-      r.order = r.id + idx;
+
+    // Data Migration for Pricing System & Ordering
+    rounds.forEach((r, idx) => {
+      if (r.priceMode === undefined) {
+        r.priceMode = 'single';
+        r.priceSingle = (r.confirmedPrice && r.confirmedPrice > 0) ? r.confirmedPrice : null;
+        r.priceAB = null;
+        r.priceC = null;
+        r.priceD = null;
+      }
+      if (r.order === undefined) {
+        r.order = r.id + idx;
+      }
+    });
+
+    const statusEl = document.getElementById('cloud-status');
+    if (statusEl) {
+      statusEl.innerText = '🟢 ออนไลน์';
+      statusEl.style.background = 'rgba(52, 199, 89, 0.9)';
+      setTimeout(() => { statusEl.style.opacity = '0'; }, 2000);
+    }
+
+    // เลือกว่าจะไปหน้าไหน
+    if (isInitialLoad) {
+      isInitialLoad = false;
+      if (activeRoundId && rounds.find(r => r.id === activeRoundId)) {
+        const round = getActiveRound();
+        activeGrade = (round && round.activeGrade) || 'AB';
+        goToTrack();
+      } else {
+        goToSelect();
+      }
+    } else {
+      // ถ้าเปิดเว็บไว้อยู่แล้ว ข้อมูลมาใหม่ ให้อัปเดตหน้าจอปัจจุบันทันที
+      if (document.getElementById('screen-select').classList.contains('active')) renderSelectScreen();
+      if (document.getElementById('screen-track').classList.contains('active')) renderTrackScreen();
+    }
+  }, (error) => {
+    console.error("Firestore Error:", error);
+    const statusEl = document.getElementById('cloud-status');
+    if (statusEl) {
+      statusEl.innerText = '🔴 ออฟไลน์ / ขัดข้อง';
+      statusEl.style.background = 'rgba(255, 59, 48, 0.9)';
+      statusEl.style.opacity = '1';
     }
   });
 }
 
 function saveData() {
+  // สำรองข้อมูลลงเครื่องด้วย เผื่อฉุกเฉิน
   localStorage.setItem(LS_ROUNDS, JSON.stringify(rounds));
   if (activeRoundId !== null) localStorage.setItem(LS_ACTIVE, activeRoundId);
   else localStorage.removeItem(LS_ACTIVE);
+
+  const statusEl = document.getElementById('cloud-status');
+  if (statusEl) {
+    statusEl.style.opacity = '1';
+    statusEl.innerText = '⏳ กำลังบันทึก...';
+    statusEl.style.background = 'rgba(0, 122, 255, 0.9)';
+  }
+
+  // ส่งขึ้นคลาวด์
+  docRef.set({ rounds, activeRoundId }).catch((error) => {
+    console.error("Error saving document: ", error);
+    if (statusEl) {
+      statusEl.innerText = '🔴 บันทึกไม่สำเร็จ';
+      statusEl.style.background = 'rgba(255, 59, 48, 0.9)';
+    }
+  });
 }
 
 function getActiveRound() { return rounds.find(r => r.id === activeRoundId) || null; }
@@ -1169,14 +1256,9 @@ bindEnter('inp-price-d', confirmPrice);
 /* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
+// เรียกโหลดข้อมูลจาก Firestore ทันทีที่เปิดหน้าเว็บ
 loadData();
-if (activeRoundId && rounds.find(r => r.id === activeRoundId)) {
-  const round = getActiveRound();
-  activeGrade = (round && round.activeGrade) || 'AB';
-  goToTrack();
-} else {
-  goToSelect();
-}
+
 </script>
 </body>
 </html>
