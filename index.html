@@ -269,7 +269,7 @@
   /* ป้ายสถานะ Cloud */
   #cloud-status { position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 12px; z-index: 999; transition: opacity 0.3s; }
 
-  /* ── TV MODE STYLES (บังคับพื้นขาว ตัวอักษรดำ 100%) ── */
+  /* ── TV MODE STYLES (บังคับพื้นขาว) ── */
   .tv-mode-active .tv-btn-hide,
   .tv-mode-active .action-grid,
   .tv-mode-active .b-actions,
@@ -280,26 +280,17 @@
   .tv-mode-active .price-setup-card {
     display: none !important;
   }
-  .tv-mode-active .card { background: transparent; box-shadow: none; border: none !important; margin-bottom: 0; }
+  .tv-mode-active .card:not(.tv-block-card) { background: transparent; box-shadow: none; border: none !important; margin-bottom: 0; }
   
-  /* บังคับพื้นหลังเป็นสีขาว และตัวเลข/ตัวอักษรเป็นสีดำทั้งหมด */
   .tv-mode-active body { background: #FFFFFF !important; }
-  .tv-mode-active .entry-row { border-bottom: 1px solid #E5E5EA !important; padding: 20px 0; }
-  .tv-mode-active .b-num { font-size: 24px; width: 50px; color: #000000 !important; }
-  .tv-mode-active .b-weight { font-size: 40px; color: #000000 !important; }
-  .tv-mode-active .b-weight small { font-size: 24px; color: #000000 !important; }
-  .tv-mode-active .b-grade { font-size: 24px; padding: 8px 16px; }
-  .tv-mode-active .block-header { background: transparent !important; border-bottom: 2px solid #E5E5EA !important; padding-bottom: 20px; margin-bottom: 20px; }
-  .tv-mode-active .block-title { font-size: 24px; color: #000000 !important; font-weight: bold; }
-  .tv-mode-active .block-total-weight { font-size: 30px; color: #FF9500 !important; }
-  .tv-mode-active #bottom-summary { background: #F2F2F7 !important; border-top: 1px solid #E5E5EA; }
+  .tv-mode-active #bottom-summary { background: #111 !important; border-top: 1px solid #E5E5EA; }
   .tv-mode-active .sum-val { font-size: 30px !important; }
   .tv-mode-active .sum-box { border: 1px solid #E5E5EA; background: #fff !important; }
   .tv-mode-active .sum-box .s-lbl { font-size: 18px; color: #000000 !important; }
   .tv-mode-active .sum-box .s-val { font-size: 24px; color: #000000 !important; }
-  .tv-mode-active .sum-total-col span { font-size: 18px; color: #6E6E73 !important; }
-  .tv-mode-active .sum-total-col strong { font-size: 40px; color: #000000 !important; }
-  .tv-mode-active .sum-money-col span { font-size: 18px; color: #6E6E73 !important; }
+ .tv-mode-active .sum-total-col span { font-size: 18px; color: #FFFFFF !important; }
+  .tv-mode-active .sum-total-col strong { font-size: 40px; color: #FFFFFF !important; }
+  .tv-mode-active .sum-money-col span { font-size: 18px; color: #FFFFFF !important; }
   .tv-mode-active .sum-money-col strong { font-size: 45px; color: #FF9500 !important; }
   .tv-mode-active #track-header { background: #FFFFFF !important; border-bottom: 1px solid #E5E5EA; }
   .tv-mode-active .round-info-nav h2 { font-size: 30px; color: #000000 !important; max-width: none; }
@@ -983,27 +974,82 @@ function renderTrackScreen() {
   let html = '';
   const lastId = round.entries[round.entries.length-1].id;
 
+  // 📌 ลูปสร้างหน้าต่างแต่ละบล็อก (รองรับทั้งโหมดปกติและโหมดทีวี)
   blocks.forEach((block) => {
     const blockWeight = block.entries.reduce((sum, e) => sum + e.weight, 0);
-    html += `<div class="card" style="padding:0; overflow:hidden; border:1px solid #E5E5EA;">
-      <div class="block-header" style="background:#FAFAFA; padding:12px 16px; margin:0 0 10px 0; display:flex; justify-content:space-between;">
-        <span class="block-title">บล็อกที่ ${block.subNum}</span>
-        <span class="block-total-weight">${fmt(blockWeight)} กก.</span>
-      </div>
-      <div style="padding:0 16px;">`;
-      
-    block.entries.forEach(e => {
-      html += `<div class="entry-row${e.id === lastId ? ' highlight' : ''}" id="entry-${e.id}">
-        <span class="b-num">#${e.basket}</span>
-        <span class="b-grade ${e.grade}">${e.grade}</span>
-        <div class="b-weight">${fmt(e.weight)} <small>กก.</small></div>
-        <div class="b-actions">
-          <button onclick="openEdit(${e.id})">แก้ไข</button>
-          <button class="btn-del" onclick="deleteEntry(${e.id})">ลบ</button>
+
+    // 📺 สร้างหน้าตาสำหรับ TV Mode
+    if (isTVMode) {
+      let blockPrice = 0;
+      // คำนวณราคารวมในบล็อกนั้น
+      block.entries.forEach(e => {
+        if (round.priceMode === 'single') {
+          blockPrice += e.weight * (round.priceSingle || 0);
+        } else {
+          let p = 0;
+          if (e.grade === 'AB') p = round.priceAB || 0;
+          else if (e.grade === 'C') p = round.priceC || 0;
+          else if (e.grade === 'D') p = round.priceD || 0;
+          blockPrice += e.weight * p;
+        }
+      });
+
+      html += `<div class="card tv-block-card" style="padding:0; overflow:hidden; border:2px solid #000; margin-bottom:20px; background: transparent; box-shadow: none;">
+        
+        <div class="block-header" style="background:#000 !important; color:#fff !important; padding:15px; margin:0; display:flex; justify-content:space-between; border-bottom: 2px solid #000;">
+          <span class="block-title" style="color:#fff !important; font-size:24px; font-weight:bold;">บล็อกที่ ${block.subNum}</span>
+          <span style="font-size:24px; font-weight:bold; color:#fff;">${round.name}</span>
         </div>
+        
+        <div style="padding:0 16px; background:#fff;">`;
+        
+      block.entries.forEach(e => {
+        let vColor = '';
+        if (e.grade === 'AB') vColor = '#34c759'; // เขียว
+        else if (e.grade === 'C') vColor = '#ff9500'; // ส้ม
+        else if (e.grade === 'D') vColor = '#ff3b30'; // แดง
+        else vColor = '#000000';
+
+        html += `<div class="entry-row${e.id === lastId ? ' highlight' : ''}" id="entry-${e.id}" style="border-bottom: 1px solid #E5E5EA !important; padding: 20px 0; display:flex; align-items:center;">
+          <span class="b-num" style="color:#000 !important; font-size:24px; width:60px;">#${e.basket}</span>
+          <span class="b-grade" style="color:${vColor} !important; font-size:24px; font-weight:bold; background:transparent; padding:0 16px;">${e.grade}</span>
+          <div class="b-weight" style="flex:1; text-align:right; color:#000 !important; font-size:40px; font-weight:bold;">${fmt(e.weight)} <small style="color:#000 !important; font-size:24px;">กก.</small></div>
+        </div>`;
+      });
+      
+      html += `</div>
+        
+        <div style="background:#000; color:#fff; padding:15px; text-align:center; border-top: 2px solid #000;">
+          <div style="font-size: 24px; font-weight: bold;">
+            น้ำหนักรวม: <span style="color:#FF9500;">${fmt(blockWeight)} กก.</span> &nbsp;
+          </div>
+        </div>
+
       </div>`;
-    });
-    html += `</div></div>`;
+
+    } 
+    // 📱 สร้างหน้าตาสำหรับโหมดมือถือปกติ (เหมือนเดิม 100%)
+    else {
+      html += `<div class="card" style="padding:0; overflow:hidden; border:1px solid #E5E5EA;">
+        <div class="block-header" style="background:#FAFAFA; padding:12px 16px; margin:0 0 10px 0; display:flex; justify-content:space-between;">
+          <span class="block-title">บล็อกที่ ${block.subNum}</span>
+          <span class="block-total-weight">${fmt(blockWeight)} กก.</span>
+        </div>
+        <div style="padding:0 16px;">`;
+        
+      block.entries.forEach(e => {
+        html += `<div class="entry-row${e.id === lastId ? ' highlight' : ''}" id="entry-${e.id}">
+          <span class="b-num">#${e.basket}</span>
+          <span class="b-grade ${e.grade}">${e.grade}</span>
+          <div class="b-weight">${fmt(e.weight)} <small>กก.</small></div>
+          <div class="b-actions">
+            <button onclick="openEdit(${e.id})">แก้ไข</button>
+            <button class="btn-del" onclick="deleteEntry(${e.id})">ลบ</button>
+          </div>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
   });
 
   const currentCount = round.entries.length;
@@ -1470,6 +1516,7 @@ function toggleTVMode() {
       btn.style.background = '#FF3B30';
     }
     alert("📺 เปิดโหมดทีวีแล้ว!\nหน้าจอจะเลื่อนอัตโนมัติ");
+    renderTrackScreen(); // โหลดหน้าจอใหม่แบบ TV
     autoScrollTV();
   } else {
     document.body.classList.remove('tv-mode-active');
@@ -1477,6 +1524,7 @@ function toggleTVMode() {
       btn.innerHTML = '📺 ทีวี';
       btn.style.background = '#34495e';
     }
+    renderTrackScreen(); // คืนค่าหน้าจอเป็นโหมดปกติ
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
