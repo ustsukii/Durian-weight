@@ -123,7 +123,7 @@
   
   .round-card { border: 2px solid transparent; transition: 0.2s; position: relative; }
   .round-card.is-active { border-color: var(--primary); background: #F0F8FF; }
-  .round-card-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; padding-right: 80px; }
+  .round-card-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; padding-right: 80px; flex-wrap: wrap; }
   .active-badge { background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
   .round-card-meta { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
   
@@ -198,8 +198,8 @@
   .entry-row.highlight { background: #F0F8FF; margin: 0 -16px; padding: 12px 16px; border-radius: 8px; animation: pop 0.3s ease; }
   
   .b-num { font-size: 14px; font-weight: 700; color: var(--text-muted); width: 30px; }
-  .b-weight { flex: 1; font-size: 22px; font-weight: 800; }
-  .b-weight small { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+  .b-weight { flex: 1; font-size: 22px; font-weight: 800; color: #000; }
+  .b-weight small { font-size: 14px; font-weight: 600; color: #000; }
   .b-grade { font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 8px; }
   .b-grade.AB { background: var(--ab-bg); color: var(--ab-text); }
   .b-grade.C { background: var(--c-bg); color: var(--c-text); }
@@ -268,6 +268,41 @@
 
   /* ป้ายสถานะ Cloud */
   #cloud-status { position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 12px; z-index: 999; transition: opacity 0.3s; }
+
+  /* ── TV MODE STYLES (บังคับพื้นขาว ตัวอักษรดำ 100%) ── */
+  .tv-mode-active .tv-btn-hide,
+  .tv-mode-active .action-grid,
+  .tv-mode-active .b-actions,
+  .tv-mode-active .end-sub-btn,
+  .tv-mode-active #sel-header,
+  .tv-mode-active .main-input-area,
+  .tv-mode-active .grade-selector,
+  .tv-mode-active .price-setup-card {
+    display: none !important;
+  }
+  .tv-mode-active .card { background: transparent; box-shadow: none; border: none !important; margin-bottom: 0; }
+  
+  /* บังคับพื้นหลังเป็นสีขาว และตัวเลข/ตัวอักษรเป็นสีดำทั้งหมด */
+  .tv-mode-active body { background: #FFFFFF !important; }
+  .tv-mode-active .entry-row { border-bottom: 1px solid #E5E5EA !important; padding: 20px 0; }
+  .tv-mode-active .b-num { font-size: 24px; width: 50px; color: #000000 !important; }
+  .tv-mode-active .b-weight { font-size: 40px; color: #000000 !important; }
+  .tv-mode-active .b-weight small { font-size: 24px; color: #000000 !important; }
+  .tv-mode-active .b-grade { font-size: 24px; padding: 8px 16px; }
+  .tv-mode-active .block-header { background: transparent !important; border-bottom: 2px solid #E5E5EA !important; padding-bottom: 20px; margin-bottom: 20px; }
+  .tv-mode-active .block-title { font-size: 24px; color: #000000 !important; font-weight: bold; }
+  .tv-mode-active .block-total-weight { font-size: 30px; color: #FF9500 !important; }
+  .tv-mode-active #bottom-summary { background: #F2F2F7 !important; border-top: 1px solid #E5E5EA; }
+  .tv-mode-active .sum-val { font-size: 30px !important; }
+  .tv-mode-active .sum-box { border: 1px solid #E5E5EA; background: #fff !important; }
+  .tv-mode-active .sum-box .s-lbl { font-size: 18px; color: #000000 !important; }
+  .tv-mode-active .sum-box .s-val { font-size: 24px; color: #000000 !important; }
+  .tv-mode-active .sum-total-col span { font-size: 18px; color: #6E6E73 !important; }
+  .tv-mode-active .sum-total-col strong { font-size: 40px; color: #000000 !important; }
+  .tv-mode-active .sum-money-col span { font-size: 18px; color: #6E6E73 !important; }
+  .tv-mode-active .sum-money-col strong { font-size: 45px; color: #FF9500 !important; }
+  .tv-mode-active #track-header { background: #FFFFFF !important; border-bottom: 1px solid #E5E5EA; }
+  .tv-mode-active .round-info-nav h2 { font-size: 30px; color: #000000 !important; max-width: none; }
 </style>
 </head>
 <body>
@@ -277,7 +312,10 @@
 <div id="screen-select" class="screen active">
   <div id="sel-header">
     <h1>🌿 ระบบชั่งทุเรียน</h1>
-    <button class="btn btn-primary" style="padding: 10px 16px;" onclick="promptCreateRound()">➕ สร้างรอบใหม่</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-secondary" style="padding: 10px 12px; background: #FF9500; color: white;" onclick="generateAnnualSummary()">📊 สรุปรายปี</button>
+      <button class="btn btn-primary" style="padding: 10px 16px;" onclick="promptCreateRound()">➕ สร้างรอบใหม่</button>
+    </div>
   </div>
   <div id="sel-content">
     <div id="yearly-section"></div>
@@ -294,9 +332,10 @@
         <h2 id="round-name-display">—</h2>
       </div>
       <div class="nav-btns">
-        <button class="nav-btn" style="background:#E3F8E9; color:#248A3D;" onclick="generateSlip()">📷 สลิป</button>
-        <button class="nav-btn" onclick="exportCSV()">ส่งออก CSV</button>
-        <button class="nav-btn" onclick="goToSelect()" style="background:#E5E5EA;">ปิด ✖</button>
+        <button class="nav-btn" id="btn-tv-mode" style="background:#34495e; color:white;" onclick="toggleTVMode()">📺 ทีวี</button>
+        <button class="nav-btn tv-btn-hide" style="background:#E3F8E9; color:#248A3D;" onclick="generateSlip()">📷 สลิป</button>
+        <button class="nav-btn tv-btn-hide" onclick="exportCSV()">ส่งออก CSV</button>
+        <button class="nav-btn tv-btn-hide" onclick="goToSelect()" style="background:#E5E5EA;">ปิด ✖</button>
       </div>
     </div>
     
@@ -319,7 +358,7 @@
       <button class="btn btn-action btn-danger" onclick="resetActiveRound()">⚠️ รีเซ็ตใหม่</button>
     </div>
 
-    <div class="card animate-slide-up" style="border: 2px solid var(--border);">
+    <div class="card animate-slide-up price-setup-card" style="border: 2px solid var(--border);">
       <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px;">💰 ตั้งราคารับซื้อ</h3>
       
       <div class="segment-control">
@@ -388,9 +427,49 @@
   <div class="modal-box">
     <h2>สร้างรอบใหม่</h2>
     <input type="text" id="create-round-input" placeholder="ชื่อรอบ (ไม่บังคับ)">
+    <select id="create-round-variety" style="width: 100%; font-size: 18px; padding: 12px; margin-bottom: 16px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-weight: 600; outline: none;">
+      <option value="หมอนทอง">🟡 หมอนทอง</option>
+      <option value="ชะนี">🟤 ชะนี</option>
+      <option value="กระดุม">🟢 กระดุม</option>
+      <option value="พวงมณี">🟠 พวงมณี</option>
+      <option value="อื่นๆ">⚪ อื่นๆ / ไม่ระบุ</option>
+    </select>
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('modal-create')">ยกเลิก</button>
       <button class="btn btn-primary" onclick="createRound()">สร้าง</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-round" class="modal-overlay">
+  <div class="modal-box">
+    <h2>✏️ แก้ไขข้อมูลรอบ</h2>
+    <input type="hidden" id="edit-round-id">
+    <label style="font-size: 14px; font-weight: bold; margin-bottom: 4px; display: block; text-align: left;">ชื่อรอบการชั่ง:</label>
+    <input type="text" id="edit-round-name" placeholder="เช่น รอบเช้า ล้งเฮียเอ">
+    
+    <label style="font-size: 14px; font-weight: bold; margin-bottom: 4px; display: block; text-align: left;">สายพันธุ์ทุเรียน:</label>
+    <select id="edit-round-variety" style="width: 100%; font-size: 18px; padding: 12px; margin-bottom: 20px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-weight: 600; outline: none;">
+      <option value="หมอนทอง">🟡 หมอนทอง</option>
+      <option value="ชะนี">🟤 ชะนี</option>
+      <option value="กระดุม">🟢 กระดุม</option>
+      <option value="พวงมณี">🟠 พวงมณี</option>
+      <option value="อื่นๆ">⚪ อื่นๆ / ไม่ระบุ</option>
+    </select>
+    
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('modal-edit-round')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveEditRound()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-annual-summary" class="modal-overlay">
+  <div class="modal-box" style="max-width: 500px;">
+    <h2>📊 สรุปยอดรวมรายปี</h2>
+    <div id="annual-summary-content" style="margin-top: 15px; text-align: left; line-height: 1.8;"></div>
+    <div class="modal-btns" style="margin-top: 20px;">
+      <button class="btn btn-secondary" onclick="closeModal('modal-annual-summary')">ปิดหน้าต่าง</button>
     </div>
   </div>
 </div>
@@ -427,18 +506,18 @@
       <input type="text" id="slip-name-c" placeholder="C (ตกไซส์)" onkeyup="generateSlip()" style="font-size:13px; padding:8px; text-align:center; margin-bottom:0 !important;">
       <input type="text" id="slip-name-d" placeholder="D (หนอน)" onkeyup="generateSlip()" style="font-size:13px; padding:8px; text-align:center; margin-bottom:0 !important;">
     </div>
-
-    <img id="slip-preview-img" style="width:100%; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px; display:block;">
+    
+    <img id="slip-preview-img" style="width:100%; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:16px;">
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('modal-slip')">ปิด</button>
-      <button class="btn btn-primary" onclick="shareSlip()">แชร์ / บันทึกรูป</button>
+      <button class="btn btn-primary" onclick="shareSlip()" style="background:#248A3D;">แชร์ / บันทึกรูป</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ══════════════════════════════════════
-   🔥 FIREBASE CONFIGURATION 🔥
+   FIREBASE SETUP (Config ตามที่คุณให้มา 100%)
 ══════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyA0pCY_tcbGXsnqhUjgKmq3IsauyJdhhKY",
@@ -453,51 +532,71 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const docRef = db.collection('durian_data').doc('farm_state');
+const docRef = db.collection('durian_data').doc('main_document');
 
 /* ══════════════════════════════════════
-   STATE & DATA
+   GLOBAL STATE & STORAGE
 ══════════════════════════════════════ */
-let rounds = [];
-let activeRoundId = null;
-let renamingRoundId = null;
-let editingEntryId = null;
-let activeGrade = 'AB';
-let uiPriceMode = 'single'; // For UI toggle before saving
-
 const LS_ROUNDS = 'durian_rounds';
 const LS_ACTIVE = 'durian_active';
-let isInitialLoad = true;
+
+let rounds = [];
+let activeRoundId = null;
+let activeGrade = 'AB';
+let editEntryId = null;
+let renameRoundId = null;
+let uiPriceMode = 'single'; 
+
+function fmt(num) { return Number(num).toFixed(2); }
+function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
+function getActiveRound() { return rounds.find(r => r.id === activeRoundId); }
 
 /* ══════════════════════════════════════
    PERSISTENCE & SYNC (FIRESTORE)
 ══════════════════════════════════════ */
+let isInitialLoad = true;
+let lastDataString = ""; 
+let cloudTimeout = null; 
+
 function loadData() {
-  // ดึงข้อมูลจากคลาวด์ตลอดเวลาที่มีการเปลี่ยนแปลง
   docRef.onSnapshot((doc) => {
+    let incomingRounds = [];
+    let incomingActiveId = null;
+
     if (doc.exists) {
       const data = doc.data();
-      rounds = data.rounds || [];
-      activeRoundId = data.activeRoundId || null;
+      incomingRounds = data.rounds || [];
+      incomingActiveId = data.activeRoundId || null;
     } else {
-      // ครั้งแรกสุด ดึงข้อมูลเก่าที่ค้างอยู่ในเครื่องขึ้นไปเก็บบนคลาวด์ด้วย
       try { 
         const r = localStorage.getItem(LS_ROUNDS); 
-        rounds = r ? JSON.parse(r) : []; 
-        activeRoundId = localStorage.getItem(LS_ACTIVE) ? parseInt(localStorage.getItem(LS_ACTIVE)) : null;
-      } catch(e) { rounds = []; }
+        incomingRounds = r ? JSON.parse(r) : []; 
+        incomingActiveId = localStorage.getItem(LS_ACTIVE) ? parseInt(localStorage.getItem(LS_ACTIVE)) : null;
+      } catch(e) { incomingRounds = []; }
       
-      if(rounds.length > 0) saveData();
+      if(incomingRounds.length > 0) {
+         rounds = incomingRounds;
+         activeRoundId = incomingActiveId;
+         saveData();
+         return; 
+      }
     }
 
-    // Data Migration for Pricing System & Ordering
+    const newDataString = JSON.stringify({ rounds: incomingRounds, activeRoundId: incomingActiveId });
+    if (lastDataString === newDataString) {
+      return; 
+    }
+    
+    rounds = incomingRounds;
+    activeRoundId = incomingActiveId;
+    lastDataString = newDataString; 
+
     rounds.forEach((r, idx) => {
       if (r.priceMode === undefined) {
         r.priceMode = 'single';
         r.priceSingle = (r.confirmedPrice && r.confirmedPrice > 0) ? r.confirmedPrice : null;
-        r.priceAB = null;
-        r.priceC = null;
-        r.priceD = null;
+        r.priceAB = null; r.priceC = null; r.priceD = null;
       }
       if (r.order === undefined) {
         r.order = r.id + idx;
@@ -506,12 +605,13 @@ function loadData() {
 
     const statusEl = document.getElementById('cloud-status');
     if (statusEl) {
+      if(cloudTimeout) clearTimeout(cloudTimeout); 
       statusEl.innerText = '🟢 ออนไลน์';
       statusEl.style.background = 'rgba(52, 199, 89, 0.9)';
-      setTimeout(() => { statusEl.style.opacity = '0'; }, 2000);
+      statusEl.style.opacity = '1';
+      cloudTimeout = setTimeout(() => { statusEl.style.opacity = '0'; }, 2000);
     }
 
-    // เลือกว่าจะไปหน้าไหน
     if (isInitialLoad) {
       isInitialLoad = false;
       if (activeRoundId && rounds.find(r => r.id === activeRoundId)) {
@@ -522,7 +622,6 @@ function loadData() {
         goToSelect();
       }
     } else {
-      // ถ้าเปิดเว็บไว้อยู่แล้ว ข้อมูลมาใหม่ ให้อัปเดตหน้าจอปัจจุบันทันที
       if (document.getElementById('screen-select').classList.contains('active')) renderSelectScreen();
       if (document.getElementById('screen-track').classList.contains('active')) renderTrackScreen();
     }
@@ -530,6 +629,7 @@ function loadData() {
     console.error("Firestore Error:", error);
     const statusEl = document.getElementById('cloud-status');
     if (statusEl) {
+      if(cloudTimeout) clearTimeout(cloudTimeout);
       statusEl.innerText = '🔴 ออฟไลน์ / ขัดข้อง';
       statusEl.style.background = 'rgba(255, 59, 48, 0.9)';
       statusEl.style.opacity = '1';
@@ -538,19 +638,20 @@ function loadData() {
 }
 
 function saveData() {
-  // สำรองข้อมูลลงเครื่องด้วย เผื่อฉุกเฉิน
   localStorage.setItem(LS_ROUNDS, JSON.stringify(rounds));
   if (activeRoundId !== null) localStorage.setItem(LS_ACTIVE, activeRoundId);
   else localStorage.removeItem(LS_ACTIVE);
 
+  lastDataString = JSON.stringify({ rounds, activeRoundId });
+
   const statusEl = document.getElementById('cloud-status');
   if (statusEl) {
+    if(cloudTimeout) clearTimeout(cloudTimeout);
     statusEl.style.opacity = '1';
     statusEl.innerText = '⏳ กำลังบันทึก...';
     statusEl.style.background = 'rgba(0, 122, 255, 0.9)';
   }
 
-  // ส่งขึ้นคลาวด์
   docRef.set({ rounds, activeRoundId }).catch((error) => {
     console.error("Error saving document: ", error);
     if (statusEl) {
@@ -560,41 +661,30 @@ function saveData() {
   });
 }
 
-function getActiveRound() { return rounds.find(r => r.id === activeRoundId) || null; }
-function updateActiveRound(fn) {
-  const idx = rounds.findIndex(r => r.id === activeRoundId);
-  if (idx === -1) return;
-  fn(rounds[idx]);
-  saveData();
-}
-
-/* ══════════════════════════════════════
-   HELPERS
-══════════════════════════════════════ */
-function todayStr() { return new Date().toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'numeric'}); }
-function fmt(n) { return (Math.round(n * 10) / 10).toFixed(1); }
-function fmtComma(n) { return Number(n.toFixed(1)).toLocaleString('th-TH'); }
-function fmtMoney(n) { return '฿' + Number(n.toFixed(2)).toLocaleString('th-TH'); }
-
 function calcRoundTotals(round) {
-  let ab = 0, c = 0, d = 0;
-  (round.entries || []).forEach(e => {
-    if (e.grade === 'AB') ab += e.weight;
-    else if (e.grade === 'C') c += e.weight;
-    else d += e.weight;
-  });
-  const total = ab + c + d;
+  let ab=0, c=0, d=0, total=0, money=0;
+  if(!round || !round.entries) return {ab:0, c:0, d:0, total:0, money:0};
   
-  let money = 0;
-  if (round.priceMode === 'multi') {
-    money = (ab * (round.priceAB || 0)) + (c * (round.priceC || 0)) + (d * (round.priceD || 0));
-  } else {
-    money = total * (round.priceSingle || 0);
-  }
-  return { ab, c, d, total, money };
+  round.entries.forEach(e => {
+    total += e.weight;
+    if(e.grade === 'AB') ab += e.weight;
+    else if(e.grade === 'C') c += e.weight;
+    else if(e.grade === 'D') d += e.weight;
+    
+    if (round.priceMode === 'single') {
+      money += e.weight * (round.priceSingle || 0);
+    } else {
+      let p = 0;
+      if (e.grade === 'AB') p = round.priceAB || 0;
+      else if (e.grade === 'C') p = round.priceC || 0;
+      else if (e.grade === 'D') p = round.priceD || 0;
+      money += e.weight * p;
+    }
+  });
+  return {ab, c, d, total, money};
 }
 
-function calcYearlySummary() {
+function calcYearlyStats() {
   const map = {};
   rounds.forEach(round => {
     const year = new Date(round.createdAt).getFullYear();
@@ -611,7 +701,9 @@ function getSubRounds(round) {
   let i = 0, subNum = 1;
   while (i < round.entries.length) {
     let breakAt = round.entries.length;
-    for (const br of breaks) { if (br > i && br < breakAt) breakAt = br; }
+    for (const br of breaks) {
+      if (br > i && br < breakAt) breakAt = br;
+    }
     const chunk = round.entries.slice(i, Math.min(i + 5, breakAt));
     if (chunk.length === 0) { i = breakAt; continue; }
     blocks.push({ entries: chunk, subNum, startIndex: i });
@@ -670,29 +762,29 @@ function moveRoundDown(id) {
 }
 
 function renderSelectScreen() {
-  const elYear = document.getElementById('yearly-section');
-  const years = calcYearlySummary();
-  if (years.length > 0) {
-    let yHtml = '<div class="card"><div class="year-title">📊 สรุปรายปี</div>';
-    years.forEach(y => {
-      yHtml += `<div class="year-row"><span>ปี ${y.year + 543} (น้ำหนัก)</span><strong>${fmtComma(y.weight)} กก.</strong></div>
-                <div class="year-row" style="border:none; margin-bottom:12px;"><span>รายได้</span><strong style="color:var(--primary)">${fmtMoney(y.money)}</strong></div>`;
-    });
-    yHtml += '</div>';
-    elYear.innerHTML = yHtml;
+  const stats = calcYearlyStats();
+  const elYearly = document.getElementById('yearly-section');
+  if (stats.length === 0) {
+    elYearly.innerHTML = '';
   } else {
-    elYear.innerHTML = '';
+    let html = '';
+    stats.forEach(s => {
+      html += `<div class="card"><div class="year-title">📅 สรุปยอดปี ${s.year}</div>
+      <div class="year-row"><span>น้ำหนักรวม</span> <strong>${fmtComma(s.weight)} กก.</strong></div>
+      <div class="year-row" style="border:none;"><span>ยอดเงินรวม</span> <strong style="color:var(--primary)">${fmtMoney(s.money)}</strong></div>
+      </div>`;
+    });
+    elYearly.innerHTML = html;
   }
 
   const elRounds = document.getElementById('rounds-list');
   if (rounds.length === 0) {
-    elRounds.innerHTML = '<div class="empty-state"><div class="icon">📝</div><p>ยังไม่มีรอบการชั่ง</p><small>กด "สร้างรอบใหม่" ด้านบนเพื่อเริ่มต้น</small></div>';
+    elRounds.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>ยังไม่มีรอบการชั่ง</p><small>กดปุ่ม "สร้างรอบใหม่" ด้านบนเพื่อเริ่มใช้งาน</small></div>`;
     return;
   }
 
-  // เรียงลำดับจาก order มากไปน้อย
-  const sorted = [...rounds].sort((a, b) => b.order - a.order);
   let html = '';
+  const sorted = [...rounds].sort((a, b) => b.order - a.order);
   
   sorted.forEach((round, index) => {
     const isFirst = index === 0;
@@ -707,89 +799,104 @@ function renderSelectScreen() {
     } else if (round.priceMode === 'multi' && (round.priceAB !== null || round.priceC !== null || round.priceD !== null)) {
       priceDisplay = `ราคา: AB=${round.priceAB||0} / C=${round.priceC||0} / D=${round.priceD||0}`;
     }
-    
+
     html += `<div class="card round-card${isActive ? ' is-active' : ''}">
-        <div class="sort-controls">
-          <button class="btn btn-secondary" onclick="moveRoundDown(${round.id})" ${isLast ? 'disabled style="opacity:0.3"' : ''}>▼</button>
-          <button class="btn btn-secondary" onclick="moveRoundUp(${round.id})" ${isFirst ? 'disabled style="opacity:0.3"' : ''}>▲</button>
-        </div>
-        <div class="round-card-name">
-          ${round.name} ${isActive ? '<span class="active-badge">กำลังใช้</span>' : ''}
-        </div>
-        <div class="round-card-meta" style="margin-bottom:4px;">📅 สร้างเมื่อ ${createdDate} · 📦 ${(round.entries||[]).length} เข่ง</div>
-        <div class="round-card-meta" style="color:var(--primary); font-weight:700;">🏷️ ${priceDisplay}</div>
-        <div class="round-card-stats">
-          <div class="rstat"><div class="rl">น้ำหนักรวม</div><div class="rv">${fmtComma(t.total)} กก.</div></div>
-          <div class="rstat"><div class="rl">ยอดเงิน</div><div class="rv" style="color:var(--primary)">${t.money > 0 ? fmtMoney(t.money) : '—'}</div></div>
-        </div>
-        <div class="round-actions">
-          <button class="btn btn-primary" style="padding:10px" onclick="enterRound(${round.id})">▶ เปิดรอบ</button>
-          <button class="btn btn-secondary" style="padding:10px" onclick="promptRename(${round.id})">✏️ แก้ชื่อ</button>
-          <button class="btn btn-danger" style="padding:10px" onclick="deleteRound(${round.id})">🗑 ลบ</button>
-        </div>
+      <div class="sort-controls">
+        <button class="btn btn-secondary" onclick="moveRoundDown(${round.id})" ${isLast ? 'disabled style="opacity:0.3"' : ''}>▼</button>
+        <button class="btn btn-secondary" onclick="moveRoundUp(${round.id})" ${isFirst ? 'disabled style="opacity:0.3"' : ''}>▲</button>
+      </div>
+      <div class="round-card-name">
+        ${round.name} 
+        <span style="font-size: 12px; background: #eee; padding: 2px 8px; border-radius: 12px; color: #555; margin-left: 4px;">${round.variety || 'อื่นๆ'}</span>
+        ${isActive ? '<span class="active-badge">กำลังใช้</span>' : ''}
+      </div>
+      <div class="round-card-meta" style="margin-bottom:4px;">📅 สร้างเมื่อ ${createdDate} · 📦 ${(round.entries||[]).length} เข่ง</div>
+      <div class="round-card-meta" style="color:var(--primary); font-weight:700;">🏷️ ${priceDisplay}</div>
+      <div class="round-card-stats">
+        <div class="rstat"><div class="rl">น้ำหนักรวม</div><div class="rv">${fmtComma(t.total)} กก.</div></div>
+        <div class="rstat"><div class="rl">ยอดเงิน</div><div class="rv" style="color:var(--primary)">${t.money > 0 ? fmtMoney(t.money) : '—'}</div></div>
+      </div>
+      <div class="round-actions">
+        <button class="btn btn-primary" style="padding:10px" onclick="enterRound(${round.id})">▶ เปิดรอบ</button>
+        <button class="btn btn-secondary" style="padding:10px" onclick="openEditRoundModal(${round.id})">✏️ แก้ไข</button>
+        <button class="btn btn-danger" style="padding:10px" onclick="deleteRound(${round.id})">🗑 ลบ</button>
+      </div>
     </div>`;
   });
   elRounds.innerHTML = html;
 }
 
 /* ══════════════════════════════════════
-   ROUND MANAGEMENT
+   ROUND OPERATIONS
 ══════════════════════════════════════ */
 function promptCreateRound() {
   document.getElementById('create-round-input').value = '';
+  document.getElementById('create-round-variety').value = 'อื่นๆ';
   openModal('modal-create');
-  setTimeout(() => document.getElementById('create-round-input').focus(), 200);
+  setTimeout(() => document.getElementById('create-round-input').focus(), 100);
 }
 
-function createRound() {
-  const name = document.getElementById('create-round-input').value.trim() || todayStr();
+window.createRound = function() {
+  const inp = document.getElementById('create-round-input');
+  const name = inp.value.trim() || 'รอบใหม่ ' + new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  const variety = document.getElementById('create-round-variety').value;
   
-  const maxOrder = rounds.length > 0 ? Math.max(...rounds.map(r => r.order || 0)) : 0;
-  const newOrder = Math.max(Date.now(), maxOrder + 1);
-
-  const round = {
-    id: Date.now(), order: newOrder, name, createdAt: new Date().toISOString(),
-    priceMode: 'single', priceSingle: null, priceAB: null, priceC: null, priceD: null,
-    activeGrade: 'AB', entries: [], subRoundBreaks: [], nextBasket: 1
+  const newRound = {
+    id: Date.now(),
+    name: name,
+    variety: variety,
+    entries: [],
+    subRoundBreaks: [],
+    nextBasket: 1,
+    createdAt: new Date().toISOString(),
+    order: Date.now(),
+    priceMode: 'single', priceSingle: null, priceAB: null, priceC: null, priceD: null
   };
-  rounds.push(round);
-  activeRoundId = round.id;
-  activeGrade = 'AB';
+  
+  rounds.push(newRound);
+  activeRoundId = newRound.id;
   saveData();
   closeModal('modal-create');
+  inp.value = '';
   goToTrack();
-}
+};
 
 function enterRound(id) {
   activeRoundId = id;
   const round = getActiveRound();
-  activeGrade = (round && round.activeGrade) || 'AB';
+  if(round && round.activeGrade) activeGrade = round.activeGrade;
   saveData();
   goToTrack();
 }
 
 function promptRename(id) {
-  renamingRoundId = id;
   const round = rounds.find(r => r.id === id);
-  document.getElementById('rename-round-input').value = round ? round.name : '';
+  if (!round) return;
+  renameRoundId = id;
+  document.getElementById('rename-round-input').value = round.name;
   openModal('modal-rename');
-  setTimeout(() => document.getElementById('rename-round-input').focus(), 200);
 }
 
 function saveRename() {
-  const name = document.getElementById('rename-round-input').value.trim();
-  if (!name) { alert('กรุณาใส่ชื่อรอบ'); return; }
-  const idx = rounds.findIndex(r => r.id === renamingRoundId);
-  if (idx !== -1) rounds[idx].name = name;
-  renamingRoundId = null;
-  saveData();
+  const inp = document.getElementById('rename-round-input');
+  const newName = inp.value.trim();
+  if (newName && renameRoundId !== null) {
+    const round = rounds.find(r => r.id === renameRoundId);
+    if (round) {
+      round.name = newName;
+      saveData();
+      renderSelectScreen();
+      if(activeRoundId === renameRoundId && document.getElementById('screen-track').classList.contains('active')) {
+         document.getElementById('round-name-display').innerText = newName;
+      }
+    }
+  }
   closeModal('modal-rename');
-  renderSelectScreen();
 }
 
 function deleteRound(id) {
   const round = rounds.find(r => r.id === id);
-  if (!confirm(`ยืนยันการลบรอบ "${round ? round.name : ''}" ?\nข้อมูลทั้งหมดจะหายไป กู้คืนไม่ได้`)) return;
+  if (!confirm(`ยืนยันการลบ "${round ? round.name : ''}" ?\nข้อมูลทั้งหมดจะหายไป กู้คืนไม่ได้`)) return;
   rounds = rounds.filter(r => r.id !== id);
   if (activeRoundId === id) activeRoundId = null;
   saveData();
@@ -828,57 +935,58 @@ function confirmPrice() {
 
 function renderPriceDisplay(round) {
   switchPriceUI(round.priceMode || 'single');
-  
   document.getElementById('inp-price-single').value = round.priceSingle !== null ? round.priceSingle : '';
   document.getElementById('inp-price-ab').value = round.priceAB !== null ? round.priceAB : '';
   document.getElementById('inp-price-c').value = round.priceC !== null ? round.priceC : '';
   document.getElementById('inp-price-d').value = round.priceD !== null ? round.priceD : '';
-
+  
   const lockBox = document.getElementById('locked-price-display');
   if (round.priceMode === 'single' && round.priceSingle !== null) {
     lockBox.innerHTML = `<div class="active-price-display"><p>กำลังใช้ราคา:</p><strong>${round.priceSingle} บาท/กก. (ทุกเกรด)</strong></div>`;
   } else if (round.priceMode === 'multi' && (round.priceAB !== null || round.priceC !== null || round.priceD !== null)) {
-    lockBox.innerHTML = `<div class="active-price-display"><p>กำลังใช้ราคา (บาท/กก.):</p><strong>AB=${round.priceAB||0} / C=${round.priceC||0} / D=${round.priceD||0}</strong></div>`;
+    lockBox.innerHTML = `<div class="active-price-display"><p>กำลังใช้ราคาแยกเกรด:</p><strong>AB: ${round.priceAB||0} | C: ${round.priceC||0} | D: ${round.priceD||0}</strong></div>`;
   } else {
     lockBox.innerHTML = '';
   }
 }
 
+function updateActiveRound(callback) {
+  const round = getActiveRound();
+  if (round) { callback(round); saveData(); }
+}
+
 function renderTrackScreen() {
   const round = getActiveRound();
-  if (!round) { goToSelect(); return; }
+  if (!round) return;
 
-  // Headers & Active Grade
-  document.getElementById('round-name-display').textContent = round.name;
+  document.getElementById('round-name-display').innerText = round.name;
+  
   document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('grade-' + activeGrade).classList.add('active');
-
-  // Prices
+  
   renderPriceDisplay(round);
 
-  // Totals
-  const totals = calcRoundTotals(round);
-  document.getElementById('sum-ab').textContent = fmt(totals.ab);
-  document.getElementById('sum-c').textContent = fmt(totals.c);
-  document.getElementById('sum-d').textContent = fmt(totals.d);
-  document.getElementById('sum-total').textContent = fmt(totals.total) + ' กก.';
-  document.getElementById('sum-money').textContent = fmtMoney(totals.money);
+  const t = calcRoundTotals(round);
+  document.getElementById('sum-ab').innerText = fmt(t.ab);
+  document.getElementById('sum-c').innerText = fmt(t.c);
+  document.getElementById('sum-d').innerText = fmt(t.d);
+  document.getElementById('sum-total').innerText = fmt(t.total) + ' กก.';
+  document.getElementById('sum-money').innerText = fmtMoney(t.money);
 
-  // Entries List
-  const blocks = getSubRounds(round);
   const container = document.getElementById('entries-container');
-  
   if (round.entries.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>ยังไม่มีตะกร้า</p><small>พิมพ์น้ำหนักแล้วกด Enter หรือปุ่ม +</small></div>';
+    container.innerHTML = `<div class="empty-state" style="padding-top:20px;"><div class="icon">🛒</div><p>ยังไม่มีข้อมูลในรอบนี้</p><small>เริ่มชั่งน้ำหนักและกด "+" เพื่อบันทึก</small></div>`;
     return;
   }
 
-  const lastId = round.entries[round.entries.length - 1].id;
+  const blocks = getSubRounds(round);
   let html = '';
-  blocks.forEach(block => {
-    const blockWeight = block.entries.reduce((s, e) => s + e.weight, 0);
-    html += `<div class="card" style="padding:0;">
-      <div style="padding:12px 16px; background:#FAFAFA; border-bottom:1px solid var(--border); border-radius:var(--radius-md) var(--radius-md) 0 0; display:flex; justify-content:space-between;">
+  const lastId = round.entries[round.entries.length-1].id;
+
+  blocks.forEach((block) => {
+    const blockWeight = block.entries.reduce((sum, e) => sum + e.weight, 0);
+    html += `<div class="card" style="padding:0; overflow:hidden; border:1px solid #E5E5EA;">
+      <div class="block-header" style="background:#FAFAFA; padding:12px 16px; margin:0 0 10px 0; display:flex; justify-content:space-between;">
         <span class="block-title">บล็อกที่ ${block.subNum}</span>
         <span class="block-total-weight">${fmt(blockWeight)} กก.</span>
       </div>
@@ -903,7 +1011,10 @@ function renderTrackScreen() {
   if (currentCount - lastBreak > 0) {
     html += `<button class="end-sub-btn" onclick="endSubRound()">— จบซับรอบก่อนครบ 5 ใบ —</button>`;
   }
+  
   container.innerHTML = html;
+  
+  autoScrollTV();
 }
 
 /* ══════════════════════════════════════
@@ -923,67 +1034,78 @@ function addEntry() {
   if (isNaN(val) || val < 1 || val > 150) {
     inp.style.borderColor = 'var(--d-border)';
     setTimeout(() => inp.style.borderColor = '', 800);
-    inp.focus(); return;
+    inp.focus();
+    return;
   }
   const entry = { basket: 0, weight: Math.round(val*100)/100, grade: activeGrade, id: Date.now() };
-  updateActiveRound(r => { entry.basket = r.nextBasket; r.entries.push(entry); r.nextBasket++; });
-  inp.value = ''; inp.focus();
+  updateActiveRound(r => {
+    entry.basket = r.nextBasket;
+    r.entries.push(entry);
+    r.nextBasket++;
+  });
+  inp.value = '';
+  inp.focus();
   if (navigator.vibrate) navigator.vibrate(40);
   renderTrackScreen();
-  setTimeout(() => { const last = document.querySelector('.entry-row.highlight'); if(last) last.scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
+  setTimeout(() => {
+    const last = document.querySelector('.entry-row.highlight');
+    if(!isTVMode && last) last.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 100);
+}
+
+function openEdit(id) {
+  const round = getActiveRound();
+  if (!round) return;
+  const entry = round.entries.find(e => e.id === id);
+  if (entry) {
+    editEntryId = id;
+    document.getElementById('edit-weight-input').value = entry.weight;
+    openModal('modal-edit');
+  }
+}
+
+function saveEdit() {
+  const inp = document.getElementById('edit-weight-input');
+  const val = parseFloat(inp.value);
+  if (!isNaN(val) && val > 0 && editEntryId !== null) {
+    updateActiveRound(r => {
+      const e = r.entries.find(x => x.id === editEntryId);
+      if (e) e.weight = Math.round(val*100)/100;
+    });
+    renderTrackScreen();
+  }
+  closeModal('modal-edit');
 }
 
 function deleteEntry(id) {
-  if (!confirm('ยืนยันลบตะกร้านี้?')) return;
+  if (confirm('ยืนยันลบตะกร้านี้?')) {
+    updateActiveRound(r => {
+      r.entries = r.entries.filter(e => e.id !== id);
+      r.entries.forEach((e, i) => e.basket = i + 1);
+      r.nextBasket = r.entries.length + 1;
+    });
+    renderTrackScreen();
+  }
+}
+
+function undoLast() {
   updateActiveRound(r => {
-    const idx = r.entries.findIndex(e => e.id === id);
-    if (idx === -1) return;
-    const basket = r.entries[idx].basket;
-    r.entries.splice(idx, 1);
-    r.entries.forEach(e => { if(e.basket > basket) e.basket--; });
-    r.nextBasket--;
-    r.subRoundBreaks = (r.subRoundBreaks||[]).map(br=>br>idx?br-1:br).filter(br=>br>0&&br<=r.entries.length);
+    if (r.entries.length > 0) {
+      r.entries.pop();
+      r.nextBasket = r.entries.length > 0 ? r.entries[r.entries.length-1].basket + 1 : 1;
+    }
   });
   renderTrackScreen();
 }
 
-function openEdit(id) {
-  editingEntryId = id;
-  const round = getActiveRound();
-  const entry = round.entries.find(e => e.id === id);
-  document.getElementById('edit-weight-input').value = entry.weight;
-  openModal('modal-edit');
-  setTimeout(() => document.getElementById('edit-weight-input').select(), 200);
-}
-
-function saveEdit() {
-  const val = parseFloat(document.getElementById('edit-weight-input').value);
-  if (isNaN(val) || val < 1) { alert('น้ำหนักไม่ถูกต้อง'); return; }
-  updateActiveRound(r => { const e = r.entries.find(e=>e.id===editingEntryId); if(e) e.weight=Math.round(val*100)/100; });
-  editingEntryId = null;
-  closeModal('modal-edit');
-  renderTrackScreen();
-}
-
-function undoLast() {
-  const round = getActiveRound();
-  if (!round || round.entries.length === 0) return;
-  if (!confirm('เลิกทำ (ลบตะกร้าล่าสุด)?')) return;
-  updateActiveRound(r => { r.entries.pop(); r.nextBasket--; r.subRoundBreaks=(r.subRoundBreaks||[]).filter(br=>br<=r.entries.length); });
-  renderTrackScreen();
-}
-
 function deleteLastSubRound() {
-  const round = getActiveRound();
-  if (!round) return;
-  const blocks = getSubRounds(round);
-  if (blocks.length === 0) return;
-  if (!confirm('ยืนยันลบบล็อกล่าสุดทั้งหมด?')) return;
-  const last = blocks[blocks.length-1];
   updateActiveRound(r => {
-    r.entries.splice(last.startIndex);
-    r.nextBasket = r.entries.length > 0 ? r.entries[r.entries.length-1].basket+1 : 1;
-    r.subRoundBreaks = (r.subRoundBreaks||[]).filter(br=>br<=r.entries.length);
+    const blocks = getSubRounds(r);
+    if(blocks.length === 0) return;
+    const lastBlock = blocks[blocks.length-1];
+    r.entries = r.entries.slice(0, lastBlock.startIndex);
+    if(r.subRoundBreaks && r.subRoundBreaks.length > 0) r.subRoundBreaks.pop();
+    r.nextBasket = r.entries.length > 0 ? r.entries[r.entries.length-1].basket + 1 : 1;
   });
   renderTrackScreen();
 }
@@ -994,14 +1116,20 @@ function endSubRound() {
   const br = round.entries.length;
   updateActiveRound(r => {
     if (!r.subRoundBreaks) r.subRoundBreaks = [];
-    if (!r.subRoundBreaks.includes(br)) { r.subRoundBreaks.push(br); r.subRoundBreaks.sort((a,b)=>a-b); }
+    if (!r.subRoundBreaks.includes(br)) {
+      r.subRoundBreaks.push(br);
+      r.subRoundBreaks.sort((a,b)=>a-b);
+    }
   });
   renderTrackScreen();
 }
 
 function resetActiveRound() {
   if (!confirm('⚠️ รีเซ็ตข้อมูลในรอบนี้ทั้งหมด?\nตะกร้าทั้งหมดจะหายไปและกู้คืนไม่ได้')) return;
-  updateActiveRound(r => { r.entries=[]; r.subRoundBreaks=[]; r.nextBasket=1; r.priceSingle=null; r.priceAB=null; r.priceC=null; r.priceD=null; });
+  updateActiveRound(r => {
+    r.entries=[]; r.subRoundBreaks=[]; r.nextBasket=1;
+    r.priceSingle=null; r.priceAB=null; r.priceC=null; r.priceD=null;
+  });
   renderTrackScreen();
 }
 
@@ -1021,34 +1149,38 @@ function exportCSV() {
     }
     return round.priceSingle || 0;
   };
-
+  
   const abCnt = round.entries.filter(e=>e.grade==='AB').length;
-  const cCnt  = round.entries.filter(e=>e.grade==='C').length;
-  const dCnt  = round.entries.filter(e=>e.grade==='D').length;
+  const cCnt = round.entries.filter(e=>e.grade==='C').length;
+  const dCnt = round.entries.filter(e=>e.grade==='D').length;
   
   let csv = '\uFEFF';
   csv += 'รอบ,' + round.name + '\n';
+  csv += 'สายพันธุ์,' + (round.variety || 'อื่นๆ') + '\n';
   csv += 'ส่งออกเมื่อ,' + new Date().toLocaleString('th-TH') + '\n\n';
-  csv += 'เกรด,จำนวนตะกร้า,น้ำหนักรวม (กก.),ราคา/กก.,ยอดเงิน\n';
   
+  csv += 'เกรด,จำนวนตะกร้า,น้ำหนักรวม (กก.),ราคา/กก.,ยอดเงิน\n';
   [{g:'AB',cnt:abCnt,w:totals.ab},{g:'C',cnt:cCnt,w:totals.c},{g:'D',cnt:dCnt,w:totals.d}].forEach(r => {
     const p = getPrice(r.g);
-    csv += `${r.g},${r.cnt},${fmt(r.w)},${p},${(r.w*p).toFixed(2)}\n`;
+    csv += `${r.g},${r.cnt},${r.w.toFixed(2)},${p},${(r.w*p).toFixed(2)}\n`;
   });
+  csv += `รวม,${round.entries.length},${totals.total.toFixed(2)},-,${totals.money.toFixed(2)}\n\n`;
   
-  csv += `\nรวมทั้งหมด,${round.entries.length},${fmt(totals.total)},-,${totals.money.toFixed(2)}\n`;
+  csv += 'ลำดับ,เกรด,น้ำหนัก (กก.)\n';
+  round.entries.forEach((e,i) => { csv += `${i+1},${e.grade},${e.weight.toFixed(2)}\n`; });
   
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'สรุปทุเรียน_' + round.name.replace(/[^ก-๙a-z0-9]/gi,'_') + '.csv';
+  a.download = 'รายการชั่งทุเรียน_' + round.name.replace(/\s+/g,'_') + '.csv';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
 }
 
 /* ══════════════════════════════════════
-   SLIP GENERATOR (CANVAS)
+   CANVAS SLIP GENERATOR
 ══════════════════════════════════════ */
 function roundRect(ctx, x, y, width, height, radius) {
   ctx.beginPath();
@@ -1068,8 +1200,8 @@ function generateSlip() {
   const round = getActiveRound();
   if (!round) return;
   const totals = calcRoundTotals(round);
-
-  const getP = (g) => {
+  
+  const getPrice = (g) => {
     if (round.priceMode === 'multi') {
       if (g === 'AB') return round.priceAB || 0;
       if (g === 'C') return round.priceC || 0;
@@ -1077,12 +1209,11 @@ function generateSlip() {
     }
     return round.priceSingle || 0;
   };
-
-  // อ่านค่าจาก Input ชื่อเกรด ถ้าไม่พิมพ์ให้ใช้ค่าเริ่มต้น
+  
   const nameAB = (document.getElementById('slip-name-ab') && document.getElementById('slip-name-ab').value.trim() !== '') ? document.getElementById('slip-name-ab').value.trim() : 'เกรด AB';
   const nameC = (document.getElementById('slip-name-c') && document.getElementById('slip-name-c').value.trim() !== '') ? document.getElementById('slip-name-c').value.trim() : 'เกรด C';
   const nameD = (document.getElementById('slip-name-d') && document.getElementById('slip-name-d').value.trim() !== '') ? document.getElementById('slip-name-d').value.trim() : 'เกรด D';
-
+  
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const w = 800;
@@ -1093,14 +1224,10 @@ function generateSlip() {
   if (totals.d > 0) itemCnt++;
   
   const h = 560 + (itemCnt * 60);
-  canvas.width = w;
-  canvas.height = h;
-
-  // Background
-  ctx.fillStyle = '#F2F2F7';
-  ctx.fillRect(0, 0, w, h);
-
-  // Card
+  canvas.width = w; canvas.height = h;
+  
+  ctx.fillStyle = '#F2F2F7'; ctx.fillRect(0, 0, w, h);
+  
   ctx.shadowColor = 'rgba(0,0,0,0.08)';
   ctx.shadowBlur = 20;
   ctx.shadowOffsetY = 10;
@@ -1108,88 +1235,86 @@ function generateSlip() {
   roundRect(ctx, 40, 40, w - 80, h - 80, 24);
   ctx.fill();
   ctx.shadowColor = 'transparent';
-
+  
   const sysFont = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-
-  // Header Text
+  
   ctx.textAlign = 'center';
   ctx.fillStyle = '#1C1C1E';
   ctx.font = `bold 42px ${sysFont}`;
   ctx.fillText('ใบเสร็จรับเงิน / สรุปยอด', w/2, 120);
-
+  
   ctx.fillStyle = '#007AFF';
   ctx.font = `bold 32px ${sysFont}`;
   ctx.fillText(round.name, w/2, 175);
-
+  
   ctx.fillStyle = '#6E6E73';
   ctx.font = `24px ${sysFont}`;
-  ctx.fillText(new Date().toLocaleString('th-TH'), w/2, 215);
-
-  // Divider 1
-  let y = 260;
+  ctx.fillText(`สายพันธุ์: ${round.variety || 'ไม่ระบุ'} | วันที่: ${new Date().toLocaleDateString('th-TH')}`, w/2, 215);
+  
+  ctx.beginPath();
+  ctx.setLineDash([8, 8]);
+  ctx.moveTo(80, 250);
+  ctx.lineTo(w - 80, 250);
   ctx.strokeStyle = '#E5E5EA';
   ctx.lineWidth = 2;
-  ctx.setLineDash([8, 8]);
-  ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(w-80, y); ctx.stroke();
+  ctx.stroke();
   ctx.setLineDash([]);
-
-  // Table Header
-  y += 50;
-  ctx.fillStyle = '#6E6E73';
-  ctx.font = `bold 24px ${sysFont}`;
-  ctx.textAlign = 'left';   ctx.fillText('รายการ', 80, y);
-  ctx.textAlign = 'right';  ctx.fillText('น้ำหนัก', 420, y);
-  ctx.textAlign = 'right';  ctx.fillText('ราคา', 560, y);
-  ctx.textAlign = 'right';  ctx.fillText('จำนวนเงิน', w-80, y);
-
-  // Table Items
-  const drawRow = (label, weight, price, color) => {
-    if (weight <= 0) return;
-    y += 60;
-    ctx.textAlign = 'left';
-    ctx.fillStyle = color;
-    ctx.font = `bold 28px ${sysFont}`;
-    ctx.fillText(label, 80, y);
-
-    ctx.fillStyle = '#1C1C1E';
-    ctx.textAlign = 'right';
-    ctx.font = `28px ${sysFont}`;
-    ctx.fillText(fmt(weight) + ' กก.', 420, y);
-    ctx.fillText('฿' + price, 560, y);
-    ctx.fillText(fmtComma(weight * price), w-80, y);
-  };
-
-  drawRow(nameAB, totals.ab, getP('AB'), '#248A3D');
-  drawRow(nameC, totals.c, getP('C'), '#E67E22');
-  drawRow(nameD, totals.d, getP('D'), '#D32F2F');
-
-  // Divider 2
-  y += 45;
-  ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(w-80, y); ctx.stroke();
-
-  // Summary
-  y += 65;
+  
+  let cy = 300;
   ctx.textAlign = 'left';
   ctx.fillStyle = '#6E6E73';
-  ctx.font = `bold 28px ${sysFont}`;
-  ctx.fillText('รวมน้ำหนักสุทธิ', 80, y);
-
+  ctx.font = `bold 22px ${sysFont}`;
+  ctx.fillText('รายการ', 80, cy);
   ctx.textAlign = 'right';
+  ctx.fillText('น้ำหนัก / ราคา', w - 80, cy);
+  
+  cy += 20;
+  
+  const items = [];
+  if (totals.ab > 0) items.push({ name: nameAB, w: totals.ab, p: getPrice('AB'), col: '#34C759' });
+  if (totals.c > 0) items.push({ name: nameC, w: totals.c, p: getPrice('C'), col: '#FF9500' });
+  if (totals.d > 0) items.push({ name: nameD, w: totals.d, p: getPrice('D'), col: '#FF3B30' });
+  
+  items.forEach(it => {
+    cy += 55;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = it.col;
+    ctx.font = `bold 28px ${sysFont}`;
+    ctx.fillText(it.name, 80, cy);
+    
+    ctx.fillStyle = '#1C1C1E';
+    ctx.font = `bold 28px ${sysFont}`;
+    ctx.textAlign = 'right';
+    ctx.fillText(`${it.w.toFixed(2)} กก. (฿${it.p})`, w - 80, cy);
+  });
+  
+  cy += 40;
+  ctx.beginPath();
+  ctx.setLineDash([8, 8]);
+  ctx.moveTo(80, cy);
+  ctx.lineTo(w - 80, cy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  cy += 60;
+  ctx.textAlign = 'left';
   ctx.fillStyle = '#1C1C1E';
-  ctx.font = `bold 32px ${sysFont}`;
-  ctx.fillText(fmtComma(totals.total) + ' กก.', w-80, y);
-
-  y += 65;
+  ctx.font = `bold 30px ${sysFont}`;
+  ctx.fillText('รวมน้ำหนักสุทธิ', 80, cy);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#007AFF';
+  ctx.fillText(`${totals.total.toFixed(2)} กก.`, w - 80, cy);
+  
+  cy += 60;
   ctx.textAlign = 'left';
   ctx.fillStyle = '#1C1C1E';
   ctx.font = `bold 36px ${sysFont}`;
-  ctx.fillText('ยอดเงินสุทธิ', 80, y);
-
+  ctx.fillText('รวมเงินสุทธิ', 80, cy);
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#007AFF';
-  ctx.font = `bold 42px ${sysFont}`;
-  ctx.fillText('฿ ' + fmtComma(totals.money), w-80, y);
-
+  ctx.fillStyle = '#FF3B30';
+  ctx.font = `bold 44px ${sysFont}`;
+  ctx.fillText(`฿${totals.money.toLocaleString()}`, w - 80, cy);
+  
   const imgData = canvas.toDataURL('image/jpeg', 1.0);
   document.getElementById('slip-preview-img').src = imgData;
   openModal('modal-slip');
@@ -1205,14 +1330,10 @@ async function shareSlip() {
     const res = await fetch(dataUrl);
     const blob = await res.blob();
     const file = new File([blob], filename, { type: 'image/jpeg' });
-
+    
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        title: 'สลิปทุเรียน',
-        files: [file]
-      });
+      await navigator.share({ title: 'สลิปทุเรียน', files: [file] });
     } else {
-      // สำหรับบน PC หรือเบราว์เซอร์ที่ไม่รองรับ Share API
       const a = document.createElement('a');
       a.href = dataUrl;
       a.download = filename;
@@ -1220,7 +1341,6 @@ async function shareSlip() {
     }
   } catch(err) {
     console.log('Share failed or cancelled.', err);
-    // กรณีการแชร์ถูกยกเลิก หรือมีปัญหา ให้ตกลงมาใช้การโหลดออกแบบปกติ
     const a = document.createElement('a');
     a.href = dataUrl;
     a.download = filename;
@@ -1234,7 +1354,6 @@ async function shareSlip() {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-// Enter Key Support
 function bindEnter(id, func) {
   const el = document.getElementById(id);
   if(el) el.addEventListener('keydown', e => { if(e.key === 'Enter') func(); });
@@ -1249,16 +1368,131 @@ bindEnter('inp-price-ab', confirmPrice);
 bindEnter('inp-price-c', confirmPrice);
 bindEnter('inp-price-d', confirmPrice);
 
-['modal-create','modal-rename','modal-edit','modal-slip'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => { if(e.target===document.getElementById(id)) closeModal(id); });
+['modal-create','modal-rename','modal-edit','modal-slip','modal-edit-round','modal-annual-summary'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if(e.target.id === id) closeModal(id);
+  });
 });
 
 /* ══════════════════════════════════════
-   INIT
+   NEW FEATURES: สายพันธุ์ & TV Mode
 ══════════════════════════════════════ */
-// เรียกโหลดข้อมูลจาก Firestore ทันทีที่เปิดหน้าเว็บ
-loadData();
 
+function openEditRoundModal(id) {
+  const round = rounds.find(r => r.id === id);
+  if (!round) return;
+  document.getElementById('edit-round-id').value = id;
+  document.getElementById('edit-round-name').value = round.name;
+  document.getElementById('edit-round-variety').value = round.variety || 'อื่นๆ'; 
+  openModal('modal-edit-round');
+}
+
+function saveEditRound() {
+  const id = parseInt(document.getElementById('edit-round-id').value);
+  const newName = document.getElementById('edit-round-name').value;
+  const newVariety = document.getElementById('edit-round-variety').value;
+  const round = rounds.find(r => r.id === id);
+  if (round) {
+    round.name = newName || "ไม่ระบุชื่อรอบ";
+    round.variety = newVariety;
+    saveData(); 
+    renderSelectScreen();
+    closeModal('modal-edit-round');
+  }
+}
+
+function generateAnnualSummary() {
+  let summary = {};
+  let grandTotalWeight = 0;
+  let grandTotalPrice = 0;
+
+  rounds.forEach(r => {
+    let variety = r.variety || 'อื่นๆ';
+    if (!summary[variety]) summary[variety] = { weight: 0, price: 0 };
+
+    let rWeight = 0, rPrice = 0;
+    if (r.entries && r.entries.length > 0) {
+      r.entries.forEach(b => {
+        rWeight += b.weight;
+        if (r.priceMode === 'single') {
+          rPrice += b.weight * (r.priceSingle || 0);
+        } else {
+          let p = 0;
+          if (b.grade === 'AB') p = r.priceAB || 0;
+          else if (b.grade === 'C') p = r.priceC || 0;
+          else if (b.grade === 'D') p = r.priceD || 0;
+          rPrice += b.weight * p;
+        }
+      });
+    }
+    summary[variety].weight += rWeight;
+    summary[variety].price += rPrice;
+    grandTotalWeight += rWeight;
+    grandTotalPrice += rPrice;
+  });
+
+  let html = '';
+  const varieties = ['หมอนทอง', 'ชะนี', 'กระดุม', 'พวงมณี', 'อื่นๆ'];
+  
+  varieties.forEach(v => {
+    if (summary[v] && summary[v].weight > 0) {
+      html += `
+        <div style="background: #f9f9f9; padding: 12px; margin-bottom: 10px; border-left: 5px solid #ff9500; border-radius: 5px;">
+          <strong style="font-size: 18px;">🌴 ${v}</strong><br>
+          น้ำหนักรวม: <span style="color:#28a745; font-weight:bold; font-size: 16px;">${summary[v].weight.toFixed(2)} กก.</span><br>
+          ยอดเงินรวม: <span style="color:#007aff; font-weight:bold; font-size: 16px;">฿${summary[v].price.toLocaleString()}</span>
+        </div>`;
+    }
+  });
+
+  html += `
+    <hr style="margin: 15px 0;">
+    <div style="background: #e8f4fd; padding: 15px; border-radius: 5px; text-align: center;">
+      <h4 style="margin: 0 0 10px 0; color: #333; font-size: 18px;">🌟 ยอดรวมสุทธิทุกสายพันธุ์</h4>
+      น้ำหนัก: <span style="font-size: 1.2em; color:#28a745; font-weight:bold;">${grandTotalWeight.toFixed(2)} กก.</span><br>
+      ยอดเงิน: <span style="font-size: 1.2em; color:#e74c3c; font-weight:bold;">฿${grandTotalPrice.toLocaleString()}</span>
+    </div>`;
+
+  document.getElementById('annual-summary-content').innerHTML = html;
+  openModal('modal-annual-summary');
+}
+
+// 📌 ระบบ TV Mode & Auto Scroll
+let isTVMode = false;
+function toggleTVMode() {
+  isTVMode = !isTVMode;
+  const btn = document.getElementById('btn-tv-mode');
+  
+  if (isTVMode) {
+    document.body.classList.add('tv-mode-active');
+    if (btn) {
+      btn.innerHTML = '❌ ออกจากทีวี';
+      btn.style.background = '#FF3B30';
+    }
+    alert("📺 เปิดโหมดทีวีแล้ว!\nหน้าจอจะเลื่อนอัตโนมัติ");
+    autoScrollTV();
+  } else {
+    document.body.classList.remove('tv-mode-active');
+    if (btn) {
+      btn.innerHTML = '📺 ทีวี';
+      btn.style.background = '#34495e';
+    }
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+
+function autoScrollTV() {
+  if (isTVMode) {
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 200);
+  }
+}
+
+// 📌 เริ่มต้นระบบ
+loadData();
 </script>
 </body>
 </html>
