@@ -323,6 +323,8 @@
         <h2 id="round-name-display">—</h2>
       </div>
       <div class="nav-btns">
+        <button class="nav-btn" id="btn-toggle-sound" onclick="toggleSound()" style="background:#E5E5EA;">🔕 ปิดเสียงเตือน</button>
+<button class="nav-btn tv-btn-hide" id="btn-toggle-voice" onclick="toggleVoice()" style="background:#E5E5EA;">🤫 ปิดเสียงพูด</button>
         <button class="nav-btn" id="btn-tv-mode" style="background:#34495e; color:white;" onclick="toggleTVMode()">📺 ทีวี</button>
         <button class="nav-btn tv-btn-hide" style="background:#E3F8E9; color:#248A3D;" onclick="generateSlip()">📷 สลิป</button>
         <button class="nav-btn tv-btn-hide" onclick="exportCSV()">ส่งออก CSV</button>
@@ -538,6 +540,54 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
+  // --- ระบบเสียง (Audio & Speech) ---
+let isSoundNotifyOn = false; 
+let isVoiceNotifyOn = false; 
+
+function playDing() {
+  if (!isSoundNotifyOn) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine'; 
+    osc.frequency.setValueAtTime(880, ctx.currentTime); 
+    gain.gain.setValueAtTime(1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(); osc.stop(ctx.currentTime + 0.5);
+  } catch(e) { console.log("Audio not supported"); }
+}
+
+function speakBlockSummary(blockNum, weight) {
+  if (!isVoiceNotifyOn || !isTVMode) return; 
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel(); 
+    const msg = new SpeechSynthesisUtterance(`บล็อกที่ ${blockNum} น้ำหนักรวม ${weight} กิโลกรัม`);
+    msg.lang = 'th-TH'; 
+    msg.rate = 0.9; 
+    window.speechSynthesis.speak(msg);
+  }
+}
+
+function toggleSound() {
+  isSoundNotifyOn = !isSoundNotifyOn;
+  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
+  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
+  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
+  if(isSoundNotifyOn) playDing(); 
+}
+
+function toggleVoice() {
+  isVoiceNotifyOn = !isVoiceNotifyOn;
+  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
+  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
+  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
+  if(isVoiceNotifyOn && isTVMode) {
+    const msg = new SpeechSynthesisUtterance("ระบบเสียงพูดพร้อมใช้งาน");
+    msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);
+  }
+}
 function fmt(num) { return Number(num).toFixed(2); }
 function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
@@ -1093,6 +1143,17 @@ function addEntry() {
   inp.focus();
   if (navigator.vibrate) navigator.vibrate(40);
   renderTrackScreen();
+  // เช็คว่าพอกดเพิ่มตะกร้าแล้ว บล็อกปัจจุบันครบ 5 ใบพอดีหรือไม่
+  const roundSound = getActiveRound();
+  if (roundSound && roundSound.entries.length > 0) {
+    const blocks = getSubRounds(roundSound);
+    const lastBlock = blocks[blocks.length - 1];
+    if (lastBlock.entries.length === 5) {
+       const blockWeight = lastBlock.entries.reduce((sum, e) => sum + e.weight, 0);
+       playDing(); 
+       speakBlockSummary(lastBlock.subNum, fmt(blockWeight)); 
+    }
+  }
   setTimeout(() => {
     const last = document.querySelector('.entry-row.highlight');
     if(!isTVMode && last) last.scrollIntoView({behavior:'smooth', block:'center'});
@@ -1168,6 +1229,15 @@ function endSubRound() {
     }
   });
   renderTrackScreen();
+  // สั่งให้มีเสียงตอนกดจบบล็อกด้วยตัวเอง
+  const roundVoice = getActiveRound();
+  if (roundVoice && roundVoice.entries.length > 0) {
+    const blocks2 = getSubRounds(roundVoice);
+    const lastBlock2 = blocks2[blocks2.length - 1];
+    const blockWeight2 = lastBlock2.entries.reduce((sum, e) => sum + e.weight, 0);
+    playDing();
+    speakBlockSummary(lastBlock2.subNum, fmt(blockWeight2));
+  }
 }
 
 function resetActiveRound() {
