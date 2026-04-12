@@ -541,106 +541,74 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
-// --- ระบบเสียง (Audio & Speech) วิถีฮาร์ดคอร์ (MP3 Queue System) ---
-let isSoundNotifyOn = false; 
-let isVoiceNotifyOn = false; 
-
-// ตัวแปรสำหรับจัดคิวเสียง
+// --- ระบบเสียง (Audio Queue) เวอร์ชันปรับจูนความเร็ว ---
 let audioQueue = [];
 let isPlaying = false;
+let currentAudio = null;
 
-// ฟังก์ชันเล่นเสียงตามคิว (หัวใจหลักของระบบคิวธนาคาร)
 function playNextInQueue() {
-  // ถ้าคิวหมดแล้ว ให้หยุด
   if (audioQueue.length === 0) {
     isPlaying = false;
     return;
   }
   
   isPlaying = true;
-  let nextSound = audioQueue.shift(); // ดึงคำแรกออกจากคิว
+  let nextSound = audioQueue.shift();
   
-  // เรียกไฟล์ mp3 จากโฟลเดอร์ sounds (แก้ path ได้ตามที่คุณเก็บไฟล์ไว้)
+  // สร้างออบเจ็กต์เสียง
   let audio = new Audio("sounds/" + nextSound + ".mp3");
-  
-  // *** สำคัญมาก: พอไฟล์นี้เล่นจบ ให้เรียกฟังก์ชันตัวเองซ้ำเพื่อเล่นคำต่อไป ***
-  audio.onended = function() {
-    playNextInQueue(); 
+  currentAudio = audio;
+
+  // ปรับความเร็วการเล่น (ลองปรับเป็น 1.1 หรือ 1.2 เพื่อให้พูดไวขึ้น)
+  audio.playbackRate = 1.1; 
+
+  // แก้ปัญหาพูดช้า: พอเสียงเกือบจะจบ (เหลืออีก 0.1 วินาที) ให้เริ่มโหลดคำต่อไปเลย
+  audio.ontimeupdate = function() {
+    if (audio.currentTime > audio.duration - 0.1) {
+       audio.ontimeupdate = null; // ป้องกันการเรียกซ้ำ
+       // ไม่ต้องรอให้จบสนิท เริ่มเล่นคิวต่อไปเลยเพื่อความต่อเนื่อง
+       if (audioQueue.length > 0) playNextInQueue();
+    }
   };
 
-  // สั่งเล่นเสียง
-  audio.play().catch(error => {
-    console.log("เบราว์เซอร์บล็อกการเล่นเสียง: " + nextSound);
-    // ถึงไฟล์นี้เออเร่อ ก็ให้ข้ามไปเล่นไฟล์ต่อไปเลย คิวจะได้ไม่ค้าง
-    playNextInQueue(); 
+  audio.onended = function() {
+    if (audioQueue.length === 0) isPlaying = false;
+  };
+
+  audio.play().catch(e => {
+    console.log("Error playing:", nextSound);
+    playNextInQueue();
   });
 }
 
-// ฟังก์ชันหลักที่เอาไว้โยนคำต่างๆ เข้าไปต่อคิว
 function speakBlockSummary(blockNum, weight) {
   if (!isVoiceNotifyOn || !isTVMode) return; 
-  
-  // 1. ใส่คำว่า "บล็อกที่"
+
+  // 1. คำว่า "บล็อกที่"
   audioQueue.push("block"); 
   
-  // 2. ใส่ตัวเลขบล็อก (เช่น "1" ก็ใช้ไฟล์ 1.mp3)
-  audioQueue.push(blockNum.toString()); 
-  
-  // 3. ใส่คำว่า "น้ำหนักรวม"
-  audioQueue.push("weight"); 
-  
-  // 4. หั่นตัวเลขน้ำหนักทีละตัว แล้วใส่เข้าคิว
-  let intWeight = Math.round(Number(weight)).toString();
-  for (let i = 0; i < intWeight.length; i++) {
-    audioQueue.push(intWeight[i]); // เช่น 250 จะโดนหั่นเป็น "2", "5", "0"
+  // 2. หั่นเลขบล็อก (แก้ปัญหาเลขไม่พูด)
+  let blockStr = blockNum.toString();
+  for (let i = 0; i < blockStr.length; i++) {
+    audioQueue.push(blockStr[i]);
   }
   
-  // 5. ปิดท้ายด้วยคำว่า "กิโลกรัม"
+  // 3. คำว่า "น้ำหนักรวม"
+  audioQueue.push("weight"); 
+  
+  // 4. หั่นเลขน้ำหนัก
+  let intWeight = Math.round(Number(weight)).toString();
+  for (let i = 0; i < intWeight.length; i++) {
+    audioQueue.push(intWeight[i]);
+  }
+  
+  // 5. คำว่า "กิโลกรัม"
   audioQueue.push("kilo"); 
   
-  // ถ้าเครื่องเสียงว่างอยู่ ให้เริ่มเล่นคิวแรกได้เลย!
   if (!isPlaying) {
     playNextInQueue();
   }
 }
-
-// ฟังก์ชันเสียงแจ้งเตือน ติ๊ง! (คงไว้เหมือนเดิม)
-function playDing() {
-  if (!isSoundNotifyOn) return;
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = 'sine'; 
-    osc.frequency.setValueAtTime(880, ctx.currentTime); 
-    gain.gain.setValueAtTime(1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    osc.start(); osc.stop(ctx.currentTime + 0.5);
-  } catch(e) { console.log("Audio not supported"); }
-}
-
-function toggleSound() {
-  isSoundNotifyOn = !isSoundNotifyOn;
-  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
-  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
-  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
-  if(isSoundNotifyOn) playDing(); 
-}
-
-function toggleVoice() {
-  isVoiceNotifyOn = !isVoiceNotifyOn;
-  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
-  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
-  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
-  
-  // ทดสอบระบบเสียงตอนกดเปิด (อย่าลืมทำไฟล์ test.mp3 พูดว่า "ระบบพร้อมใช้งาน" เตรียมไว้ด้วยนะครับ)
-  if(isVoiceNotifyOn && isTVMode) {
-    audioQueue.push("test"); 
-    if (!isPlaying) playNextInQueue();
-  }
-}
-// -----------------------------------------------------------------
 function fmt(num) { return Number(num).toFixed(2); }
 function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
