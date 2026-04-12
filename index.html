@@ -541,11 +541,31 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
-// --- ระบบเสียง (Audio Queue) เวอร์ชันปรับจูนความเร็ว ---
+// --- ระบบเสียง (Audio Queue) ฉบับสมบูรณ์ อัปเดตล่าสุด ---
+let isSoundNotifyOn = false; 
+let isVoiceNotifyOn = false; 
+
 let audioQueue = [];
 let isPlaying = false;
 let currentAudio = null;
 
+// เสียง ติ๊ง! แจ้งเตือน
+function playDing() {
+  if (!isSoundNotifyOn) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine'; 
+    osc.frequency.setValueAtTime(880, ctx.currentTime); 
+    gain.gain.setValueAtTime(1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(); osc.stop(ctx.currentTime + 0.5);
+  } catch(e) { console.log("Audio not supported"); }
+}
+
+// ระบบจัดคิวเล่นไฟล์เสียง
 function playNextInQueue() {
   if (audioQueue.length === 0) {
     isPlaying = false;
@@ -555,39 +575,41 @@ function playNextInQueue() {
   isPlaying = true;
   let nextSound = audioQueue.shift();
   
-  // สร้างออบเจ็กต์เสียง
+  // เรียกไฟล์ mp3
   let audio = new Audio("sounds/" + nextSound + ".mp3");
   currentAudio = audio;
 
-  // ปรับความเร็วการเล่น (ลองปรับเป็น 1.1 หรือ 1.2 เพื่อให้พูดไวขึ้น)
+  // เร่งความเร็วเสียงนิดหน่อยให้กระชับขึ้น
   audio.playbackRate = 1.1; 
 
-  // แก้ปัญหาพูดช้า: พอเสียงเกือบจะจบ (เหลืออีก 0.1 วินาที) ให้เริ่มโหลดคำต่อไปเลย
+  // เล่นคิวต่อไปล่วงหน้าเล็กน้อย (0.15 วินาที) ก่อนไฟล์เก่าจะจบ เพื่อลดความหน่วง
   audio.ontimeupdate = function() {
-    if (audio.currentTime > audio.duration - 0.1) {
-       audio.ontimeupdate = null; // ป้องกันการเรียกซ้ำ
-       // ไม่ต้องรอให้จบสนิท เริ่มเล่นคิวต่อไปเลยเพื่อความต่อเนื่อง
+    if (audio.currentTime > audio.duration - 0.15) {
+       audio.ontimeupdate = null; 
        if (audioQueue.length > 0) playNextInQueue();
     }
   };
 
+  // เช็คว่าหมดคิวหรือยัง
   audio.onended = function() {
     if (audioQueue.length === 0) isPlaying = false;
   };
 
+  // สั่งเล่นเสียง (ถ้าหาไฟล์ไม่เจอ ให้ข้ามไปเล่นไฟล์ถัดไป)
   audio.play().catch(e => {
-    console.log("Error playing:", nextSound);
-    playNextInQueue();
+    console.log("หาไฟล์ไม่เจอ หรือถูกบล็อก: sounds/" + nextSound + ".mp3");
+    playNextInQueue(); 
   });
 }
 
+// ฟังก์ชันเตรียมคำพูด
 function speakBlockSummary(blockNum, weight) {
   if (!isVoiceNotifyOn || !isTVMode) return; 
 
   // 1. คำว่า "บล็อกที่"
   audioQueue.push("block"); 
   
-  // 2. หั่นเลขบล็อก (แก้ปัญหาเลขไม่พูด)
+  // 2. หั่นเลขบล็อก
   let blockStr = blockNum.toString();
   for (let i = 0; i < blockStr.length; i++) {
     audioQueue.push(blockStr[i]);
@@ -609,6 +631,30 @@ function speakBlockSummary(blockNum, weight) {
     playNextInQueue();
   }
 }
+
+// ปุ่มสวิตช์เปิด/ปิดเสียงติ๊ง
+function toggleSound() {
+  isSoundNotifyOn = !isSoundNotifyOn;
+  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
+  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
+  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
+  if(isSoundNotifyOn) playDing(); 
+}
+
+// ปุ่มสวิตช์เปิด/ปิดเสียงพูด AI
+function toggleVoice() {
+  isVoiceNotifyOn = !isVoiceNotifyOn;
+  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
+  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
+  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
+  
+  // ทดสอบเสียงพูดตอนกดเปิดระบบ (ดึงไฟล์ test.mp3)
+  if(isVoiceNotifyOn && isTVMode) {
+    audioQueue.push("test"); 
+    if (!isPlaying) playNextInQueue();
+  }
+}
+// -----------------------------------------------------------------
 function fmt(num) { return Number(num).toFixed(2); }
 function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
