@@ -540,9 +540,21 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
-  // --- ระบบเสียง (Audio & Speech) ---
+// --- ระบบเสียง (Audio & Speech) ---
 let isSoundNotifyOn = false; 
 let isVoiceNotifyOn = false; 
+let thaiVoice = null; // ตัวแปรสำหรับล็อกเสียงภาษาไทย
+
+// ฟังก์ชันโหลดเสียงภาษาไทยเตรียมไว้ล่วงหน้า
+function initVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  // ค้นหาเสียงที่มีรหัส th หรือชื่อมีคำว่า thai
+  thaiVoice = voices.find(v => v.lang.includes('th') || v.name.toLowerCase().includes('thai'));
+}
+// สั่งให้โหลดเสียงทันทีที่ระบบเสียงของเบราว์เซอร์พร้อม
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = initVoices;
+}
 
 function playDing() {
   if (!isSoundNotifyOn) return;
@@ -563,12 +575,52 @@ function speakBlockSummary(blockNum, weight) {
   if (!isVoiceNotifyOn || !isTVMode) return; 
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel(); 
-    const msg = new SpeechSynthesisUtterance(`บล็อกที่ ${blockNum} น้ำหนักรวม ${weight} กิโลกรัม`);
-    msg.lang = 'th-TH'; 
-    msg.rate = 0.9; 
+    
+    // แปลงน้ำหนักและตัดทศนิยมออก (ปัดเศษเป็นจำนวนเต็ม)
+    let intWeight = Math.round(Number(weight));
+    
+    // สร้างข้อความที่จะพูด
+    const textToSpeak = `บล็อกที่ ${blockNum} น้ำหนักรวม ${intWeight} กิโลกรัม`;
+    const msg = new SpeechSynthesisUtterance(textToSpeak);
+    
+    msg.lang = 'th-TH'; // บังคับภาษาไทย
+    msg.rate = 0.85; // ปรับให้พูดช้าลงนิดนึง จะได้ฟังชัดๆ
+    
+    // ถ้าตอนแรกโหลดเสียงไม่ทัน ให้ลองดึงอีกรอบ
+    if (!thaiVoice) initVoices(); 
+    
+    // ถ้าเจอเสียงภาษาไทยในเครื่อง ให้จับยัดใส่เลย
+    if (thaiVoice) {
+      msg.voice = thaiVoice;
+    }
+
     window.speechSynthesis.speak(msg);
   }
 }
+
+function toggleSound() {
+  isSoundNotifyOn = !isSoundNotifyOn;
+  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
+  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
+  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
+  if(isSoundNotifyOn) playDing(); 
+}
+
+function toggleVoice() {
+  isVoiceNotifyOn = !isVoiceNotifyOn;
+  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
+  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
+  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
+  if(isVoiceNotifyOn && isTVMode) {
+    // เทสเสียงพูดตอนกดเปิด เพื่อเช็คว่าหาเสียงไทยเจอไหม
+    if (!thaiVoice) initVoices();
+    const msg = new SpeechSynthesisUtterance("ระบบเสียงพูดพร้อมใช้งาน");
+    msg.lang = 'th-TH';
+    if (thaiVoice) msg.voice = thaiVoice;
+    window.speechSynthesis.speak(msg);
+  }
+}
+// ---------------------------------
 
 function toggleSound() {
   isSoundNotifyOn = !isSoundNotifyOn;
@@ -627,6 +679,33 @@ function loadData() {
     const newDataString = JSON.stringify({ rounds: incomingRounds, activeRoundId: incomingActiveId });
     if (lastDataString === newDataString) {
       return; 
+    }
+    // 🔊 ตรวจจับการเปลี่ยนแปลงจาก Firebase เพื่อสั่ง TV ให้มีเสียง
+    if (!isInitialLoad && incomingActiveId && incomingActiveId === activeRoundId) {
+      const oldR = rounds.find(r => r.id === incomingActiveId);
+      const newR = incomingRounds.find(r => r.id === incomingActiveId);
+      
+      if (oldR && newR) {
+        const oldB = getSubRounds(oldR);
+        const newB = getSubRounds(newR);
+        const oldLast = oldB[oldB.length - 1];
+        const newLast = newB[newB.length - 1];
+        
+        let playBlock = null;
+        
+        // เช็คว่าตะกร้าเพิ่งครบ 5 ใบ หรือมีการกดปุ่ม จบซับรอบเอง
+        if (newLast && newLast.entries.length === 5 && (!oldLast || oldLast.entries.length < 5)) {
+          playBlock = newLast; // ครบ 5 ใบ
+        } else if (newB.length > oldB.length && oldLast && oldLast.entries.length > 0 && oldLast.entries.length < 5) {
+          playBlock = oldLast; // โดนกดจบซับรอบ
+        }
+
+        if (playBlock) {
+          const bw = playBlock.entries.reduce((sum, e) => sum + e.weight, 0);
+          playDing();
+          speakBlockSummary(playBlock.subNum, fmt(bw));
+        }
+      }
     }
     
     rounds = incomingRounds;
@@ -1143,17 +1222,6 @@ function addEntry() {
   inp.focus();
   if (navigator.vibrate) navigator.vibrate(40);
   renderTrackScreen();
-  // เช็คว่าพอกดเพิ่มตะกร้าแล้ว บล็อกปัจจุบันครบ 5 ใบพอดีหรือไม่
-  const roundSound = getActiveRound();
-  if (roundSound && roundSound.entries.length > 0) {
-    const blocks = getSubRounds(roundSound);
-    const lastBlock = blocks[blocks.length - 1];
-    if (lastBlock.entries.length === 5) {
-       const blockWeight = lastBlock.entries.reduce((sum, e) => sum + e.weight, 0);
-       playDing(); 
-       speakBlockSummary(lastBlock.subNum, fmt(blockWeight)); 
-    }
-  }
   setTimeout(() => {
     const last = document.querySelector('.entry-row.highlight');
     if(!isTVMode && last) last.scrollIntoView({behavior:'smooth', block:'center'});
@@ -1229,15 +1297,6 @@ function endSubRound() {
     }
   });
   renderTrackScreen();
-  // สั่งให้มีเสียงตอนกดจบบล็อกด้วยตัวเอง
-  const roundVoice = getActiveRound();
-  if (roundVoice && roundVoice.entries.length > 0) {
-    const blocks2 = getSubRounds(roundVoice);
-    const lastBlock2 = blocks2[blocks2.length - 1];
-    const blockWeight2 = lastBlock2.entries.reduce((sum, e) => sum + e.weight, 0);
-    playDing();
-    speakBlockSummary(lastBlock2.subNum, fmt(blockWeight2));
-  }
 }
 
 function resetActiveRound() {
