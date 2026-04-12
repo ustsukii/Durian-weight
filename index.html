@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+<script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -540,22 +541,70 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
-// --- ระบบเสียง (Audio & Speech) ---
+// --- ระบบเสียง (Audio & Speech) วิถีฮาร์ดคอร์ (MP3 Queue System) ---
 let isSoundNotifyOn = false; 
 let isVoiceNotifyOn = false; 
-let thaiVoice = null; // ตัวแปรสำหรับล็อกเสียงภาษาไทย
 
-// ฟังก์ชันโหลดเสียงภาษาไทยเตรียมไว้ล่วงหน้า
-function initVoices() {
-  const voices = window.speechSynthesis.getVoices();
-  // ค้นหาเสียงที่มีรหัส th หรือชื่อมีคำว่า thai
-  thaiVoice = voices.find(v => v.lang.includes('th') || v.name.toLowerCase().includes('thai'));
-}
-// สั่งให้โหลดเสียงทันทีที่ระบบเสียงของเบราว์เซอร์พร้อม
-if ('speechSynthesis' in window) {
-  window.speechSynthesis.onvoiceschanged = initVoices;
+// ตัวแปรสำหรับจัดคิวเสียง
+let audioQueue = [];
+let isPlaying = false;
+
+// ฟังก์ชันเล่นเสียงตามคิว (หัวใจหลักของระบบคิวธนาคาร)
+function playNextInQueue() {
+  // ถ้าคิวหมดแล้ว ให้หยุด
+  if (audioQueue.length === 0) {
+    isPlaying = false;
+    return;
+  }
+  
+  isPlaying = true;
+  let nextSound = audioQueue.shift(); // ดึงคำแรกออกจากคิว
+  
+  // เรียกไฟล์ mp3 จากโฟลเดอร์ sounds (แก้ path ได้ตามที่คุณเก็บไฟล์ไว้)
+  let audio = new Audio("sounds/" + nextSound + ".mp3");
+  
+  // *** สำคัญมาก: พอไฟล์นี้เล่นจบ ให้เรียกฟังก์ชันตัวเองซ้ำเพื่อเล่นคำต่อไป ***
+  audio.onended = function() {
+    playNextInQueue(); 
+  };
+
+  // สั่งเล่นเสียง
+  audio.play().catch(error => {
+    console.log("เบราว์เซอร์บล็อกการเล่นเสียง: " + nextSound);
+    // ถึงไฟล์นี้เออเร่อ ก็ให้ข้ามไปเล่นไฟล์ต่อไปเลย คิวจะได้ไม่ค้าง
+    playNextInQueue(); 
+  });
 }
 
+// ฟังก์ชันหลักที่เอาไว้โยนคำต่างๆ เข้าไปต่อคิว
+function speakBlockSummary(blockNum, weight) {
+  if (!isVoiceNotifyOn || !isTVMode) return; 
+  
+  // 1. ใส่คำว่า "บล็อกที่"
+  audioQueue.push("block"); 
+  
+  // 2. ใส่ตัวเลขบล็อก (เช่น "1" ก็ใช้ไฟล์ 1.mp3)
+  audioQueue.push(blockNum.toString()); 
+  
+  // 3. ใส่คำว่า "น้ำหนักรวม"
+  audioQueue.push("weight"); 
+  
+  // 4. หั่นตัวเลขน้ำหนักทีละตัว แล้วใส่เข้าคิว
+  let intWeight = Math.round(Number(weight)).toString();
+  for (let i = 0; i < intWeight.length; i++) {
+    audioQueue.push(intWeight[i]); // เช่น 250 จะโดนหั่นเป็น "2", "5", "0"
+  }
+  
+  // 5. ปิดท้ายด้วยคำว่า "กิโลกรัม"
+  audioQueue.push("kilo"); 
+  
+  // ถ้าเครื่องเสียงว่างอยู่ ให้เริ่มเล่นคิวแรกได้เลย!
+  if (!isPlaying) {
+    playNextInQueue();
+  }
+}
+
+// ฟังก์ชันเสียงแจ้งเตือน ติ๊ง! (คงไว้เหมือนเดิม)
 function playDing() {
   if (!isSoundNotifyOn) return;
   try {
@@ -571,33 +620,6 @@ function playDing() {
   } catch(e) { console.log("Audio not supported"); }
 }
 
-function speakBlockSummary(blockNum, weight) {
-  if (!isVoiceNotifyOn || !isTVMode) return; 
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); 
-    
-    // แปลงน้ำหนักและตัดทศนิยมออก (ปัดเศษเป็นจำนวนเต็ม)
-    let intWeight = Math.round(Number(weight));
-    
-    // สร้างข้อความที่จะพูด
-    const textToSpeak = `บล็อกที่ ${blockNum} น้ำหนักรวม ${intWeight} กิโลกรัม`;
-    const msg = new SpeechSynthesisUtterance(textToSpeak);
-    
-    msg.lang = 'th-TH'; // บังคับภาษาไทย
-    msg.rate = 0.85; // ปรับให้พูดช้าลงนิดนึง จะได้ฟังชัดๆ
-    
-    // ถ้าตอนแรกโหลดเสียงไม่ทัน ให้ลองดึงอีกรอบ
-    if (!thaiVoice) initVoices(); 
-    
-    // ถ้าเจอเสียงภาษาไทยในเครื่อง ให้จับยัดใส่เลย
-    if (thaiVoice) {
-      msg.voice = thaiVoice;
-    }
-
-    window.speechSynthesis.speak(msg);
-  }
-}
-
 function toggleSound() {
   isSoundNotifyOn = !isSoundNotifyOn;
   document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
@@ -611,35 +633,14 @@ function toggleVoice() {
   document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
   document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
   document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
+  
+  // ทดสอบระบบเสียงตอนกดเปิด (อย่าลืมทำไฟล์ test.mp3 พูดว่า "ระบบพร้อมใช้งาน" เตรียมไว้ด้วยนะครับ)
   if(isVoiceNotifyOn && isTVMode) {
-    // เทสเสียงพูดตอนกดเปิด เพื่อเช็คว่าหาเสียงไทยเจอไหม
-    if (!thaiVoice) initVoices();
-    const msg = new SpeechSynthesisUtterance("ระบบเสียงพูดพร้อมใช้งาน");
-    msg.lang = 'th-TH';
-    if (thaiVoice) msg.voice = thaiVoice;
-    window.speechSynthesis.speak(msg);
+    audioQueue.push("test"); 
+    if (!isPlaying) playNextInQueue();
   }
 }
-// ---------------------------------
-
-function toggleSound() {
-  isSoundNotifyOn = !isSoundNotifyOn;
-  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
-  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
-  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
-  if(isSoundNotifyOn) playDing(); 
-}
-
-function toggleVoice() {
-  isVoiceNotifyOn = !isVoiceNotifyOn;
-  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
-  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
-  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
-  if(isVoiceNotifyOn && isTVMode) {
-    const msg = new SpeechSynthesisUtterance("ระบบเสียงพูดพร้อมใช้งาน");
-    msg.lang = 'th-TH'; window.speechSynthesis.speak(msg);
-  }
-}
+// -----------------------------------------------------------------
 function fmt(num) { return Number(num).toFixed(2); }
 function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
