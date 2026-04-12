@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -324,8 +323,6 @@
         <h2 id="round-name-display">—</h2>
       </div>
       <div class="nav-btns">
-        <button class="nav-btn" id="btn-toggle-sound" onclick="toggleSound()" style="background:#E5E5EA;">🔕 ปิดเสียงเตือน</button>
-<button class="nav-btn tv-btn-hide" id="btn-toggle-voice" onclick="toggleVoice()" style="background:#E5E5EA;">🤫 ปิดเสียงพูด</button>
         <button class="nav-btn" id="btn-tv-mode" style="background:#34495e; color:white;" onclick="toggleTVMode()">📺 ทีวี</button>
         <button class="nav-btn tv-btn-hide" style="background:#E3F8E9; color:#248A3D;" onclick="generateSlip()">📷 สลิป</button>
         <button class="nav-btn tv-btn-hide" onclick="exportCSV()">ส่งออก CSV</button>
@@ -541,120 +538,6 @@ let editEntryId = null;
 let renameRoundId = null;
 let uiPriceMode = 'single'; 
 
-// --- ระบบเสียง (Audio Queue) ฉบับสมบูรณ์ อัปเดตล่าสุด ---
-let isSoundNotifyOn = false; 
-let isVoiceNotifyOn = false; 
-
-let audioQueue = [];
-let isPlaying = false;
-let currentAudio = null;
-
-// เสียง ติ๊ง! แจ้งเตือน
-function playDing() {
-  if (!isSoundNotifyOn) return;
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = 'sine'; 
-    osc.frequency.setValueAtTime(880, ctx.currentTime); 
-    gain.gain.setValueAtTime(1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    osc.start(); osc.stop(ctx.currentTime + 0.5);
-  } catch(e) { console.log("Audio not supported"); }
-}
-
-// ระบบจัดคิวเล่นไฟล์เสียง
-function playNextInQueue() {
-  if (audioQueue.length === 0) {
-    isPlaying = false;
-    return;
-  }
-  
-  isPlaying = true;
-  let nextSound = audioQueue.shift();
-  
-  // เรียกไฟล์ mp3
-  let audio = new Audio("sounds/" + nextSound + ".mp3");
-  currentAudio = audio;
-
-  // เร่งความเร็วเสียงนิดหน่อยให้กระชับขึ้น
-  audio.playbackRate = 1.1; 
-
-  // เล่นคิวต่อไปล่วงหน้าเล็กน้อย (0.15 วินาที) ก่อนไฟล์เก่าจะจบ เพื่อลดความหน่วง
-  audio.ontimeupdate = function() {
-    if (audio.currentTime > audio.duration - 0.15) {
-       audio.ontimeupdate = null; 
-       if (audioQueue.length > 0) playNextInQueue();
-    }
-  };
-
-  // เช็คว่าหมดคิวหรือยัง
-  audio.onended = function() {
-    if (audioQueue.length === 0) isPlaying = false;
-  };
-
-  // สั่งเล่นเสียง (ถ้าหาไฟล์ไม่เจอ ให้ข้ามไปเล่นไฟล์ถัดไป)
-  audio.play().catch(e => {
-    console.log("หาไฟล์ไม่เจอ หรือถูกบล็อก: sounds/" + nextSound + ".mp3");
-    playNextInQueue(); 
-  });
-}
-
-// ฟังก์ชันเตรียมคำพูด
-function speakBlockSummary(blockNum, weight) {
-  if (!isVoiceNotifyOn || !isTVMode) return; 
-
-  // 1. คำว่า "บล็อกที่"
-  audioQueue.push("block"); 
-  
-  // 2. หั่นเลขบล็อก
-  let blockStr = blockNum.toString();
-  for (let i = 0; i < blockStr.length; i++) {
-    audioQueue.push(blockStr[i]);
-  }
-  
-  // 3. คำว่า "น้ำหนักรวม"
-  audioQueue.push("weight"); 
-  
-  // 4. หั่นเลขน้ำหนัก
-  let intWeight = Math.round(Number(weight)).toString();
-  for (let i = 0; i < intWeight.length; i++) {
-    audioQueue.push(intWeight[i]);
-  }
-  
-  // 5. คำว่า "กิโลกรัม"
-  audioQueue.push("kilo"); 
-  
-  if (!isPlaying) {
-    playNextInQueue();
-  }
-}
-
-// ปุ่มสวิตช์เปิด/ปิดเสียงติ๊ง
-function toggleSound() {
-  isSoundNotifyOn = !isSoundNotifyOn;
-  document.getElementById('btn-toggle-sound').innerHTML = isSoundNotifyOn ? '🔔 เปิดเสียงเตือน' : '🔕 ปิดเสียงเตือน';
-  document.getElementById('btn-toggle-sound').style.background = isSoundNotifyOn ? '#34C759' : '#E5E5EA';
-  document.getElementById('btn-toggle-sound').style.color = isSoundNotifyOn ? '#FFF' : '#1C1C1E';
-  if(isSoundNotifyOn) playDing(); 
-}
-
-// ปุ่มสวิตช์เปิด/ปิดเสียงพูด AI
-function toggleVoice() {
-  isVoiceNotifyOn = !isVoiceNotifyOn;
-  document.getElementById('btn-toggle-voice').innerHTML = isVoiceNotifyOn ? '🗣️ เปิดเสียงพูด' : '🤫 ปิดเสียงพูด';
-  document.getElementById('btn-toggle-voice').style.background = isVoiceNotifyOn ? '#007AFF' : '#E5E5EA';
-  document.getElementById('btn-toggle-voice').style.color = isVoiceNotifyOn ? '#FFF' : '#1C1C1E';
-  
-  // ทดสอบเสียงพูดตอนกดเปิดระบบ (ดึงไฟล์ test.mp3)
-  if(isVoiceNotifyOn && isTVMode) {
-    audioQueue.push("test"); 
-    if (!isPlaying) playNextInQueue();
-  }
-}
-// -----------------------------------------------------------------
 function fmt(num) { return Number(num).toFixed(2); }
 function fmtComma(num) { return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fmtMoney(num) { return '฿' + Number(num).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); }
@@ -694,33 +577,6 @@ function loadData() {
     const newDataString = JSON.stringify({ rounds: incomingRounds, activeRoundId: incomingActiveId });
     if (lastDataString === newDataString) {
       return; 
-    }
-    // 🔊 ตรวจจับการเปลี่ยนแปลงจาก Firebase เพื่อสั่ง TV ให้มีเสียง
-    if (!isInitialLoad && incomingActiveId && incomingActiveId === activeRoundId) {
-      const oldR = rounds.find(r => r.id === incomingActiveId);
-      const newR = incomingRounds.find(r => r.id === incomingActiveId);
-      
-      if (oldR && newR) {
-        const oldB = getSubRounds(oldR);
-        const newB = getSubRounds(newR);
-        const oldLast = oldB[oldB.length - 1];
-        const newLast = newB[newB.length - 1];
-        
-        let playBlock = null;
-        
-        // เช็คว่าตะกร้าเพิ่งครบ 5 ใบ หรือมีการกดปุ่ม จบซับรอบเอง
-        if (newLast && newLast.entries.length === 5 && (!oldLast || oldLast.entries.length < 5)) {
-          playBlock = newLast; // ครบ 5 ใบ
-        } else if (newB.length > oldB.length && oldLast && oldLast.entries.length > 0 && oldLast.entries.length < 5) {
-          playBlock = oldLast; // โดนกดจบซับรอบ
-        }
-
-        if (playBlock) {
-          const bw = playBlock.entries.reduce((sum, e) => sum + e.weight, 0);
-          playDing();
-          speakBlockSummary(playBlock.subNum, fmt(bw));
-        }
-      }
     }
     
     rounds = incomingRounds;
