@@ -1,3 +1,207 @@
-<h1>Durian Tools</h1>
-<a href="weigh.html">⚖️ ระบบชั่งน้ำหนัก</a>
-<a href="farm.html">🌳 ระบบสวน</a>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Durian Pro - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- ตัวแปรสำหรับใส่ URL GitHub Pages --- */
+        :root {
+            --url-weighing-system: "https://ustsukii.github.io/Durian-weight/weigh.html";
+            --url-garden-system: "https://ustsukii.github.io/Durian-weight/farm.html";
+            
+            /* Color Palette */
+            --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d3436 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent-color: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* พื้นหลังตกแต่ง (Ambient Glow) */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(76, 175, 80, 0.2);
+            filter: blur(100px);
+            top: 10%;
+            left: 10%;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Logo Section */
+        .logo-container {
+            margin-bottom: 40px;
+        }
+
+        .logo-svg {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* Button Layout */
+        .menu-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .menu-card {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card:hover {
+            transform: scale(1.03);
+            background: rgba(255, 255, 255, 0.15);
+            filter: brightness(1.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .menu-card:active {
+            transform: scale(0.98);
+        }
+
+        .icon-box {
+            font-size: 24px;
+            margin-right: 18px;
+            background: rgba(255,255,255,0.1);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .text-content {
+            text-align: left;
+        }
+
+        .title {
+            display: block;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .desc {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 90%;
+            }
+            h1 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10C50 10 35 30 35 50C35 70 50 90 50 90C50 90 65 70 65 50C65 30 50 10 50 10Z" fill="#4CAF50"/>
+                <circle cx="50" cy="55" r="25" fill="#8BC34A"/>
+                <path d="M40 45L35 40M50 40V32M60 45L65 40M40 65L35 70M60 65L65 70" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <h1>ระบบสวนทุเรียน</h1>
+            <p class="subtitle">Smart Orchard Solution</p>
+        </div>
+
+        <div class="menu-wrapper">
+            <a href="#" id="weighing-link" class="menu-card">
+                <div class="icon-box">⚖️</div>
+                <div class="text-content">
+                    <span class="title">ระบบชั่งน้ำหนัก</span>
+                    <span class="desc">บันทึกและจัดการน้ำหนักผลผลิต</span>
+                </div>
+            </a>
+
+            <a href="#" id="garden-link" class="menu-card">
+                <div class="icon-box">🌳</div>
+                <div class="text-content">
+                    <span class="title">ระบบจัดการสวน</span>
+                    <span class="desc">ติดตาม ดูแล และวิเคราะห์ข้อมูลสวน</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // การดึงค่าตัวแปรจาก CSS เพื่อมาใส่ใน Link
+        const rootStyles = getComputedStyle(document.documentElement);
+        
+        const weighingUrl = rootStyles.getPropertyValue('--url-weighing-system').trim().replace(/"/g, '');
+        const gardenUrl = rootStyles.getPropertyValue('--url-garden-system').trim().replace(/"/g, '');
+
+        document.getElementById('weighing-link').href = weighingUrl;
+        document.getElementById('garden-link').href = gardenUrl;
+    </script>
+
+</body>
+</html>
