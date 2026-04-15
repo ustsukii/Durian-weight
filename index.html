@@ -1,207 +1,268 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Durian Pro - Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        /* --- ตัวแปรสำหรับใส่ URL GitHub Pages --- */
-        :root {
-            --url-weighing-system: "https://ustsukii.github.io/Durian-weight/weigh.html";
-            --url-garden-system: "https://ustsukii.github.io/Durian-weight/farm.html";
-            
-            /* Color Palette */
-            --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d3436 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --accent-color: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>🌴 ระบบสวนทุเรียน Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+  body {
+    font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #0D1B2A 0%, #1B3A5C 50%, #0A3D62 100%);
+    padding: 32px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        body {
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            overflow: hidden;
-        }
+  /* ── Stars background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 35% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 70% 85%, rgba(255,255,255,0.2) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        /* พื้นหลังตกแต่ง (Ambient Glow) */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(76, 175, 80, 0.2);
-            filter: blur(100px);
-            top: 10%;
-            left: 10%;
-            z-index: -1;
-        }
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+  }
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
-        }
+  /* ── Logo ── */
+  .home-logo {
+    font-size: 76px;
+    margin-bottom: 14px;
+    animation: float 3.5s ease-in-out infinite;
+    filter: drop-shadow(0 8px 24px rgba(0,200,100,0.3));
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-12px); }
+  }
 
-        /* Logo Section */
-        .logo-container {
-            margin-bottom: 40px;
-        }
+  .home-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .home-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+    margin-bottom: 48px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
 
-        .logo-svg {
-            width: 80px;
-            height: 80px;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
-            margin-bottom: 15px;
-        }
+  /* ── Cards ── */
+  .home-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
 
-        h1 {
-            font-weight: 600;
-            font-size: 2rem;
-            letter-spacing: -0.5px;
-            margin-bottom: 5px;
-        }
+  .home-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 24px;
+    padding: 22px 22px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+  .home-card.weigh::before { background: radial-gradient(circle at 30% 50%, rgba(0,122,255,0.15), transparent 70%); }
+  .home-card.farm::before  { background: radial-gradient(circle at 30% 50%, rgba(48,209,88,0.15), transparent 70%); }
+  .home-card:hover::before { opacity: 1; }
+  .home-card:hover {
+    background: rgba(255,255,255,0.14);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  }
+  .home-card:active { transform: scale(0.97); }
 
-        p.subtitle {
-            color: var(--text-secondary);
-            font-weight: 300;
-            margin-bottom: 40px;
-            font-size: 0.9rem;
-        }
+  .home-card.weigh { border-color: rgba(0,122,255,0.35); }
+  .home-card.farm  { border-color: rgba(48,209,88,0.35); }
 
-        /* Button Layout */
-        .menu-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+  .card-icon-wrap {
+    width: 56px; height: 56px; flex-shrink: 0;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .home-card.weigh .card-icon-wrap { background: rgba(0,122,255,0.2); }
+  .home-card.farm  .card-icon-wrap { background: rgba(48,209,88,0.2); }
 
-        .menu-card {
-            display: flex;
-            align-items: center;
-            padding: 20px 25px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 22px;
-            text-decoration: none;
-            color: white;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
+  .card-info { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+    line-height: 1.4;
+  }
 
-        .menu-card:hover {
-            transform: scale(1.03);
-            background: rgba(255, 255, 255, 0.15);
-            filter: brightness(1.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+  .card-arrow {
+    font-size: 20px;
+    color: rgba(255,255,255,0.3);
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .home-card:hover .card-arrow {
+    transform: translateX(4px);
+    color: rgba(255,255,255,0.6);
+  }
 
-        .menu-card:active {
-            transform: scale(0.98);
-        }
+  /* ── Divider ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 28px 0 20px;
+  }
 
-        .icon-box {
-            font-size: 24px;
-            margin-right: 18px;
-            background: rgba(255,255,255,0.1);
-            width: 45px;
-            height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-        }
+  /* ── Footer ── */
+  .home-footer {
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    line-height: 1.8;
+  }
+  .home-footer a {
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    font-size: 11px;
+  }
+  .home-footer a:hover { color: rgba(255,255,255,0.6); }
 
-        .text-content {
-            text-align: left;
-        }
+  /* ── Badge ── */
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(48,209,88,0.18);
+    border: 1px solid rgba(48,209,88,0.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #30D158;
+    margin-bottom: 28px;
+    letter-spacing: 0.3px;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    background: #30D158;
+    border-radius: 50%;
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
 
-        .title {
-            display: block;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .desc {
-            display: block;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive Settings */
-        @media (max-width: 480px) {
-            .container {
-                max-width: 90%;
-            }
-            h1 { font-size: 1.7rem; }
-        }
-    </style>
+  @media (max-width: 400px) {
+    .home-logo { font-size: 60px; }
+    .home-title { font-size: 24px; }
+    .card-name { font-size: 16px; }
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-container">
-            <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M50 10C50 10 35 30 35 50C35 70 50 90 50 90C50 90 65 70 65 50C65 30 50 10 50 10Z" fill="#4CAF50"/>
-                <circle cx="50" cy="55" r="25" fill="#8BC34A"/>
-                <path d="M40 45L35 40M50 40V32M60 45L65 40M40 65L35 70M60 65L65 70" stroke="white" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-            <h1>ระบบสวนทุเรียน</h1>
-            <p class="subtitle">เลือกระบบที่ต้องการใช้งาน</p>
-        </div>
+<div class="container">
 
-        <div class="menu-wrapper">
-            <a href="#" id="weighing-link" class="menu-card">
-                <div class="icon-box">⚖️</div>
-                <div class="text-content">
-                    <span class="title">ระบบชั่งน้ำหนัก</span>
-                    <span class="desc">บันทึกและจัดการน้ำหนักผลผลิต</span>
-                </div>
-            </a>
+  <div class="home-logo">🌴</div>
+  <div class="home-title">ระบบสวนทุเรียน Pro</div>
+  <div class="home-subtitle">เลือกระบบที่ต้องการใช้งาน</div>
 
-            <a href="#" id="garden-link" class="menu-card">
-                <div class="icon-box">🌳</div>
-                <div class="text-content">
-                    <span class="title">ระบบจัดการสวน</span>
-                    <span class="desc">ติดตาม ดูแล และวิเคราะห์ข้อมูลสวน</span>
-                </div>
-            </a>
-        </div>
-    </div>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    Firebase Real-time Sync
+  </div>
 
-    <script>
-        // การดึงค่าตัวแปรจาก CSS เพื่อมาใส่ใน Link
-        const rootStyles = getComputedStyle(document.documentElement);
-        
-        const weighingUrl = rootStyles.getPropertyValue('--url-weighing-system').trim().replace(/"/g, '');
-        const gardenUrl = rootStyles.getPropertyValue('--url-garden-system').trim().replace(/"/g, '');
+  <div class="home-cards">
 
-        document.getElementById('weighing-link').href = weighingUrl;
-        document.getElementById('garden-link').href = gardenUrl;
-    </script>
+    <a class="home-card weigh"
+       href="https://ustsukii.github.io/Durian-weight/weigh.html"
+       target="_blank" rel="noopener noreferrer">
+      <div class="card-icon-wrap">⚖️</div>
+      <div class="card-info">
+        <div class="card-name">ระบบชั่งน้ำหนัก</div>
+        <div class="card-desc">บันทึก ชั่ง คำนวณ สรุปยอด<br>TV Mode · สลิป · CSV Export</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+
+    <a class="home-card farm"
+       href="https://ustsukii.github.io/Durian-weight/farm.html"
+       target="_blank" rel="noopener noreferrer">
+      <div class="card-icon-wrap">🌳</div>
+      <div class="card-info">
+        <div class="card-name">ระบบจัดการสวน</div>
+        <div class="card-desc">ติดตามต้นทุเรียน · แผนที่สวน<br>Firebase Sync · 182 บล็อก</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </a>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="home-footer">
+    🔥 Powered by Firebase &nbsp;·&nbsp; ข้อมูล Real-time Sync<br>
+    <a href="https://ustsukii.github.io/Durian-weight/weigh.html" target="_blank">weigh.html</a>
+    &nbsp;·&nbsp;
+    <a href="https://ustsukii.github.io/Durian-weight/farm.html" target="_blank">farm.html</a>
+  </div>
+
+</div>
 
 </body>
 </html>
