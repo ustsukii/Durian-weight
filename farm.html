@@ -874,6 +874,232 @@
     display: inline-block;
     flex-shrink: 0;
   }
+
+  /* ===== FIREBASE SYNC INDICATOR ===== */
+  .sync-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--gray-bg);
+    color: var(--secondary);
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .sync-indicator.syncing { background: #E8F3FF; color: var(--primary); }
+  .sync-indicator.synced  { background: var(--green-bg); color: #1A7A3A; }
+  .sync-indicator.error   { background: var(--red-bg); color: var(--red); }
+  .sync-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .sync-indicator.syncing .sync-dot { animation: syncPulse 0.8s ease-in-out infinite; }
+  @keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ===== FAST BLOOM OVERLAY ===== */
+  .fb-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 155;
+    display: flex;
+    flex-direction: column;
+    animation: mapFadeIn 0.3s ease;
+  }
+  .fb-overlay.hidden { display: none; }
+
+  .fb-header {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--divider);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .fb-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    flex: 1;
+  }
+  .fb-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--divider);
+    margin-top: 6px;
+  }
+  .fb-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .fb-control-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .fb-control-group input[type="date"],
+  .fb-control-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--primary-light);
+    border: 1.5px solid var(--primary);
+    border-radius: 10px;
+    color: var(--primary-dark);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 7px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  .fb-batch-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .fb-batch-btn {
+    border: 2px solid var(--divider);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--secondary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .fb-batch-btn.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .fb-stat-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .fb-stat-selected {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 12px;
+  }
+
+  .fb-body {
+    flex: 1;
+    overflow: auto;
+    padding: 16px 20px 100px;
+  }
+  .fb-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(52px, 1fr));
+    gap: 5px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .fb-cell {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    user-select: none;
+    border: 2px solid transparent;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+  .fb-cell:active { transform: scale(0.92); }
+  .fb-cell.state-empty {
+    background: #F2F2F7;
+    border-color: #E5E5EA;
+  }
+  .fb-cell.state-has-data {
+    background: #D1F2DD;
+    border-color: #7DC896;
+  }
+  .fb-cell.state-selected {
+    background: var(--primary);
+    border-color: var(--primary-dark);
+    box-shadow: 0 3px 12px rgba(0,122,255,0.45);
+    transform: scale(1.06);
+  }
+  .fb-cell.state-selected-exists {
+    background: #FF9F0A;
+    border-color: #B06800;
+    box-shadow: 0 3px 12px rgba(255,159,10,0.4);
+    transform: scale(1.06);
+  }
+  .fb-cell-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.65);
+    line-height: 1;
+  }
+  .fb-cell.state-selected .fb-cell-num,
+  .fb-cell.state-selected-exists .fb-cell-num { color: #fff; }
+  .fb-cell-sub {
+    font-size: 8px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.45);
+    margin-top: 2px;
+    text-align: center;
+  }
+  .fb-cell.state-selected .fb-cell-sub,
+  .fb-cell.state-selected-exists .fb-cell-sub { color: rgba(255,255,255,0.85); }
+
+  .fb-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--divider);
+    padding: 12px 20px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+
+  @media (max-width: 599px) {
+    .fb-grid {
+      grid-template-columns: repeat(10, minmax(28px, 1fr));
+      gap: 3px;
+    }
+    .fb-cell-num { font-size: 10px; }
+    .fb-cell-sub { font-size: 7px; }
+    .fb-controls { gap: 8px; }
+  }
 </style>
 </head>
 <body>
@@ -892,7 +1118,14 @@
       </div>
     </div>
     <div class="header-controls">
+      <div class="sync-indicator" id="syncIndicator" title="Firebase Sync">
+        <span class="sync-dot"></span>
+        <span id="syncLabel">—</span>
+      </div>
       <select class="year-select" id="yearSelect" title="เลือกปี"></select>
+      <button class="btn" style="background:linear-gradient(135deg,#FF9F0A,#FF6B35);color:#fff" onclick="openFastBloom()">
+        ⚡ บันทึกเร็ว
+      </button>
       <button class="btn btn-map" id="btnMapMode" onclick="openMapMode()">
         🗺️ แผนที่สวน
       </button>
@@ -1016,6 +1249,42 @@
   </div>
 </div>
 
+<!-- FAST BLOOM OVERLAY -->
+<div class="fb-overlay hidden" id="fbOverlay">
+  <div class="fb-header">
+    <button class="btn btn-ghost" style="flex-shrink:0" onclick="closeFastBloom()">← กลับ</button>
+    <div class="fb-title">⚡ โหมดบันทึกออกดอกเร็ว</div>
+    <div class="fb-stat-bar">
+      <span style="font-size:12px;color:var(--secondary)">เลือกแล้ว</span>
+      <span class="fb-stat-selected" id="fbSelectedCount">0</span>
+    </div>
+    <div class="fb-controls">
+      <div class="fb-control-group">
+        <div class="fb-control-label">วันที่ออกดอก</div>
+        <input type="date" id="fbDate">
+      </div>
+      <div class="fb-control-group">
+        <div class="fb-control-label">เลือกรุ่น</div>
+        <div class="fb-batch-group" id="fbBatchGroup">
+          <button class="fb-batch-btn active" data-batch="1" onclick="fbSelectBatch(1,this)">รุ่น 1</button>
+          <button class="fb-batch-btn" data-batch="2" onclick="fbSelectBatch(2,this)">รุ่น 2</button>
+          <button class="fb-batch-btn" data-batch="3" onclick="fbSelectBatch(3,this)">รุ่น 3</button>
+          <button class="fb-batch-btn" data-batch="4" onclick="fbSelectBatch(4,this)">รุ่น 4</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fb-body">
+    <div class="fb-grid" id="fbGrid"></div>
+  </div>
+  <div class="fb-footer">
+    <div style="width:100%;text-align:center;font-size:11px;color:var(--secondary);margin-bottom:2px">👆 กดค้างแล้วลากเพื่อเลือกหลายต้นพร้อมกัน</div>
+    <button class="btn btn-ghost" onclick="fbUndo()">↩ Undo</button>
+    <button class="btn btn-secondary" onclick="fbClearSelection()">✕ ล้างที่เลือก</button>
+    <button class="btn btn-success" onclick="fbSaveAll()">💾 บันทึกทั้งหมด</button>
+  </div>
+</div>
+
 
 <div class="modal-overlay hidden" id="modal">
   <div class="modal">
@@ -1076,6 +1345,7 @@ function getYearTrees(year) {
 function setYearTrees(year, trees) {
   state.data[year] = trees;
   saveStorage();
+  if (typeof _afterSetYearTrees === 'function') _afterSetYearTrees();
 }
 
 // ===== LOGIC =====
@@ -1347,13 +1617,19 @@ function saveTree() {
   if (state.editingId) {
     const idx = trees.findIndex(t => t.id === state.editingId);
     if (idx !== -1) {
+      // Check duplicate (treeNumber+batch) excluding self
+      const batchKey = String(batch || '');
+      const dup = trees.some((t, i) => i !== idx && String(t.treeNumber) === String(treeNum) && String(t.batch || '') === batchKey);
+      if (dup) { showToast('⚠️ ต้น "' + treeNum + '" รุ่น "' + (batch||'—') + '" มีอยู่แล้ว'); return; }
       trees[idx] = { ...trees[idx], treeNumber:treeNum, bloomDate:bloom, batch, zone };
       showToast('✅ แก้ไขข้อมูลสำเร็จ');
     }
   } else {
-    // Check duplicate
-    if (trees.some(t => t.treeNumber === treeNum)) {
-      showToast('⚠️ เลขต้น "' + treeNum + '" มีอยู่แล้วในปีนี้');
+    // Multi-batch: unique by (treeNumber + batch)
+    const batchKey = String(batch || '');
+    if (trees.some(t => String(t.treeNumber) === String(treeNum) && String(t.batch || '') === batchKey)) {
+      const batchLabel = batch ? `รุ่น "${batch}"` : '(ไม่มีรุ่น)';
+      showToast('⚠️ ต้น "' + treeNum + '" ' + batchLabel + ' มีอยู่แล้ว');
       return;
     }
     trees.push({ id:generateId(), treeNumber:treeNum, bloomDate:bloom, batch, zone, done:false, harvestedAt:null });
@@ -1394,6 +1670,7 @@ function resetYear() {
   if (!confirm(`รีเซ็ตข้อมูลปี ${state.currentYear}?\nต้นทุเรียนทั้งหมดในปีนี้จะถูกลบ`)) return;
   delete state.data[state.currentYear];
   saveStorage();
+  setTimeout(pushToFirestore, 200);
   showToast(`🗑 ล้างข้อมูลปี ${state.currentYear} แล้ว`);
   renderAll();
 }
@@ -1402,6 +1679,7 @@ function resetAll() {
   if (!confirm('ล้างข้อมูลทุกปีออกจากระบบ?\nการดำเนินการนี้ไม่สามารถย้อนกลับได้!')) return;
   state.data = {};
   saveStorage();
+  setTimeout(pushToFirestore, 200);
   showToast('🔥 ล้างข้อมูลทั้งหมดแล้ว');
   renderAll();
 }
@@ -1597,6 +1875,293 @@ document.addEventListener('keydown', e => {
 
 
 
+// ===== FIREBASE SYNC =====
+// Use compat SDK loaded via CDN — no duplicate initializeApp
+let _db = null;
+let _isSyncing = false;
+let _unsubscribe = null;
+
+const FB_CONFIG = {
+  apiKey: "AIzaSyA0pCY_tcbGXsnqhUjgKmq3IsauyJdhhKY",
+  authDomain: "durianfarm-e924f.firebaseapp.com",
+  projectId: "durianfarm-e924f",
+  storageBucket: "durianfarm-e924f.firebasestorage.app",
+  messagingSenderId: "307965945526",
+  appId: "1:307965945526:web:05e82947ea4f5e8877e817",
+  measurementId: "G-2PGMW25WE8"
+};
+
+function setSyncStatus(s, label) {
+  const el = document.getElementById('syncIndicator');
+  const lbl = document.getElementById('syncLabel');
+  el.className = 'sync-indicator ' + s;
+  lbl.textContent = label;
+}
+
+function initFirebase() {
+  try {
+    // Prevent duplicate init
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FB_CONFIG);
+    }
+    _db = firebase.firestore();
+    setSyncStatus('synced', 'เชื่อมต่อแล้ว');
+    startRealtimeSync();
+  } catch(e) {
+    console.warn('Firebase init error:', e);
+    setSyncStatus('error', 'ไม่ได้เชื่อมต่อ');
+  }
+}
+
+function pushToFirestore() {
+  if (!_db) return;
+  setSyncStatus('syncing', 'กำลัง sync...');
+  const payload = { years: state.data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  _db.collection('durian_farm_data').doc('main')
+    .set(payload)
+    .then(() => setSyncStatus('synced', 'Synced ✓'))
+    .catch(e => { console.warn('Firestore push error:', e); setSyncStatus('error', 'Sync ล้มเหลว'); });
+}
+
+function startRealtimeSync() {
+  if (!_db) return;
+  if (_unsubscribe) _unsubscribe();
+  _unsubscribe = _db.collection('durian_farm_data').doc('main')
+    .onSnapshot(snap => {
+      if (_isSyncing) return; // prevent write-loop
+      if (!snap.exists) return;
+      const remote = snap.data();
+      if (!remote || !remote.years) return;
+      // Merge remote into local (remote wins)
+      const localJson = JSON.stringify(state.data);
+      const remoteJson = JSON.stringify(remote.years);
+      if (localJson !== remoteJson) {
+        _isSyncing = true;
+        state.data = remote.years;
+        if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+        saveStorage();
+        renderAll();
+        setSyncStatus('synced', 'Synced ✓');
+        setTimeout(() => { _isSyncing = false; }, 500);
+      }
+    }, e => {
+      console.warn('onSnapshot error:', e);
+      setSyncStatus('error', 'Real-time ล้มเหลว');
+    });
+}
+
+// Auto-push hook — called by the patched setYearTrees below
+function _afterSetYearTrees() {
+  if (!_isSyncing) setTimeout(pushToFirestore, 200);
+}
+
+// ===== FAST BLOOM MODE =====
+let _fbSelected = new Set(); // Set of treeNumber strings
+let _fbLastAction = null;    // for undo: { type:'add'|'remove', treeNums: [] }
+let _fbBatch = 1;
+let _fbIsDragging = false;
+let _fbDragMode = null; // 'select' | 'deselect'
+
+function openFastBloom() {
+  // Set default date to today
+  const today_str = new Date().toISOString().split('T')[0];
+  document.getElementById('fbDate').value = today_str;
+  _fbSelected = new Set();
+  _fbBatch = 1;
+  // Reset batch buttons
+  document.querySelectorAll('.fb-batch-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.batch) === 1);
+  });
+  generateFbGrid();
+  document.getElementById('fbOverlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  // Register global drag listeners
+  document.addEventListener('pointermove', _fbOnPointerMove, { passive: false });
+  document.addEventListener('pointerup', fbPointerUp);
+  document.addEventListener('pointercancel', fbPointerUp);
+}
+
+function closeFastBloom() {
+  document.getElementById('fbOverlay').classList.add('hidden');
+  document.body.style.overflow = '';
+  _fbSelected = new Set();
+  _fbLastAction = null;
+  // Remove global drag listeners
+  document.removeEventListener('pointermove', _fbOnPointerMove);
+  document.removeEventListener('pointerup', fbPointerUp);
+  document.removeEventListener('pointercancel', fbPointerUp);
+}
+
+function fbSelectBatch(b, el) {
+  _fbBatch = b;
+  document.querySelectorAll('.fb-batch-btn').forEach(btn => btn.classList.remove('active'));
+  el.classList.add('active');
+  generateFbGrid(); // re-render to update which cells already have this batch
+}
+
+function getFbCellState(treeNum) {
+  const numStr = String(treeNum);
+  if (_fbSelected.has(numStr)) {
+    // check if this tree+batch already exists
+    const trees = getYearTrees(state.currentYear);
+    const exists = trees.some(t => String(t.treeNumber) === numStr && String(t.batch||'') === String(_fbBatch));
+    return exists ? 'state-selected-exists' : 'state-selected';
+  }
+  const trees = getYearTrees(state.currentYear);
+  const hasAny = trees.some(t => String(t.treeNumber) === numStr);
+  return hasAny ? 'state-has-data' : 'state-empty';
+}
+
+function getFbCellSub(treeNum) {
+  const trees = getYearTrees(state.currentYear);
+  const matches = trees.filter(t => String(t.treeNumber) === String(treeNum));
+  if (matches.length === 0) return '';
+  const batches = matches.map(t => t.batch || '?').join(',');
+  return 'รุ่น ' + batches;
+}
+
+function generateFbGrid() {
+  const TOTAL = 182;
+  const COLS = 10;
+  let html = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const row = Math.floor((i-1)/COLS);
+    const posInRow = (i-1) % COLS;
+    let blockNum = row % 2 === 0 ? row*COLS + posInRow + 1 : row*COLS + (COLS - posInRow);
+    const cellState = getFbCellState(blockNum);
+    const sub = getFbCellSub(blockNum);
+    html += `<div class="fb-cell ${cellState}" data-num="${blockNum}"
+      onpointerdown="fbPointerDown(event,${blockNum})"
+      onpointerenter="fbPointerEnter(event,${blockNum})"
+      onpointerup="fbPointerUp(event)">
+      <div class="fb-cell-num">${blockNum}</div>
+      ${sub ? `<div class="fb-cell-sub">${sub}</div>` : ''}
+    </div>`;
+  }
+  document.getElementById('fbGrid').innerHTML = html;
+  document.getElementById('fbSelectedCount').textContent = _fbSelected.size;
+}
+
+function fbToggleCell(numStr) {
+  if (_fbSelected.has(numStr)) _fbSelected.delete(numStr);
+  else _fbSelected.add(numStr);
+}
+
+function fbPointerDown(e, num) {
+  e.preventDefault();
+  const numStr = String(num);
+  const willSelect = !_fbSelected.has(numStr);
+  _fbDragMode = willSelect ? 'select' : 'deselect';
+  _fbIsDragging = true;
+  _fbLastAction = { type: willSelect ? 'add' : 'remove', treeNums: [numStr] };
+  if (willSelect) _fbSelected.add(numStr);
+  else _fbSelected.delete(numStr);
+  updateFbCell(num);
+  document.getElementById('fbSelectedCount').textContent = _fbSelected.size;
+}
+
+function fbPointerEnter(e, num) {
+  // kept for mouse fallback — main logic handled by document pointermove
+  if (!_fbIsDragging) return;
+  _fbApplyDragToNum(String(num));
+}
+
+function fbPointerUp(e) {
+  _fbIsDragging = false;
+  _fbDragMode = null;
+}
+
+// Document-level pointermove: use elementFromPoint to find cell under finger/cursor
+function _fbOnPointerMove(e) {
+  if (!_fbIsDragging) return;
+  e.preventDefault();
+  // For touch, use changedTouches clientX/Y via pointer event
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (!el) return;
+  const cell = el.closest('.fb-cell');
+  if (!cell) return;
+  const num = cell.dataset.num;
+  if (!num) return;
+  _fbApplyDragToNum(num);
+}
+
+function _fbApplyDragToNum(numStr) {
+  if (_fbDragMode === 'select' && !_fbSelected.has(numStr)) {
+    _fbSelected.add(numStr);
+    if (_fbLastAction) _fbLastAction.treeNums.push(numStr);
+    updateFbCell(numStr);
+    document.getElementById('fbSelectedCount').textContent = _fbSelected.size;
+  } else if (_fbDragMode === 'deselect' && _fbSelected.has(numStr)) {
+    _fbSelected.delete(numStr);
+    if (_fbLastAction) _fbLastAction.treeNums.push(numStr);
+    updateFbCell(numStr);
+    document.getElementById('fbSelectedCount').textContent = _fbSelected.size;
+  }
+}
+
+function updateFbCell(num) {
+  const cell = document.querySelector(`.fb-cell[data-num="${num}"]`);
+  if (!cell) return;
+  const newState = getFbCellState(num);
+  cell.className = `fb-cell ${newState}`;
+}
+
+function fbUndo() {
+  if (!_fbLastAction || _fbLastAction.treeNums.length === 0) {
+    showToast('⚠️ ไม่มีการกระทำล่าสุด');
+    return;
+  }
+  const { type, treeNums } = _fbLastAction;
+  treeNums.forEach(n => {
+    if (type === 'add') _fbSelected.delete(n);
+    else _fbSelected.add(n);
+  });
+  _fbLastAction = null;
+  generateFbGrid();
+  showToast('↩ Undo สำเร็จ');
+}
+
+function fbClearSelection() {
+  if (_fbSelected.size === 0) return;
+  _fbLastAction = { type: 'add', treeNums: [..._fbSelected] };
+  _fbSelected = new Set();
+  generateFbGrid();
+  showToast('✕ ล้างที่เลือกแล้ว');
+}
+
+function fbSaveAll() {
+  if (_fbSelected.size === 0) { showToast('⚠️ ยังไม่ได้เลือกต้นไม้'); return; }
+  const bloomDate = document.getElementById('fbDate').value;
+  if (!bloomDate) { showToast('⚠️ กรุณาเลือกวันที่ออกดอก'); return; }
+
+  const trees = getYearTrees(state.currentYear);
+  let added = 0, skipped = 0;
+
+  _fbSelected.forEach(numStr => {
+    const batchStr = String(_fbBatch);
+    // Multi-batch unique check: treeNumber + batch
+    const exists = trees.some(t => String(t.treeNumber) === numStr && String(t.batch||'') === batchStr);
+    if (exists) { skipped++; return; }
+    trees.push({
+      id: generateId(),
+      treeNumber: numStr,
+      batch: String(_fbBatch),
+      bloomDate,
+      done: false,
+      harvestedAt: null
+    });
+    added++;
+  });
+
+  setYearTrees(state.currentYear, trees);
+  renderAll();
+
+  let msg = `⚡ บันทึก ${added} ต้น (รุ่น ${_fbBatch}) สำเร็จ`;
+  if (skipped > 0) msg += ` — ข้าม ${skipped} ต้น (ซ้ำ)`;
+  showToast(msg);
+  closeFastBloom();
+}
+
 // ===== INIT =====
 (function init() {
   loadStorage();
@@ -1604,7 +2169,17 @@ document.addEventListener('keydown', e => {
   renderAll();
   // Refresh every 10 minutes
   setInterval(renderAll, 10 * 60 * 1000);
+  // Firebase will be initialized by the CDN scripts loaded after this block
+  setSyncStatus('', 'กำลังเชื่อมต่อ...');
 })();
+</script>
+
+<!-- Firebase Compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+// Init Firebase after SDKs are loaded
+initFirebase();
 </script>
 </body>
 </html>
