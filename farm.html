@@ -875,6 +875,231 @@
     flex-shrink: 0;
   }
 
+  /* ===== BATCH FILTER ROW ===== */
+  .batch-filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .batch-filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--secondary);
+    flex-shrink: 0;
+  }
+  .batch-tab {
+    border: none;
+    background: var(--gray-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    color: var(--secondary);
+    transition: var(--transition);
+    white-space: nowrap;
+    border: 1.5px solid transparent;
+  }
+  .batch-tab:active { transform: scale(0.94); }
+  .batch-tab.active {
+    background: #FFF4E0;
+    color: #B06800;
+    border-color: #F6C02A;
+  }
+
+  /* ===== MULTI-HARVEST BAR ===== */
+  .multi-harvest-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--divider);
+    transition: var(--transition);
+  }
+  .multi-harvest-bar.hidden { display: none; }
+  .multi-harvest-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--secondary);
+    flex: 1;
+  }
+  .multi-harvest-count strong {
+    color: var(--primary);
+    font-size: 15px;
+  }
+
+  /* ===== CHECKBOX ON CARD ===== */
+  .tree-checkbox-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .tree-checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--divider);
+    background: var(--bg);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .tree-checkbox:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .tree-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 1px;
+    width: 8px; height: 12px;
+    border: 2.5px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(40deg);
+  }
+  .tree-card.card-checked {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+  }
+
+  /* ===== UNDO HARVEST BUTTON ===== */
+  .undo-harvest-btn {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px;
+    transition: var(--transition);
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: var(--gray-bg);
+    color: var(--secondary);
+    border: 1px solid var(--divider);
+    margin-top: 6px;
+  }
+  .undo-harvest-btn:hover { background: var(--orange-bg); color: #B06800; border-color: var(--orange); }
+  .undo-harvest-btn:active { transform: scale(0.97); }
+
+  /* ===== MAP BATCH FILTER ===== */
+  .map-batch-filter {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .map-batch-tab {
+    border: none;
+    background: var(--gray-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    color: var(--secondary);
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .map-batch-tab.active {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  /* ===== TREE COUNT SETTINGS ===== */
+  .tree-count-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    border: 1.5px solid var(--divider);
+  }
+  .tree-count-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .tree-count-info {
+    flex: 1;
+    min-width: 140px;
+  }
+  .tree-count-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .tree-count-current {
+    font-size: 12px;
+    color: var(--secondary);
+  }
+  .tree-count-current strong {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .tree-count-input-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .tree-count-input {
+    width: 90px;
+    background: var(--bg);
+    border: 1.5px solid var(--divider);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 8px 12px;
+    outline: none;
+    text-align: center;
+    transition: var(--transition);
+  }
+  .tree-count-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+    background: #fff;
+  }
+  .tree-count-sync-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--secondary);
+    background: var(--gray-bg);
+    border-radius: 20px;
+    padding: 3px 10px;
+    transition: var(--transition);
+  }
+  .tree-count-sync-badge.saving { background: #E8F3FF; color: var(--primary); }
+  .tree-count-sync-badge.saved  { background: var(--green-bg); color: #1A7A3A; }
+
   /* ===== FIREBASE SYNC INDICATOR ===== */
   .sync-indicator {
     display: inline-flex;
@@ -1185,7 +1410,7 @@
   <div class="toolbar">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="ค้นหาเลขต้น..." oninput="renderTrees()">
+      <input type="text" class="search-input" id="searchInput" placeholder="ค้นหาเลขต้น (ตรงทั้งหมด)..." oninput="renderTrees()">
     </div>
     <div class="filter-tabs">
       <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">ทั้งหมด</button>
@@ -1193,6 +1418,22 @@
       <button class="filter-tab" data-filter="ready" onclick="setFilter('ready',this)">พร้อมตัด</button>
       <button class="filter-tab" data-filter="done" onclick="setFilter('done',this)">ตัดแล้ว</button>
     </div>
+    <div class="batch-filter-row">
+      <span class="batch-filter-label">รุ่น:</span>
+      <button class="batch-tab active" data-batch="all" onclick="setBatchFilter('all',this)">ทั้งหมด</button>
+      <button class="batch-tab" data-batch="1" onclick="setBatchFilter('1',this)">รุ่น 1</button>
+      <button class="batch-tab" data-batch="2" onclick="setBatchFilter('2',this)">รุ่น 2</button>
+      <button class="batch-tab" data-batch="3" onclick="setBatchFilter('3',this)">รุ่น 3</button>
+      <button class="batch-tab" data-batch="4" onclick="setBatchFilter('4',this)">รุ่น 4</button>
+    </div>
+  </div>
+
+  <!-- Multi Harvest Bar -->
+  <div class="multi-harvest-bar hidden" id="multiHarvestBar">
+    <div class="multi-harvest-count">เลือกแล้ว <strong id="multiHarvestCount">0</strong> ต้น</div>
+    <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px" onclick="selectAllVisible()">✔️ เลือกทั้งหมด</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:7px 12px" onclick="clearMultiSelect()">✕ ยกเลิก</button>
+    <button class="btn btn-success" style="font-size:13px" onclick="multiHarvest()">✂️ บันทึกการตัด (<span id="multiHarvestCount2">0</span> ต้น)</button>
   </div>
 
   <!-- Tree Grid -->
@@ -1201,6 +1442,20 @@
     <span id="treeCount" style="color:var(--primary)">0 ต้น</span>
   </div>
   <div class="tree-grid" id="treeGrid"></div>
+
+  <!-- Tree Count Settings -->
+  <div class="tree-count-card" id="treeCountCard">
+    <div class="tree-count-icon">🌳</div>
+    <div class="tree-count-info">
+      <div class="tree-count-title">จำนวนต้นทุเรียนทั้งหมด</div>
+      <div class="tree-count-current">ปัจจุบัน: <strong id="treeCountDisplay">182</strong> ต้น</div>
+    </div>
+    <div class="tree-count-input-wrap">
+      <input type="number" class="tree-count-input" id="treeCountInput" min="1" max="9999" placeholder="182">
+      <button class="btn btn-primary" style="font-size:13px;padding:9px 14px" onclick="updateTreeCount()">อัปเดต</button>
+      <span class="tree-count-sync-badge" id="treeCountSyncBadge">ซิงค์แล้ว</span>
+    </div>
+  </div>
 
   <!-- Danger Zone -->
   <div class="danger-zone">
@@ -1226,6 +1481,13 @@
     <div class="map-title">
       <span>🗺️</span> แผนที่สวนทุเรียน
       <span class="map-year-badge" id="mapYearBadge"></span>
+    </div>
+    <div class="map-batch-filter">
+      <button class="map-batch-tab active" data-mbatch="all" onclick="setMapBatch('all',this)">ทั้งหมด</button>
+      <button class="map-batch-tab" data-mbatch="1" onclick="setMapBatch('1',this)">รุ่น 1</button>
+      <button class="map-batch-tab" data-mbatch="2" onclick="setMapBatch('2',this)">รุ่น 2</button>
+      <button class="map-batch-tab" data-mbatch="3" onclick="setMapBatch('3',this)">รุ่น 3</button>
+      <button class="map-batch-tab" data-mbatch="4" onclick="setMapBatch('4',this)">รุ่น 4</button>
     </div>
     <div class="map-legend">
       <span class="legend-item"><span class="legend-dot" style="background:#B8E8C8"></span>อ่อน</span>
@@ -1321,14 +1583,21 @@ let state = {
   data: {},           // { "2026": [...trees] }
   currentYear: new Date().getFullYear(),
   filter: 'all',
+  batchFilter: 'all', // NEW: รุ่น filter
   editingId: null,
+  treeCount: 182,     // NEW: dynamic tree count (synced via Firestore)
 };
 
+let _multiSelected = new Set(); // NEW: multi-select harvest (Set of tree ids)
+let _mapBatch = 'all';          // NEW: map mode batch filter
+
 const STORAGE_KEY = 'durianTracker_v2';
+const TREE_COUNT_KEY = 'durianTracker_treeCount'; // NEW: separate localStorage key
 
 // ===== STORAGE =====
 function saveStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+  localStorage.setItem(TREE_COUNT_KEY, String(state.treeCount));
 }
 
 function loadStorage() {
@@ -1336,6 +1605,9 @@ function loadStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) state.data = JSON.parse(raw);
   } catch(e) { state.data = {}; }
+  // Load treeCount from localStorage (offline fallback)
+  const savedCount = parseInt(localStorage.getItem(TREE_COUNT_KEY));
+  if (savedCount > 0) state.treeCount = savedCount;
 }
 
 function getYearTrees(year) {
@@ -1473,7 +1745,7 @@ function renderUrgent(trees) {
 
 function renderTrees() {
   const trees = getYearTrees(state.currentYear);
-  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const search = document.getElementById('searchInput').value.trim();
   let filtered = trees;
 
   // filter by status
@@ -1487,9 +1759,14 @@ function renderTrees() {
     });
   }
 
-  // search
+  // filter by batch (NEW)
+  if (state.batchFilter !== 'all') {
+    filtered = filtered.filter(t => String(t.batch || '') === String(state.batchFilter));
+  }
+
+  // search — exact match (NEW)
   if (search) {
-    filtered = filtered.filter(t => t.treeNumber.toLowerCase().includes(search));
+    filtered = filtered.filter(t => String(t.treeNumber).toLowerCase() === search.toLowerCase());
   }
 
   // sort: undone first by age desc, then done last
@@ -1505,13 +1782,17 @@ function renderTrees() {
     document.getElementById('treeGrid').innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🌱</div>
-        <div class="empty-title">${search || state.filter !== 'all' ? 'ไม่พบต้นที่ค้นหา' : 'ยังไม่มีข้อมูลต้นทุเรียน'}</div>
-        <div class="empty-sub">${search || state.filter !== 'all' ? 'ลองเปลี่ยนคำค้นหา' : 'กด "เพิ่มต้น" เพื่อเริ่มต้น'}</div>
+        <div class="empty-title">${search || state.filter !== 'all' || state.batchFilter !== 'all' ? 'ไม่พบต้นที่ค้นหา' : 'ยังไม่มีข้อมูลต้นทุเรียน'}</div>
+        <div class="empty-sub">${search || state.filter !== 'all' || state.batchFilter !== 'all' ? 'ลองเปลี่ยนตัวกรอง' : 'กด "เพิ่มต้น" เพื่อเริ่มต้น'}</div>
       </div>`;
     return;
   }
 
+  // Store currently visible ids for "select all"
+  state._visibleIds = filtered.map(t => t.id);
+
   document.getElementById('treeGrid').innerHTML = filtered.map(t => buildTreeCard(t)).join('');
+  updateMultiHarvestBar();
 }
 
 function buildTreeCard(tree) {
@@ -1519,20 +1800,30 @@ function buildTreeCard(tree) {
   const status = getStatus(tree);
   const pct = getProgressPercent(age, tree.done);
   const progressDays = tree.done ? '✓ ตัดแล้ว' : `${age} / 120 วัน`;
+  const isChecked = _multiSelected.has(tree.id);
   let cardClass = 'tree-card';
   if (tree.done) cardClass += ' done';
   else if (status === 'ready') cardClass += ' ready';
   else if (status === 'cutting') cardClass += ' cutting';
   else if (status === 'near') cardClass += ' near';
+  if (isChecked) cardClass += ' card-checked';
 
   const harvestRow = tree.done
     ? `<div class="meta-item"><div class="meta-label">วันที่ตัด</div><div class="meta-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</div></div>`
     : `<div class="meta-item"><div class="meta-label">อายุ</div><div class="meta-value">${age} วัน</div></div>`;
 
+  // undo harvest button (only when done)
+  const undoBtn = tree.done
+    ? `<button class="undo-harvest-btn" onclick="undoHarvest('${tree.id}')">↩️ ยกเลิกการตัด</button>`
+    : '';
+
   return `
   <div class="${cardClass}" id="card-${tree.id}">
     <div class="tree-header">
       <div class="tree-id-wrap">
+        <label class="tree-checkbox-wrap" title="เลือกสำหรับตัดหมู่">
+          <input type="checkbox" class="tree-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleMultiSelect('${tree.id}', this)" ${tree.done ? 'disabled style="opacity:0.35"' : ''}>
+        </label>
         <div class="tree-number">ต้น ${tree.treeNumber}</div>
         <span class="tree-badge ${getStatusClass(status)}">${getStatusLabel(status)}</span>
       </div>
@@ -1562,6 +1853,7 @@ function buildTreeCard(tree) {
     <button class="harvest-btn ${tree.done?'is-done':'not-done'}" onclick="${tree.done?'':'harvest(\''+tree.id+'\')'}" ${tree.done?'disabled':''}>
       ${tree.done ? '✅ ตัดแล้ว' : '✂️ บันทึกการตัด'}
     </button>
+    ${undoBtn}
   </div>`;
 }
 
@@ -1570,7 +1862,98 @@ function setFilter(f, el) {
   state.filter = f;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  _multiSelected.clear();
   renderTrees();
+}
+
+// ===== BATCH FILTER (NEW) =====
+function setBatchFilter(b, el) {
+  state.batchFilter = b;
+  document.querySelectorAll('.batch-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  _multiSelected.clear();
+  renderTrees();
+}
+
+// ===== MULTI-SELECT HARVEST (NEW) =====
+function toggleMultiSelect(id, checkbox) {
+  if (checkbox.checked) {
+    _multiSelected.add(id);
+  } else {
+    _multiSelected.delete(id);
+  }
+  // Update card highlight
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('card-checked', checkbox.checked);
+  updateMultiHarvestBar();
+}
+
+function updateMultiHarvestBar() {
+  const bar = document.getElementById('multiHarvestBar');
+  const cnt = _multiSelected.size;
+  if (cnt > 0) {
+    bar.classList.remove('hidden');
+    document.getElementById('multiHarvestCount').textContent = cnt;
+    document.getElementById('multiHarvestCount2').textContent = cnt;
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+function selectAllVisible() {
+  const trees = getYearTrees(state.currentYear);
+  const ids = (state._visibleIds || []);
+  ids.forEach(id => {
+    const tree = trees.find(t => t.id === id);
+    if (tree && !tree.done) _multiSelected.add(id);
+  });
+  renderTrees();
+}
+
+function clearMultiSelect() {
+  _multiSelected.clear();
+  renderTrees();
+}
+
+function multiHarvest() {
+  if (_multiSelected.size === 0) return;
+  const count = _multiSelected.size;
+  if (!confirm(`ยืนยันการตัด ${count} ต้นพร้อมกัน?`)) return;
+  const trees = getYearTrees(state.currentYear);
+  const today = new Date().toISOString().split('T')[0];
+  let done = 0;
+  trees.forEach(t => {
+    if (_multiSelected.has(t.id) && !t.done) {
+      t.done = true;
+      t.harvestedAt = today;
+      done++;
+    }
+  });
+  setYearTrees(state.currentYear, trees);
+  _multiSelected.clear();
+  showToast(`✂️ บันทึกการตัด ${done} ต้น สำเร็จ!`);
+  renderAll();
+}
+
+// ===== UNDO HARVEST (NEW) =====
+function undoHarvest(id) {
+  const trees = getYearTrees(state.currentYear);
+  const tree = trees.find(t => t.id === id);
+  if (!tree || !tree.done) return;
+  if (!confirm(`ยกเลิกการตัดต้น ${tree.treeNumber}?`)) return;
+  tree.done = false;
+  tree.harvestedAt = null;
+  setYearTrees(state.currentYear, trees);
+  showToast('↩️ ยกเลิกการตัดสำเร็จ');
+  renderAll();
+}
+
+// ===== MAP BATCH FILTER (NEW) =====
+function setMapBatch(b, el) {
+  _mapBatch = b;
+  document.querySelectorAll('.map-batch-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  generateMapGrid();
 }
 
 // ===== ADD/EDIT MODAL =====
@@ -1724,6 +2107,9 @@ function importData(event) {
 document.getElementById('yearSelect').addEventListener('change', function() {
   state.currentYear = parseInt(this.value);
   if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+  _multiSelected.clear();
+  state.batchFilter = 'all';
+  document.querySelectorAll('.batch-tab').forEach(t => t.classList.toggle('active', t.dataset.batch === 'all'));
   renderAll();
 });
 
@@ -1763,19 +2149,33 @@ function getMapBlockColor(status) {
 
 function generateMapGrid() {
   const trees = getYearTrees(state.currentYear);
-  // Build lookup: treeNumber → tree
-  const treeMap = {};
-  trees.forEach(t => { treeMap[String(t.treeNumber)] = t; });
 
-  const TOTAL = 182;
+  // Build lookup: treeNumber → tree (respecting batch filter)
+  // When batch='all', pick the "most urgent" tree per treeNumber
+  // When batch=specific, pick only that batch
+  const treeMap = {};
+  trees.forEach(t => {
+    const key = String(t.treeNumber);
+    if (_mapBatch !== 'all' && String(t.batch || '') !== String(_mapBatch)) return;
+    if (!treeMap[key]) {
+      treeMap[key] = t;
+    } else {
+      // pick more urgent (higher age wins; done loses to not-done)
+      const existing = treeMap[key];
+      if (existing.done && !t.done) { treeMap[key] = t; return; }
+      if (!existing.done && t.done) return;
+      if (calcAge(t.bloomDate) > calcAge(existing.bloomDate)) treeMap[key] = t;
+    }
+  });
+
+  const TOTAL = state.treeCount;
   const COLS = 10;
   let html = '';
 
   for (let i = 1; i <= TOTAL; i++) {
-    const row = Math.floor((i - 1) / COLS); // 0-indexed row
-    const posInRow = (i - 1) % COLS;        // position within row
+    const row = Math.floor((i - 1) / COLS);
+    const posInRow = (i - 1) % COLS;
 
-    // Snake pattern: even rows L→R (normal), odd rows R→L (reverse)
     let blockNum;
     if (row % 2 === 0) {
       blockNum = row * COLS + posInRow + 1;
@@ -1790,7 +2190,8 @@ function generateMapGrid() {
     if (tree) {
       status = getStatus(tree);
       const age = tree.done ? '✓' : calcAge(tree.bloomDate) + 'ว';
-      subLabel = age;
+      const batchTag = (_mapBatch === 'all' && tree.batch) ? ' ร' + tree.batch : '';
+      subLabel = age + batchTag;
     }
 
     const colorClass = getMapBlockColor(status);
@@ -1806,19 +2207,18 @@ function generateMapGrid() {
 
 function openMapModal(blockNum) {
   const trees = getYearTrees(state.currentYear);
-  const tree = trees.find(t => String(t.treeNumber) === String(blockNum));
+  // Find all records for this treeNumber (respecting map batch filter)
+  let matches = trees.filter(t => String(t.treeNumber) === String(blockNum));
+  if (_mapBatch !== 'all') matches = matches.filter(t => String(t.batch || '') === String(_mapBatch));
 
   let content = '';
-  if (!tree) {
+  if (matches.length === 0) {
     content = `
       <div class="map-detail-num" style="color:var(--secondary)">ต้น ${blockNum}</div>
       <div class="map-detail-badge" style="background:var(--gray-bg);color:var(--secondary)">ว่าง — ไม่มีข้อมูล</div>
-      <div style="font-size:13px;color:var(--secondary);text-align:center;padding:16px 0">ยังไม่มีต้นทุเรียนในช่องนี้</div>
+      <div style="font-size:13px;color:var(--secondary);text-align:center;padding:16px 0">ยังไม่มีต้นทุเรียนในช่องนี้${_mapBatch !== 'all' ? ' (รุ่น ' + _mapBatch + ')' : ''}</div>
     `;
   } else {
-    const status = getStatus(tree);
-    const age = tree.done ? '—' : calcAge(tree.bloomDate);
-    const statusLabel = getStatusLabel(status);
     const badgeColors = {
       young:   { bg: '#E8F3FF', color: '#007AFF' },
       near:    { bg: '#FFF4E0', color: '#B06800' },
@@ -1826,24 +2226,31 @@ function openMapModal(blockNum) {
       ready:   { bg: '#E8FAF0', color: '#1A7A3A' },
       done:    { bg: '#F2F2F7', color: '#6E6E73' }
     };
-    const bc = badgeColors[status] || { bg: '#F2F2F7', color: '#6E6E73' };
-    content = `
-      <div class="map-detail-num">ต้น ${tree.treeNumber}</div>
-      <div class="map-detail-badge" style="background:${bc.bg};color:${bc.color}">${statusLabel}</div>
-      <div class="map-detail-rows">
-        <div class="map-detail-row">
-          <span class="map-detail-label">อายุ</span>
-          <span class="map-detail-value">${tree.done ? '✅ ตัดแล้ว' : age + ' วัน'}</span>
-        </div>
-        <div class="map-detail-row">
-          <span class="map-detail-label">วันออกดอก</span>
-          <span class="map-detail-value">${formatDate(tree.bloomDate)}</span>
-        </div>
-        ${tree.batch ? `<div class="map-detail-row"><span class="map-detail-label">รุ่น</span><span class="map-detail-value">${tree.batch}</span></div>` : ''}
-        ${tree.zone ? `<div class="map-detail-row"><span class="map-detail-label">โซน</span><span class="map-detail-value">${tree.zone}</span></div>` : ''}
-        ${tree.done && tree.harvestedAt ? `<div class="map-detail-row"><span class="map-detail-label">วันที่ตัด</span><span class="map-detail-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</span></div>` : ''}
-      </div>
-    `;
+    content = `<div class="map-detail-num">ต้น ${blockNum}</div>`;
+    matches.forEach((tree, idx) => {
+      const status = getStatus(tree);
+      const age = tree.done ? '—' : calcAge(tree.bloomDate);
+      const statusLabel = getStatusLabel(status);
+      const bc = badgeColors[status] || { bg: '#F2F2F7', color: '#6E6E73' };
+      if (matches.length > 1) {
+        content += `<div style="font-size:11px;font-weight:700;color:var(--secondary);margin:${idx>0?'12px':0} 0 4px;text-transform:uppercase;letter-spacing:.5px">รุ่น ${tree.batch || '—'}</div>`;
+      }
+      content += `
+        <div class="map-detail-badge" style="background:${bc.bg};color:${bc.color}">${statusLabel}</div>
+        <div class="map-detail-rows">
+          <div class="map-detail-row">
+            <span class="map-detail-label">อายุ</span>
+            <span class="map-detail-value">${tree.done ? '✅ ตัดแล้ว' : age + ' วัน'}</span>
+          </div>
+          <div class="map-detail-row">
+            <span class="map-detail-label">วันออกดอก</span>
+            <span class="map-detail-value">${formatDate(tree.bloomDate)}</span>
+          </div>
+          ${tree.batch ? `<div class="map-detail-row"><span class="map-detail-label">รุ่น</span><span class="map-detail-value">${tree.batch}</span></div>` : ''}
+          ${tree.zone ? `<div class="map-detail-row"><span class="map-detail-label">โซน</span><span class="map-detail-value">${tree.zone}</span></div>` : ''}
+          ${tree.done && tree.harvestedAt ? `<div class="map-detail-row"><span class="map-detail-label">วันที่ตัด</span><span class="map-detail-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</span></div>` : ''}
+        </div>`;
+    });
   }
 
   document.getElementById('mapModalContent').innerHTML = content;
@@ -1916,7 +2323,11 @@ function initFirebase() {
 function pushToFirestore() {
   if (!_db) return;
   setSyncStatus('syncing', 'กำลัง sync...');
-  const payload = { years: state.data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  const payload = {
+    years: state.data,
+    treeCount: state.treeCount,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
   _db.collection('durian_farm_data').doc('main')
     .set(payload)
     .then(() => setSyncStatus('synced', 'Synced ✓'))
@@ -1931,15 +2342,34 @@ function startRealtimeSync() {
       if (_isSyncing) return; // prevent write-loop
       if (!snap.exists) return;
       const remote = snap.data();
-      if (!remote || !remote.years) return;
-      // Merge remote into local (remote wins)
-      const localJson = JSON.stringify(state.data);
-      const remoteJson = JSON.stringify(remote.years);
-      if (localJson !== remoteJson) {
+      if (!remote) return;
+
+      let changed = false;
+
+      // Sync treeCount
+      if (remote.treeCount && typeof remote.treeCount === 'number' && remote.treeCount > 0) {
+        if (remote.treeCount !== state.treeCount) {
+          state.treeCount = remote.treeCount;
+          localStorage.setItem(TREE_COUNT_KEY, String(state.treeCount));
+          applyTreeCountUI();
+          changed = true;
+        }
+      }
+
+      // Sync years data
+      if (remote.years) {
+        const localJson = JSON.stringify(state.data);
+        const remoteJson = JSON.stringify(remote.years);
+        if (localJson !== remoteJson) {
+          state.data = remote.years;
+          if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+          saveStorage();
+          changed = true;
+        }
+      }
+
+      if (changed) {
         _isSyncing = true;
-        state.data = remote.years;
-        if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
-        saveStorage();
         renderAll();
         setSyncStatus('synced', 'Synced ✓');
         setTimeout(() => { _isSyncing = false; }, 500);
@@ -1953,6 +2383,66 @@ function startRealtimeSync() {
 // Auto-push hook — called by the patched setYearTrees below
 function _afterSetYearTrees() {
   if (!_isSyncing) setTimeout(pushToFirestore, 200);
+}
+
+// ===== TREE COUNT (NEW) =====
+function applyTreeCountUI() {
+  const el = document.getElementById('treeCountDisplay');
+  if (el) el.textContent = state.treeCount;
+  const input = document.getElementById('treeCountInput');
+  if (input && !input.matches(':focus')) input.value = state.treeCount;
+}
+
+function updateTreeCount() {
+  const input = document.getElementById('treeCountInput');
+  const val = parseInt(input.value);
+  if (!val || val < 1) { showToast('⚠️ กรุณากรอกจำนวนต้นที่ถูกต้อง (≥ 1)'); return; }
+
+  const oldCount = state.treeCount;
+
+  // Warn if reducing count (data of trees beyond new count would be hidden)
+  if (val < oldCount) {
+    const trees = getYearTrees(state.currentYear);
+    const affected = trees.filter(t => {
+      const n = parseInt(t.treeNumber);
+      return !isNaN(n) && n > val;
+    });
+    if (affected.length > 0) {
+      if (!confirm(`ลดจำนวนต้นจาก ${oldCount} → ${val} ต้น\nข้อมูลต้น ${affected.length} ต้น (เกินจำนวนใหม่) จะถูกซ่อนในแผนที่\nแต่ยังคงอยู่ในรายการ\n\nยืนยันหรือไม่?`)) return;
+    }
+  }
+
+  state.treeCount = val;
+  saveStorage();
+  applyTreeCountUI();
+
+  // Push to Firestore
+  const badge = document.getElementById('treeCountSyncBadge');
+  if (badge) { badge.textContent = 'กำลังบันทึก...'; badge.className = 'tree-count-sync-badge saving'; }
+
+  if (_db) {
+    _isSyncing = true;
+    _db.collection('durian_farm_data').doc('main').set({
+      years: state.data,
+      treeCount: state.treeCount,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      if (badge) { badge.textContent = 'ซิงค์แล้ว ✓'; badge.className = 'tree-count-sync-badge saved'; }
+      setSyncStatus('synced', 'Synced ✓');
+      setTimeout(() => { _isSyncing = false; }, 500);
+    }).catch(e => {
+      console.warn('treeCount push error:', e);
+      if (badge) { badge.textContent = 'บันทึกแล้ว (offline)'; badge.className = 'tree-count-sync-badge'; }
+      _isSyncing = false;
+    });
+  } else {
+    if (badge) { badge.textContent = 'บันทึกแล้ว (offline)'; badge.className = 'tree-count-sync-badge'; }
+  }
+
+  showToast(`🌳 อัปเดตจำนวนต้น → ${val} ต้น`);
+  // Re-render map and fast bloom if open
+  if (!document.getElementById('mapOverlay').classList.contains('hidden')) generateMapGrid();
+  if (!document.getElementById('fbOverlay').classList.contains('hidden')) generateFbGrid();
 }
 
 // ===== FAST BLOOM MODE =====
@@ -2021,7 +2511,7 @@ function getFbCellSub(treeNum) {
 }
 
 function generateFbGrid() {
-  const TOTAL = 182;
+  const TOTAL = state.treeCount;
   const COLS = 10;
   let html = '';
   for (let i = 1; i <= TOTAL; i++) {
@@ -2166,6 +2656,7 @@ function fbSaveAll() {
 (function init() {
   loadStorage();
   if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+  applyTreeCountUI();
   renderAll();
   // Refresh every 10 minutes
   setInterval(renderAll, 10 * 60 * 1000);
