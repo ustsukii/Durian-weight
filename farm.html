@@ -875,231 +875,6 @@
     flex-shrink: 0;
   }
 
-  /* ===== BATCH FILTER ROW ===== */
-  .batch-filter-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 8px;
-  }
-  .batch-filter-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--secondary);
-    flex-shrink: 0;
-  }
-  .batch-tab {
-    border: none;
-    background: var(--gray-bg);
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 5px 12px;
-    color: var(--secondary);
-    transition: var(--transition);
-    white-space: nowrap;
-    border: 1.5px solid transparent;
-  }
-  .batch-tab:active { transform: scale(0.94); }
-  .batch-tab.active {
-    background: #FFF4E0;
-    color: #B06800;
-    border-color: #F6C02A;
-  }
-
-  /* ===== MULTI-HARVEST BAR ===== */
-  .multi-harvest-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: var(--card);
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-    border: 1.5px solid var(--divider);
-    transition: var(--transition);
-  }
-  .multi-harvest-bar.hidden { display: none; }
-  .multi-harvest-count {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--secondary);
-    flex: 1;
-  }
-  .multi-harvest-count strong {
-    color: var(--primary);
-    font-size: 15px;
-  }
-
-  /* ===== CHECKBOX ON CARD ===== */
-  .tree-checkbox-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .tree-checkbox {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    border: 2px solid var(--divider);
-    background: var(--bg);
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    flex-shrink: 0;
-  }
-  .tree-checkbox:checked {
-    background: var(--primary);
-    border-color: var(--primary);
-  }
-  .tree-checkbox:checked::after {
-    content: '';
-    position: absolute;
-    left: 4px; top: 1px;
-    width: 8px; height: 12px;
-    border: 2.5px solid #fff;
-    border-top: none;
-    border-left: none;
-    transform: rotate(40deg);
-  }
-  .tree-card.card-checked {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
-  }
-
-  /* ===== UNDO HARVEST BUTTON ===== */
-  .undo-harvest-btn {
-    width: 100%;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 7px;
-    transition: var(--transition);
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background: var(--gray-bg);
-    color: var(--secondary);
-    border: 1px solid var(--divider);
-    margin-top: 6px;
-  }
-  .undo-harvest-btn:hover { background: var(--orange-bg); color: #B06800; border-color: var(--orange); }
-  .undo-harvest-btn:active { transform: scale(0.97); }
-
-  /* ===== MAP BATCH FILTER ===== */
-  .map-batch-filter {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .map-batch-tab {
-    border: none;
-    background: var(--gray-bg);
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 5px 12px;
-    color: var(--secondary);
-    transition: var(--transition);
-    white-space: nowrap;
-  }
-  .map-batch-tab.active {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  /* ===== TREE COUNT SETTINGS ===== */
-  .tree-count-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    border: 1.5px solid var(--divider);
-  }
-  .tree-count-icon {
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-  .tree-count-info {
-    flex: 1;
-    min-width: 140px;
-  }
-  .tree-count-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-  .tree-count-current {
-    font-size: 12px;
-    color: var(--secondary);
-  }
-  .tree-count-current strong {
-    color: var(--primary);
-    font-size: 15px;
-    font-weight: 700;
-  }
-  .tree-count-input-wrap {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .tree-count-input {
-    width: 90px;
-    background: var(--bg);
-    border: 1.5px solid var(--divider);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 8px 12px;
-    outline: none;
-    text-align: center;
-    transition: var(--transition);
-  }
-  .tree-count-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
-    background: #fff;
-  }
-  .tree-count-sync-badge {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--secondary);
-    background: var(--gray-bg);
-    border-radius: 20px;
-    padding: 3px 10px;
-    transition: var(--transition);
-  }
-  .tree-count-sync-badge.saving { background: #E8F3FF; color: var(--primary); }
-  .tree-count-sync-badge.saved  { background: var(--green-bg); color: #1A7A3A; }
-
   /* ===== FIREBASE SYNC INDICATOR ===== */
   .sync-indicator {
     display: inline-flex;
@@ -1325,6 +1100,287 @@
     .fb-cell-sub { font-size: 7px; }
     .fb-controls { gap: 8px; }
   }
+
+  /* ===== COUNT MODE ===== */
+  .btn-count {
+    background: linear-gradient(135deg, #30D158, #00C7BE);
+    color: #fff;
+    border: none;
+  }
+  .btn-count:hover { opacity: 0.88; box-shadow: 0 4px 16px rgba(48,209,88,0.4); }
+
+  .cnt-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 160;
+    display: flex;
+    flex-direction: column;
+    animation: mapFadeIn 0.3s ease;
+  }
+  .cnt-overlay.hidden { display: none; }
+
+  .cnt-header {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--divider);
+    padding: 10px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .cnt-header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .cnt-title {
+    font-size: 17px;
+    font-weight: 700;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Summary bar */
+  .cnt-summary {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 0 4px;
+    border-top: 1px solid var(--divider);
+    margin-top: 4px;
+  }
+  .cnt-stat {
+    background: var(--gray-bg);
+    border-radius: 10px;
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+  }
+  .cnt-stat-label { font-size: 10px; color: var(--secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .cnt-stat-val { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .cnt-stat.accent { background: var(--green-bg); }
+  .cnt-stat.accent .cnt-stat-val { color: #1A7A3A; }
+
+  /* Slider row */
+  .cnt-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 6px 0 2px;
+    border-top: 1px solid var(--divider);
+    margin-top: 4px;
+  }
+  .cnt-slider-label { font-size: 11px; font-weight: 700; color: var(--secondary); white-space: nowrap; }
+  .cnt-slider {
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    accent-color: var(--green);
+  }
+  .cnt-weight-display {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .cnt-weight-range {
+    font-size: 11px;
+    color: var(--secondary);
+    white-space: nowrap;
+  }
+
+  /* Batch tabs */
+  .cnt-batch-tabs {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 6px 0 2px;
+    border-top: 1px solid var(--divider);
+    margin-top: 4px;
+  }
+  .cnt-batch-label { font-size: 10px; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.4px; margin-right: 2px; }
+  .cnt-batch-btn {
+    border: 2px solid var(--divider);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--secondary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .cnt-batch-btn.active {
+    border-color: #30D158;
+    background: #30D158;
+    color: #fff;
+  }
+
+  /* Grid */
+  .cnt-body {
+    flex: 1;
+    overflow: auto;
+    padding: 14px 16px 140px;
+  }
+  .cnt-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(52px, 1fr));
+    gap: 5px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cnt-block {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.13s ease, box-shadow 0.13s ease;
+    user-select: none;
+    border: 2px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+  }
+  .cnt-block:active { transform: scale(0.92); }
+
+  /* States */
+  .cnt-block.cb-empty   { background: #DCDCE0; border-color: #C7C7CC; }
+  .cnt-block.cb-counted { background: #30D158; border-color: #1FAD43; box-shadow: 0 2px 8px rgba(48,209,88,0.35); }
+  .cnt-block.cb-active  { background: #007AFF; border-color: #0056CC; box-shadow: 0 3px 12px rgba(0,122,255,0.45); animation: cntPulse 1.2s ease-in-out infinite; }
+
+  @keyframes cntPulse {
+    0%,100% { box-shadow: 0 3px 12px rgba(0,122,255,0.45); }
+    50%      { box-shadow: 0 3px 20px rgba(0,122,255,0.7); }
+  }
+
+  .cnt-block-num  { font-size: 12px; font-weight: 700; color: rgba(0,0,0,0.6); line-height: 1; }
+  .cnt-block.cb-counted .cnt-block-num,
+  .cnt-block.cb-active  .cnt-block-num { color: #fff; font-size: 11px; }
+  .cnt-block-val  { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 1px; }
+  .cnt-block-sub  { font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.8); margin-top: 1px; }
+
+  /* Input panel (bottom sheet) */
+  .cnt-input-panel {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.18);
+    padding: 20px 20px 32px;
+    z-index: 20;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  }
+  .cnt-input-panel.open { transform: translateY(0); }
+
+  .cnt-panel-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cnt-panel-close {
+    background: var(--gray-bg);
+    border: none;
+    border-radius: 50%;
+    width: 28px; height: 28px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--secondary);
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+  }
+  .cnt-panel-close:hover { background: var(--divider); }
+
+  .cnt-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .cnt-step-btn {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    border: none;
+    font-size: 26px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .cnt-step-btn:active { transform: scale(0.9); }
+  .cnt-step-minus { background: var(--red-bg); color: var(--red); }
+  .cnt-step-minus:hover { background: var(--red); color: #fff; }
+  .cnt-step-plus  { background: var(--green-bg); color: var(--green); }
+  .cnt-step-plus:hover  { background: var(--green); color: #fff; }
+  .cnt-step-input {
+    width: 90px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 32px;
+    font-weight: 800;
+    border: 2px solid var(--divider);
+    border-radius: 14px;
+    padding: 8px;
+    outline: none;
+    color: var(--text);
+    transition: var(--transition);
+    background: var(--bg);
+  }
+  .cnt-step-input:focus { border-color: var(--primary); background: #fff; }
+
+  .cnt-confirm-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #30D158, #00C7BE);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .cnt-confirm-btn:active { transform: scale(0.97); }
+  .cnt-confirm-btn:hover { box-shadow: 0 4px 16px rgba(48,209,88,0.4); }
+
+  /* Legend */
+  .cnt-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  @media (max-width: 599px) {
+    .cnt-grid {
+      grid-template-columns: repeat(10, minmax(28px, 1fr));
+      gap: 3px;
+    }
+    .cnt-block-num { font-size: 9px; }
+    .cnt-block-val { font-size: 11px; }
+  }
 </style>
 </head>
 <body>
@@ -1350,6 +1406,9 @@
       <select class="year-select" id="yearSelect" title="เลือกปี"></select>
       <button class="btn" style="background:linear-gradient(135deg,#FF9F0A,#FF6B35);color:#fff" onclick="openFastBloom()">
         ⚡ บันทึกเร็ว
+      </button>
+      <button class="btn btn-count" onclick="openCountMode()">
+        🍈 นับลูก
       </button>
       <button class="btn btn-map" id="btnMapMode" onclick="openMapMode()">
         🗺️ แผนที่สวน
@@ -1410,7 +1469,7 @@
   <div class="toolbar">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="ค้นหาเลขต้น (ตรงทั้งหมด)..." oninput="renderTrees()">
+      <input type="text" class="search-input" id="searchInput" placeholder="ค้นหาเลขต้น..." oninput="renderTrees()">
     </div>
     <div class="filter-tabs">
       <button class="filter-tab active" data-filter="all" onclick="setFilter('all',this)">ทั้งหมด</button>
@@ -1418,22 +1477,6 @@
       <button class="filter-tab" data-filter="ready" onclick="setFilter('ready',this)">พร้อมตัด</button>
       <button class="filter-tab" data-filter="done" onclick="setFilter('done',this)">ตัดแล้ว</button>
     </div>
-    <div class="batch-filter-row">
-      <span class="batch-filter-label">รุ่น:</span>
-      <button class="batch-tab active" data-batch="all" onclick="setBatchFilter('all',this)">ทั้งหมด</button>
-      <button class="batch-tab" data-batch="1" onclick="setBatchFilter('1',this)">รุ่น 1</button>
-      <button class="batch-tab" data-batch="2" onclick="setBatchFilter('2',this)">รุ่น 2</button>
-      <button class="batch-tab" data-batch="3" onclick="setBatchFilter('3',this)">รุ่น 3</button>
-      <button class="batch-tab" data-batch="4" onclick="setBatchFilter('4',this)">รุ่น 4</button>
-    </div>
-  </div>
-
-  <!-- Multi Harvest Bar -->
-  <div class="multi-harvest-bar hidden" id="multiHarvestBar">
-    <div class="multi-harvest-count">เลือกแล้ว <strong id="multiHarvestCount">0</strong> ต้น</div>
-    <button class="btn btn-secondary" style="font-size:12px;padding:7px 12px" onclick="selectAllVisible()">✔️ เลือกทั้งหมด</button>
-    <button class="btn btn-ghost" style="font-size:12px;padding:7px 12px" onclick="clearMultiSelect()">✕ ยกเลิก</button>
-    <button class="btn btn-success" style="font-size:13px" onclick="multiHarvest()">✂️ บันทึกการตัด (<span id="multiHarvestCount2">0</span> ต้น)</button>
   </div>
 
   <!-- Tree Grid -->
@@ -1442,20 +1485,6 @@
     <span id="treeCount" style="color:var(--primary)">0 ต้น</span>
   </div>
   <div class="tree-grid" id="treeGrid"></div>
-
-  <!-- Tree Count Settings -->
-  <div class="tree-count-card" id="treeCountCard">
-    <div class="tree-count-icon">🌳</div>
-    <div class="tree-count-info">
-      <div class="tree-count-title">จำนวนต้นทุเรียนทั้งหมด</div>
-      <div class="tree-count-current">ปัจจุบัน: <strong id="treeCountDisplay">182</strong> ต้น</div>
-    </div>
-    <div class="tree-count-input-wrap">
-      <input type="number" class="tree-count-input" id="treeCountInput" min="1" max="9999" placeholder="182">
-      <button class="btn btn-primary" style="font-size:13px;padding:9px 14px" onclick="updateTreeCount()">อัปเดต</button>
-      <span class="tree-count-sync-badge" id="treeCountSyncBadge">ซิงค์แล้ว</span>
-    </div>
-  </div>
 
   <!-- Danger Zone -->
   <div class="danger-zone">
@@ -1482,13 +1511,6 @@
       <span>🗺️</span> แผนที่สวนทุเรียน
       <span class="map-year-badge" id="mapYearBadge"></span>
     </div>
-    <div class="map-batch-filter">
-      <button class="map-batch-tab active" data-mbatch="all" onclick="setMapBatch('all',this)">ทั้งหมด</button>
-      <button class="map-batch-tab" data-mbatch="1" onclick="setMapBatch('1',this)">รุ่น 1</button>
-      <button class="map-batch-tab" data-mbatch="2" onclick="setMapBatch('2',this)">รุ่น 2</button>
-      <button class="map-batch-tab" data-mbatch="3" onclick="setMapBatch('3',this)">รุ่น 3</button>
-      <button class="map-batch-tab" data-mbatch="4" onclick="setMapBatch('4',this)">รุ่น 4</button>
-    </div>
     <div class="map-legend">
       <span class="legend-item"><span class="legend-dot" style="background:#B8E8C8"></span>อ่อน</span>
       <span class="legend-item"><span class="legend-dot" style="background:#FFE082"></span>ใกล้ตัด</span>
@@ -1508,6 +1530,77 @@
   <div class="map-modal-card" id="mapModalCard">
     <button class="map-modal-close" onclick="closeMapModal()">✕</button>
     <div id="mapModalContent"></div>
+  </div>
+</div>
+
+<!-- COUNT MODE OVERLAY -->
+<div class="cnt-overlay hidden" id="cntOverlay">
+  <div class="cnt-header">
+    <div class="cnt-header-top">
+      <button class="btn btn-ghost" style="flex-shrink:0" onclick="closeCountMode()">← กลับ</button>
+      <div class="cnt-title">🍈 โหมดนับลูกทุเรียน</div>
+      <div class="cnt-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#DCDCE0;border:1px solid #C7C7CC"></span>ยังไม่นับ</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#30D158"></span>นับแล้ว</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#007AFF"></span>กำลังกรอก</span>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="cnt-summary">
+      <div class="cnt-stat">
+        <div class="cnt-stat-label">นับแล้ว</div>
+        <div class="cnt-stat-val" id="cntStatCounted">0</div>
+      </div>
+      <div class="cnt-stat">
+        <div class="cnt-stat-label">ยังไม่นับ</div>
+        <div class="cnt-stat-val" id="cntStatRemain">0</div>
+      </div>
+      <div class="cnt-stat accent">
+        <div class="cnt-stat-label">ลูกรวม</div>
+        <div class="cnt-stat-val" id="cntStatTotal">0</div>
+      </div>
+      <div class="cnt-stat accent" style="min-width:160px;align-items:flex-start;padding:6px 14px">
+        <div class="cnt-stat-label">คาดการณ์น้ำหนัก</div>
+        <div class="cnt-stat-val" id="cntStatWeight">—</div>
+        <div style="font-size:9px;color:var(--secondary);font-weight:600" id="cntStatRange"></div>
+      </div>
+    </div>
+
+    <!-- Weight slider -->
+    <div class="cnt-slider-row">
+      <span class="cnt-slider-label">⚖️ น้ำหนักต่อลูก:</span>
+      <input type="range" class="cnt-slider" id="cntWeightSlider" min="1.5" max="5.0" step="0.1" value="3.0" oninput="cntUpdateWeight()">
+      <span class="cnt-weight-display" id="cntWeightVal">3.0 กก./ลูก</span>
+    </div>
+
+    <!-- Batch selector -->
+    <div class="cnt-batch-tabs">
+      <span class="cnt-batch-label">รุ่น:</span>
+      <button class="cnt-batch-btn active" data-batch="all" onclick="cntSelectBatch('all',this)">ทั้งหมด</button>
+      <button class="cnt-batch-btn" data-batch="1" onclick="cntSelectBatch('1',this)">รุ่น 1</button>
+      <button class="cnt-batch-btn" data-batch="2" onclick="cntSelectBatch('2',this)">รุ่น 2</button>
+      <button class="cnt-batch-btn" data-batch="3" onclick="cntSelectBatch('3',this)">รุ่น 3</button>
+      <button class="cnt-batch-btn" data-batch="4" onclick="cntSelectBatch('4',this)">รุ่น 4</button>
+    </div>
+  </div>
+
+  <div class="cnt-body">
+    <div class="cnt-grid" id="cntGrid"></div>
+  </div>
+
+  <!-- Input panel (bottom sheet) -->
+  <div class="cnt-input-panel" id="cntInputPanel">
+    <div class="cnt-panel-title">
+      <span id="cntPanelTitle">🌳 ต้น —</span>
+      <button class="cnt-panel-close" onclick="closeCntPanel()">✕</button>
+    </div>
+    <div class="cnt-stepper">
+      <button class="cnt-step-btn cnt-step-minus" onclick="cntStep(-1)">−</button>
+      <input type="number" class="cnt-step-input" id="cntStepInput" value="0" min="0" max="9999" oninput="cntSyncInput()">
+      <button class="cnt-step-btn cnt-step-plus"  onclick="cntStep(+1)">+</button>
+    </div>
+    <button class="cnt-confirm-btn" onclick="cntConfirm()">✓ ยืนยัน</button>
   </div>
 </div>
 
@@ -1583,21 +1676,14 @@ let state = {
   data: {},           // { "2026": [...trees] }
   currentYear: new Date().getFullYear(),
   filter: 'all',
-  batchFilter: 'all', // NEW: รุ่น filter
   editingId: null,
-  treeCount: 182,     // NEW: dynamic tree count (synced via Firestore)
 };
 
-let _multiSelected = new Set(); // NEW: multi-select harvest (Set of tree ids)
-let _mapBatch = 'all';          // NEW: map mode batch filter
-
 const STORAGE_KEY = 'durianTracker_v2';
-const TREE_COUNT_KEY = 'durianTracker_treeCount'; // NEW: separate localStorage key
 
 // ===== STORAGE =====
 function saveStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
-  localStorage.setItem(TREE_COUNT_KEY, String(state.treeCount));
 }
 
 function loadStorage() {
@@ -1605,9 +1691,6 @@ function loadStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) state.data = JSON.parse(raw);
   } catch(e) { state.data = {}; }
-  // Load treeCount from localStorage (offline fallback)
-  const savedCount = parseInt(localStorage.getItem(TREE_COUNT_KEY));
-  if (savedCount > 0) state.treeCount = savedCount;
 }
 
 function getYearTrees(year) {
@@ -1745,7 +1828,7 @@ function renderUrgent(trees) {
 
 function renderTrees() {
   const trees = getYearTrees(state.currentYear);
-  const search = document.getElementById('searchInput').value.trim();
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
   let filtered = trees;
 
   // filter by status
@@ -1759,14 +1842,9 @@ function renderTrees() {
     });
   }
 
-  // filter by batch (NEW)
-  if (state.batchFilter !== 'all') {
-    filtered = filtered.filter(t => String(t.batch || '') === String(state.batchFilter));
-  }
-
-  // search — exact match (NEW)
+  // search
   if (search) {
-    filtered = filtered.filter(t => String(t.treeNumber).toLowerCase() === search.toLowerCase());
+    filtered = filtered.filter(t => t.treeNumber.toLowerCase().includes(search));
   }
 
   // sort: undone first by age desc, then done last
@@ -1782,17 +1860,13 @@ function renderTrees() {
     document.getElementById('treeGrid').innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🌱</div>
-        <div class="empty-title">${search || state.filter !== 'all' || state.batchFilter !== 'all' ? 'ไม่พบต้นที่ค้นหา' : 'ยังไม่มีข้อมูลต้นทุเรียน'}</div>
-        <div class="empty-sub">${search || state.filter !== 'all' || state.batchFilter !== 'all' ? 'ลองเปลี่ยนตัวกรอง' : 'กด "เพิ่มต้น" เพื่อเริ่มต้น'}</div>
+        <div class="empty-title">${search || state.filter !== 'all' ? 'ไม่พบต้นที่ค้นหา' : 'ยังไม่มีข้อมูลต้นทุเรียน'}</div>
+        <div class="empty-sub">${search || state.filter !== 'all' ? 'ลองเปลี่ยนคำค้นหา' : 'กด "เพิ่มต้น" เพื่อเริ่มต้น'}</div>
       </div>`;
     return;
   }
 
-  // Store currently visible ids for "select all"
-  state._visibleIds = filtered.map(t => t.id);
-
   document.getElementById('treeGrid').innerHTML = filtered.map(t => buildTreeCard(t)).join('');
-  updateMultiHarvestBar();
 }
 
 function buildTreeCard(tree) {
@@ -1800,30 +1874,20 @@ function buildTreeCard(tree) {
   const status = getStatus(tree);
   const pct = getProgressPercent(age, tree.done);
   const progressDays = tree.done ? '✓ ตัดแล้ว' : `${age} / 120 วัน`;
-  const isChecked = _multiSelected.has(tree.id);
   let cardClass = 'tree-card';
   if (tree.done) cardClass += ' done';
   else if (status === 'ready') cardClass += ' ready';
   else if (status === 'cutting') cardClass += ' cutting';
   else if (status === 'near') cardClass += ' near';
-  if (isChecked) cardClass += ' card-checked';
 
   const harvestRow = tree.done
     ? `<div class="meta-item"><div class="meta-label">วันที่ตัด</div><div class="meta-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</div></div>`
     : `<div class="meta-item"><div class="meta-label">อายุ</div><div class="meta-value">${age} วัน</div></div>`;
 
-  // undo harvest button (only when done)
-  const undoBtn = tree.done
-    ? `<button class="undo-harvest-btn" onclick="undoHarvest('${tree.id}')">↩️ ยกเลิกการตัด</button>`
-    : '';
-
   return `
   <div class="${cardClass}" id="card-${tree.id}">
     <div class="tree-header">
       <div class="tree-id-wrap">
-        <label class="tree-checkbox-wrap" title="เลือกสำหรับตัดหมู่">
-          <input type="checkbox" class="tree-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleMultiSelect('${tree.id}', this)" ${tree.done ? 'disabled style="opacity:0.35"' : ''}>
-        </label>
         <div class="tree-number">ต้น ${tree.treeNumber}</div>
         <span class="tree-badge ${getStatusClass(status)}">${getStatusLabel(status)}</span>
       </div>
@@ -1853,7 +1917,6 @@ function buildTreeCard(tree) {
     <button class="harvest-btn ${tree.done?'is-done':'not-done'}" onclick="${tree.done?'':'harvest(\''+tree.id+'\')'}" ${tree.done?'disabled':''}>
       ${tree.done ? '✅ ตัดแล้ว' : '✂️ บันทึกการตัด'}
     </button>
-    ${undoBtn}
   </div>`;
 }
 
@@ -1862,98 +1925,7 @@ function setFilter(f, el) {
   state.filter = f;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  _multiSelected.clear();
   renderTrees();
-}
-
-// ===== BATCH FILTER (NEW) =====
-function setBatchFilter(b, el) {
-  state.batchFilter = b;
-  document.querySelectorAll('.batch-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  _multiSelected.clear();
-  renderTrees();
-}
-
-// ===== MULTI-SELECT HARVEST (NEW) =====
-function toggleMultiSelect(id, checkbox) {
-  if (checkbox.checked) {
-    _multiSelected.add(id);
-  } else {
-    _multiSelected.delete(id);
-  }
-  // Update card highlight
-  const card = document.getElementById('card-' + id);
-  if (card) card.classList.toggle('card-checked', checkbox.checked);
-  updateMultiHarvestBar();
-}
-
-function updateMultiHarvestBar() {
-  const bar = document.getElementById('multiHarvestBar');
-  const cnt = _multiSelected.size;
-  if (cnt > 0) {
-    bar.classList.remove('hidden');
-    document.getElementById('multiHarvestCount').textContent = cnt;
-    document.getElementById('multiHarvestCount2').textContent = cnt;
-  } else {
-    bar.classList.add('hidden');
-  }
-}
-
-function selectAllVisible() {
-  const trees = getYearTrees(state.currentYear);
-  const ids = (state._visibleIds || []);
-  ids.forEach(id => {
-    const tree = trees.find(t => t.id === id);
-    if (tree && !tree.done) _multiSelected.add(id);
-  });
-  renderTrees();
-}
-
-function clearMultiSelect() {
-  _multiSelected.clear();
-  renderTrees();
-}
-
-function multiHarvest() {
-  if (_multiSelected.size === 0) return;
-  const count = _multiSelected.size;
-  if (!confirm(`ยืนยันการตัด ${count} ต้นพร้อมกัน?`)) return;
-  const trees = getYearTrees(state.currentYear);
-  const today = new Date().toISOString().split('T')[0];
-  let done = 0;
-  trees.forEach(t => {
-    if (_multiSelected.has(t.id) && !t.done) {
-      t.done = true;
-      t.harvestedAt = today;
-      done++;
-    }
-  });
-  setYearTrees(state.currentYear, trees);
-  _multiSelected.clear();
-  showToast(`✂️ บันทึกการตัด ${done} ต้น สำเร็จ!`);
-  renderAll();
-}
-
-// ===== UNDO HARVEST (NEW) =====
-function undoHarvest(id) {
-  const trees = getYearTrees(state.currentYear);
-  const tree = trees.find(t => t.id === id);
-  if (!tree || !tree.done) return;
-  if (!confirm(`ยกเลิกการตัดต้น ${tree.treeNumber}?`)) return;
-  tree.done = false;
-  tree.harvestedAt = null;
-  setYearTrees(state.currentYear, trees);
-  showToast('↩️ ยกเลิกการตัดสำเร็จ');
-  renderAll();
-}
-
-// ===== MAP BATCH FILTER (NEW) =====
-function setMapBatch(b, el) {
-  _mapBatch = b;
-  document.querySelectorAll('.map-batch-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  generateMapGrid();
 }
 
 // ===== ADD/EDIT MODAL =====
@@ -2107,9 +2079,6 @@ function importData(event) {
 document.getElementById('yearSelect').addEventListener('change', function() {
   state.currentYear = parseInt(this.value);
   if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
-  _multiSelected.clear();
-  state.batchFilter = 'all';
-  document.querySelectorAll('.batch-tab').forEach(t => t.classList.toggle('active', t.dataset.batch === 'all'));
   renderAll();
 });
 
@@ -2149,33 +2118,19 @@ function getMapBlockColor(status) {
 
 function generateMapGrid() {
   const trees = getYearTrees(state.currentYear);
-
-  // Build lookup: treeNumber → tree (respecting batch filter)
-  // When batch='all', pick the "most urgent" tree per treeNumber
-  // When batch=specific, pick only that batch
+  // Build lookup: treeNumber → tree
   const treeMap = {};
-  trees.forEach(t => {
-    const key = String(t.treeNumber);
-    if (_mapBatch !== 'all' && String(t.batch || '') !== String(_mapBatch)) return;
-    if (!treeMap[key]) {
-      treeMap[key] = t;
-    } else {
-      // pick more urgent (higher age wins; done loses to not-done)
-      const existing = treeMap[key];
-      if (existing.done && !t.done) { treeMap[key] = t; return; }
-      if (!existing.done && t.done) return;
-      if (calcAge(t.bloomDate) > calcAge(existing.bloomDate)) treeMap[key] = t;
-    }
-  });
+  trees.forEach(t => { treeMap[String(t.treeNumber)] = t; });
 
-  const TOTAL = state.treeCount;
+  const TOTAL = 182;
   const COLS = 10;
   let html = '';
 
   for (let i = 1; i <= TOTAL; i++) {
-    const row = Math.floor((i - 1) / COLS);
-    const posInRow = (i - 1) % COLS;
+    const row = Math.floor((i - 1) / COLS); // 0-indexed row
+    const posInRow = (i - 1) % COLS;        // position within row
 
+    // Snake pattern: even rows L→R (normal), odd rows R→L (reverse)
     let blockNum;
     if (row % 2 === 0) {
       blockNum = row * COLS + posInRow + 1;
@@ -2190,8 +2145,7 @@ function generateMapGrid() {
     if (tree) {
       status = getStatus(tree);
       const age = tree.done ? '✓' : calcAge(tree.bloomDate) + 'ว';
-      const batchTag = (_mapBatch === 'all' && tree.batch) ? ' ร' + tree.batch : '';
-      subLabel = age + batchTag;
+      subLabel = age;
     }
 
     const colorClass = getMapBlockColor(status);
@@ -2207,18 +2161,19 @@ function generateMapGrid() {
 
 function openMapModal(blockNum) {
   const trees = getYearTrees(state.currentYear);
-  // Find all records for this treeNumber (respecting map batch filter)
-  let matches = trees.filter(t => String(t.treeNumber) === String(blockNum));
-  if (_mapBatch !== 'all') matches = matches.filter(t => String(t.batch || '') === String(_mapBatch));
+  const tree = trees.find(t => String(t.treeNumber) === String(blockNum));
 
   let content = '';
-  if (matches.length === 0) {
+  if (!tree) {
     content = `
       <div class="map-detail-num" style="color:var(--secondary)">ต้น ${blockNum}</div>
       <div class="map-detail-badge" style="background:var(--gray-bg);color:var(--secondary)">ว่าง — ไม่มีข้อมูล</div>
-      <div style="font-size:13px;color:var(--secondary);text-align:center;padding:16px 0">ยังไม่มีต้นทุเรียนในช่องนี้${_mapBatch !== 'all' ? ' (รุ่น ' + _mapBatch + ')' : ''}</div>
+      <div style="font-size:13px;color:var(--secondary);text-align:center;padding:16px 0">ยังไม่มีต้นทุเรียนในช่องนี้</div>
     `;
   } else {
+    const status = getStatus(tree);
+    const age = tree.done ? '—' : calcAge(tree.bloomDate);
+    const statusLabel = getStatusLabel(status);
     const badgeColors = {
       young:   { bg: '#E8F3FF', color: '#007AFF' },
       near:    { bg: '#FFF4E0', color: '#B06800' },
@@ -2226,31 +2181,24 @@ function openMapModal(blockNum) {
       ready:   { bg: '#E8FAF0', color: '#1A7A3A' },
       done:    { bg: '#F2F2F7', color: '#6E6E73' }
     };
-    content = `<div class="map-detail-num">ต้น ${blockNum}</div>`;
-    matches.forEach((tree, idx) => {
-      const status = getStatus(tree);
-      const age = tree.done ? '—' : calcAge(tree.bloomDate);
-      const statusLabel = getStatusLabel(status);
-      const bc = badgeColors[status] || { bg: '#F2F2F7', color: '#6E6E73' };
-      if (matches.length > 1) {
-        content += `<div style="font-size:11px;font-weight:700;color:var(--secondary);margin:${idx>0?'12px':0} 0 4px;text-transform:uppercase;letter-spacing:.5px">รุ่น ${tree.batch || '—'}</div>`;
-      }
-      content += `
-        <div class="map-detail-badge" style="background:${bc.bg};color:${bc.color}">${statusLabel}</div>
-        <div class="map-detail-rows">
-          <div class="map-detail-row">
-            <span class="map-detail-label">อายุ</span>
-            <span class="map-detail-value">${tree.done ? '✅ ตัดแล้ว' : age + ' วัน'}</span>
-          </div>
-          <div class="map-detail-row">
-            <span class="map-detail-label">วันออกดอก</span>
-            <span class="map-detail-value">${formatDate(tree.bloomDate)}</span>
-          </div>
-          ${tree.batch ? `<div class="map-detail-row"><span class="map-detail-label">รุ่น</span><span class="map-detail-value">${tree.batch}</span></div>` : ''}
-          ${tree.zone ? `<div class="map-detail-row"><span class="map-detail-label">โซน</span><span class="map-detail-value">${tree.zone}</span></div>` : ''}
-          ${tree.done && tree.harvestedAt ? `<div class="map-detail-row"><span class="map-detail-label">วันที่ตัด</span><span class="map-detail-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</span></div>` : ''}
-        </div>`;
-    });
+    const bc = badgeColors[status] || { bg: '#F2F2F7', color: '#6E6E73' };
+    content = `
+      <div class="map-detail-num">ต้น ${tree.treeNumber}</div>
+      <div class="map-detail-badge" style="background:${bc.bg};color:${bc.color}">${statusLabel}</div>
+      <div class="map-detail-rows">
+        <div class="map-detail-row">
+          <span class="map-detail-label">อายุ</span>
+          <span class="map-detail-value">${tree.done ? '✅ ตัดแล้ว' : age + ' วัน'}</span>
+        </div>
+        <div class="map-detail-row">
+          <span class="map-detail-label">วันออกดอก</span>
+          <span class="map-detail-value">${formatDate(tree.bloomDate)}</span>
+        </div>
+        ${tree.batch ? `<div class="map-detail-row"><span class="map-detail-label">รุ่น</span><span class="map-detail-value">${tree.batch}</span></div>` : ''}
+        ${tree.zone ? `<div class="map-detail-row"><span class="map-detail-label">โซน</span><span class="map-detail-value">${tree.zone}</span></div>` : ''}
+        ${tree.done && tree.harvestedAt ? `<div class="map-detail-row"><span class="map-detail-label">วันที่ตัด</span><span class="map-detail-value" style="color:var(--green)">${formatDate(tree.harvestedAt)}</span></div>` : ''}
+      </div>
+    `;
   }
 
   document.getElementById('mapModalContent').innerHTML = content;
@@ -2313,7 +2261,7 @@ function initFirebase() {
     }
     _db = firebase.firestore();
     setSyncStatus('synced', 'เชื่อมต่อแล้ว');
-    startRealtimeSync();
+    _hookRealtimeSync(); // use hooked version that syncs countData too
   } catch(e) {
     console.warn('Firebase init error:', e);
     setSyncStatus('error', 'ไม่ได้เชื่อมต่อ');
@@ -2323,11 +2271,7 @@ function initFirebase() {
 function pushToFirestore() {
   if (!_db) return;
   setSyncStatus('syncing', 'กำลัง sync...');
-  const payload = {
-    years: state.data,
-    treeCount: state.treeCount,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+  const payload = { years: state.data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
   _db.collection('durian_farm_data').doc('main')
     .set(payload)
     .then(() => setSyncStatus('synced', 'Synced ✓'))
@@ -2342,34 +2286,15 @@ function startRealtimeSync() {
       if (_isSyncing) return; // prevent write-loop
       if (!snap.exists) return;
       const remote = snap.data();
-      if (!remote) return;
-
-      let changed = false;
-
-      // Sync treeCount
-      if (remote.treeCount && typeof remote.treeCount === 'number' && remote.treeCount > 0) {
-        if (remote.treeCount !== state.treeCount) {
-          state.treeCount = remote.treeCount;
-          localStorage.setItem(TREE_COUNT_KEY, String(state.treeCount));
-          applyTreeCountUI();
-          changed = true;
-        }
-      }
-
-      // Sync years data
-      if (remote.years) {
-        const localJson = JSON.stringify(state.data);
-        const remoteJson = JSON.stringify(remote.years);
-        if (localJson !== remoteJson) {
-          state.data = remote.years;
-          if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
-          saveStorage();
-          changed = true;
-        }
-      }
-
-      if (changed) {
+      if (!remote || !remote.years) return;
+      // Merge remote into local (remote wins)
+      const localJson = JSON.stringify(state.data);
+      const remoteJson = JSON.stringify(remote.years);
+      if (localJson !== remoteJson) {
         _isSyncing = true;
+        state.data = remote.years;
+        if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+        saveStorage();
         renderAll();
         setSyncStatus('synced', 'Synced ✓');
         setTimeout(() => { _isSyncing = false; }, 500);
@@ -2383,66 +2308,6 @@ function startRealtimeSync() {
 // Auto-push hook — called by the patched setYearTrees below
 function _afterSetYearTrees() {
   if (!_isSyncing) setTimeout(pushToFirestore, 200);
-}
-
-// ===== TREE COUNT (NEW) =====
-function applyTreeCountUI() {
-  const el = document.getElementById('treeCountDisplay');
-  if (el) el.textContent = state.treeCount;
-  const input = document.getElementById('treeCountInput');
-  if (input && !input.matches(':focus')) input.value = state.treeCount;
-}
-
-function updateTreeCount() {
-  const input = document.getElementById('treeCountInput');
-  const val = parseInt(input.value);
-  if (!val || val < 1) { showToast('⚠️ กรุณากรอกจำนวนต้นที่ถูกต้อง (≥ 1)'); return; }
-
-  const oldCount = state.treeCount;
-
-  // Warn if reducing count (data of trees beyond new count would be hidden)
-  if (val < oldCount) {
-    const trees = getYearTrees(state.currentYear);
-    const affected = trees.filter(t => {
-      const n = parseInt(t.treeNumber);
-      return !isNaN(n) && n > val;
-    });
-    if (affected.length > 0) {
-      if (!confirm(`ลดจำนวนต้นจาก ${oldCount} → ${val} ต้น\nข้อมูลต้น ${affected.length} ต้น (เกินจำนวนใหม่) จะถูกซ่อนในแผนที่\nแต่ยังคงอยู่ในรายการ\n\nยืนยันหรือไม่?`)) return;
-    }
-  }
-
-  state.treeCount = val;
-  saveStorage();
-  applyTreeCountUI();
-
-  // Push to Firestore
-  const badge = document.getElementById('treeCountSyncBadge');
-  if (badge) { badge.textContent = 'กำลังบันทึก...'; badge.className = 'tree-count-sync-badge saving'; }
-
-  if (_db) {
-    _isSyncing = true;
-    _db.collection('durian_farm_data').doc('main').set({
-      years: state.data,
-      treeCount: state.treeCount,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      if (badge) { badge.textContent = 'ซิงค์แล้ว ✓'; badge.className = 'tree-count-sync-badge saved'; }
-      setSyncStatus('synced', 'Synced ✓');
-      setTimeout(() => { _isSyncing = false; }, 500);
-    }).catch(e => {
-      console.warn('treeCount push error:', e);
-      if (badge) { badge.textContent = 'บันทึกแล้ว (offline)'; badge.className = 'tree-count-sync-badge'; }
-      _isSyncing = false;
-    });
-  } else {
-    if (badge) { badge.textContent = 'บันทึกแล้ว (offline)'; badge.className = 'tree-count-sync-badge'; }
-  }
-
-  showToast(`🌳 อัปเดตจำนวนต้น → ${val} ต้น`);
-  // Re-render map and fast bloom if open
-  if (!document.getElementById('mapOverlay').classList.contains('hidden')) generateMapGrid();
-  if (!document.getElementById('fbOverlay').classList.contains('hidden')) generateFbGrid();
 }
 
 // ===== FAST BLOOM MODE =====
@@ -2511,7 +2376,7 @@ function getFbCellSub(treeNum) {
 }
 
 function generateFbGrid() {
-  const TOTAL = state.treeCount;
+  const TOTAL = 182;
   const COLS = 10;
   let html = '';
   for (let i = 1; i <= TOTAL; i++) {
@@ -2652,11 +2517,292 @@ function fbSaveAll() {
   closeFastBloom();
 }
 
+// ===== COUNT MODE =====
+// Storage: state.countData[year][batch][treeNum] = fruitCount (number)
+// batch key: 'all' | '1' | '2' | '3' | '4'
+
+let _cntBatch = 'all';       // current batch filter
+let _cntActiveTree = null;   // treeNum currently in input panel
+let _cntWeightKg = 3.0;
+
+function getCntData(year) {
+  if (!state.countData) state.countData = {};
+  if (!state.countData[year]) state.countData[year] = {};
+  return state.countData[year];
+}
+
+function cntGetCount(year, treeNum, batch) {
+  const data = getCntData(year);
+  const key = batch === 'all' ? 'all' : String(batch);
+  if (!data[String(treeNum)]) return null;
+  return data[String(treeNum)][key] ?? null;
+}
+
+function cntSetCount(year, treeNum, batch, count) {
+  const data = getCntData(year);
+  const key = batch === 'all' ? 'all' : String(batch);
+  if (!data[String(treeNum)]) data[String(treeNum)] = {};
+  data[String(treeNum)][key] = count;
+  saveStorage(); // persist via localStorage
+  if (!_isSyncing) setTimeout(pushToFirestore, 300);
+}
+
+// Override saveStorage/loadStorage to include countData
+const _origSaveStorage = saveStorage;
+saveStorage = function() {
+  const payload = { trees: state.data, countData: state.countData || {} };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+};
+const _origLoadStorage = loadStorage;
+loadStorage = function() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Support both old format (plain array) and new format
+      if (parsed && typeof parsed === 'object' && parsed.trees !== undefined) {
+        state.data = parsed.trees || {};
+        state.countData = parsed.countData || {};
+      } else {
+        // old format — just tree data
+        state.data = parsed || {};
+        state.countData = {};
+      }
+    }
+  } catch(e) { state.data = {}; state.countData = {}; }
+};
+
+// Override Firestore push to include countData
+const _origPushToFirestore = pushToFirestore;
+pushToFirestore = function() {
+  if (!_db) return;
+  setSyncStatus('syncing', 'กำลัง sync...');
+  const payload = {
+    years: state.data,
+    countData: state.countData || {},
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  _db.collection('durian_farm_data').doc('main')
+    .set(payload)
+    .then(() => setSyncStatus('synced', 'Synced ✓'))
+    .catch(e => { console.warn('Firestore push error:', e); setSyncStatus('error', 'Sync ล้มเหลว'); });
+};
+
+// Override Firestore listener to sync countData too
+function _hookRealtimeSync() {
+  if (!_db) return;
+  if (_unsubscribe) _unsubscribe();
+  _unsubscribe = _db.collection('durian_farm_data').doc('main')
+    .onSnapshot(snap => {
+      if (_isSyncing) return;
+      if (!snap.exists) return;
+      const remote = snap.data();
+      if (!remote || !remote.years) return;
+      const localJson = JSON.stringify({ d: state.data, c: state.countData });
+      const remoteJson = JSON.stringify({ d: remote.years, c: remote.countData || {} });
+      if (localJson !== remoteJson) {
+        _isSyncing = true;
+        state.data = remote.years;
+        state.countData = remote.countData || {};
+        if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
+        saveStorage();
+        renderAll();
+        // refresh count grid if open
+        if (!document.getElementById('cntOverlay').classList.contains('hidden')) {
+          generateCntGrid();
+          cntUpdateSummary();
+        }
+        setSyncStatus('synced', 'Synced ✓');
+        setTimeout(() => { _isSyncing = false; }, 500);
+      }
+    }, e => {
+      console.warn('onSnapshot error:', e);
+      setSyncStatus('error', 'Real-time ล้มเหลว');
+    });
+}
+
+function openCountMode() {
+  _cntBatch = 'all';
+  _cntActiveTree = null;
+  _cntWeightKg = parseFloat(document.getElementById('cntWeightSlider').value) || 3.0;
+  // reset batch buttons
+  document.querySelectorAll('.cnt-batch-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.batch === 'all');
+  });
+  generateCntGrid();
+  cntUpdateSummary();
+  document.getElementById('cntOverlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCountMode() {
+  closeCntPanel();
+  document.getElementById('cntOverlay').classList.add('hidden');
+  document.body.style.overflow = '';
+  _cntActiveTree = null;
+}
+
+function cntSelectBatch(batch, el) {
+  _cntBatch = batch;
+  document.querySelectorAll('.cnt-batch-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  closeCntPanel();
+  generateCntGrid();
+  cntUpdateSummary();
+}
+
+function getCntTreeCount() {
+  // How many unique tree numbers to show = max(treeCount from state, 182)
+  const trees = getYearTrees(state.currentYear);
+  const nums = trees.map(t => parseInt(t.treeNumber)).filter(n => !isNaN(n));
+  const maxTree = nums.length > 0 ? Math.max(...nums) : 0;
+  return Math.max(maxTree, trees.length);
+}
+
+function generateCntGrid() {
+  const totalTrees = getCntTreeCount();
+  const COLS = 10;
+  const TOTAL = totalTrees > 0 ? Math.ceil(totalTrees / COLS) * COLS : 10; // round up to full row
+  const capped = Math.min(TOTAL, 182); // max 182
+
+  let html = '';
+  for (let i = 1; i <= capped; i++) {
+    const row = Math.floor((i - 1) / COLS);
+    const posInRow = (i - 1) % COLS;
+    const blockNum = row % 2 === 0
+      ? row * COLS + posInRow + 1
+      : row * COLS + (COLS - posInRow);
+
+    const count = cntGetCount(state.currentYear, blockNum, _cntBatch);
+    const isActive = _cntActiveTree === blockNum;
+
+    let cls = 'cnt-block cb-empty';
+    let inner = `<div class="cnt-block-num">${blockNum}</div>`;
+
+    if (isActive) {
+      cls = 'cnt-block cb-active';
+      inner = `<div class="cnt-block-num">${blockNum}</div><div class="cnt-block-val">✏️</div>`;
+    } else if (count !== null) {
+      cls = 'cnt-block cb-counted';
+      inner = `<div class="cnt-block-num">${blockNum}</div><div class="cnt-block-val">${count}</div>`;
+      if (_cntBatch !== 'all') {
+        inner += `<div class="cnt-block-sub">รุ่น${_cntBatch}</div>`;
+      }
+    }
+
+    html += `<div class="${cls}" onclick="cntOpenPanel(${blockNum})">${inner}</div>`;
+  }
+
+  document.getElementById('cntGrid').innerHTML = html;
+}
+
+function cntOpenPanel(treeNum) {
+  _cntActiveTree = treeNum;
+
+  // Set panel title
+  const batchLabel = _cntBatch === 'all' ? '' : ` (รุ่น ${_cntBatch})`;
+  document.getElementById('cntPanelTitle').textContent = `🌳 ต้น ${treeNum}${batchLabel}`;
+
+  // Pre-fill existing count
+  const existing = cntGetCount(state.currentYear, treeNum, _cntBatch) || 0;
+  document.getElementById('cntStepInput').value = existing;
+
+  // Show panel
+  document.getElementById('cntInputPanel').classList.add('open');
+
+  // Focus input
+  setTimeout(() => document.getElementById('cntStepInput').select(), 200);
+
+  // Update grid to show active state
+  generateCntGrid();
+}
+
+function closeCntPanel() {
+  document.getElementById('cntInputPanel').classList.remove('open');
+  _cntActiveTree = null;
+  generateCntGrid();
+}
+
+function cntStep(delta) {
+  const inp = document.getElementById('cntStepInput');
+  const cur = parseInt(inp.value) || 0;
+  inp.value = Math.max(0, cur + delta);
+}
+
+function cntSyncInput() {
+  const inp = document.getElementById('cntStepInput');
+  let v = parseInt(inp.value);
+  if (isNaN(v) || v < 0) inp.value = 0;
+}
+
+function cntConfirm() {
+  if (_cntActiveTree === null) return;
+  const count = parseInt(document.getElementById('cntStepInput').value) || 0;
+  cntSetCount(state.currentYear, _cntActiveTree, _cntBatch, count);
+  closeCntPanel();
+  generateCntGrid();
+  cntUpdateSummary();
+  showToast(`✅ ต้น ${_cntActiveTree}: ${count} ลูก`);
+}
+
+function cntUpdateWeight() {
+  _cntWeightKg = parseFloat(document.getElementById('cntWeightSlider').value);
+  document.getElementById('cntWeightVal').textContent = _cntWeightKg.toFixed(1) + ' กก./ลูก';
+  cntUpdateSummary();
+}
+
+function cntUpdateSummary() {
+  const data = getCntData(state.currentYear);
+  const key = _cntBatch === 'all' ? 'all' : String(_cntBatch);
+
+  const totalTrees = getCntTreeCount();
+  const COLS = 10;
+  const capped = Math.min(Math.ceil(totalTrees / COLS) * COLS, 182);
+
+  let counted = 0;
+  let totalFruits = 0;
+
+  // Count over grid range
+  for (let i = 1; i <= capped; i++) {
+    const row = Math.floor((i - 1) / COLS);
+    const posInRow = (i - 1) % COLS;
+    const blockNum = row % 2 === 0
+      ? row * COLS + posInRow + 1
+      : row * COLS + (COLS - posInRow);
+
+    const treeData = data[String(blockNum)];
+    if (treeData && treeData[key] !== undefined) {
+      counted++;
+      totalFruits += treeData[key];
+    }
+  }
+
+  const remain = capped - counted;
+  document.getElementById('cntStatCounted').textContent = counted;
+  document.getElementById('cntStatRemain').textContent = remain;
+  document.getElementById('cntStatTotal').textContent = totalFruits;
+
+  // Weight forecast with ±25% range
+  if (totalFruits > 0) {
+    const mid = totalFruits * _cntWeightKg;
+    const low = mid * 0.75;
+    const high = mid * 1.25;
+    const fmt = n => n >= 1000
+      ? (n / 1000).toFixed(1) + ' ตัน'
+      : Math.round(n) + ' กก.';
+    document.getElementById('cntStatWeight').textContent = fmt(mid);
+    document.getElementById('cntStatRange').textContent = `ช่วง ${fmt(low)} – ${fmt(high)}`;
+  } else {
+    document.getElementById('cntStatWeight').textContent = '—';
+    document.getElementById('cntStatRange').textContent = '';
+  }
+}
+
 // ===== INIT =====
 (function init() {
   loadStorage();
   if (!state.data[state.currentYear]) state.data[state.currentYear] = [];
-  applyTreeCountUI();
+  if (!state.countData) state.countData = {};
   renderAll();
   // Refresh every 10 minutes
   setInterval(renderAll, 10 * 60 * 1000);
