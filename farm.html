@@ -47,23 +47,46 @@
 
   /* ===== HEADER ===== */
   .app-header {
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--divider);
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 0 20px;
+    padding: 0 14px;
   }
   .header-inner {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  /* Row 1: logo + right controls */
+  .header-row1 {
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
-    gap: 12px;
+    height: 54px;
+    gap: 8px;
+  }
+  /* Row 2: action buttons — scrollable on very small screens */
+  .header-row2 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .header-row2::-webkit-scrollbar { display: none; }
+  .header-row2 .btn { flex-shrink: 0; }
+  /* On wider screens keep everything in one row */
+  @media (min-width: 700px) {
+    .header-inner { flex-direction: row; align-items: center; height: 64px; }
+    .header-row2 { padding: 0; }
   }
   .header-logo {
     display: flex;
@@ -609,7 +632,8 @@
     .dashboard { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 767px) {
-    .header-inner { height: 56px; }
+    .header-inner { height: auto; }
+    .header-row1 { height: 50px; }
     .logo-text { font-size: 16px; }
     .logo-sub { display: none; }
     .dashboard { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -1411,27 +1435,33 @@
         <div class="logo-sub">Durian Tracker</div>
       </div>
     </div>
-    <div class="header-controls">
-      <div class="sync-indicator" id="syncIndicator" title="Firebase Sync">
-        <span class="sync-dot"></span>
-        <span id="syncLabel">—</span>
+    <!-- Row 1: utility controls -->
+    <div class="header-row1">
+      <div style="display:none" id="logoPlaceholder"></div><!-- spacer handled by logo flex -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap">
+        <div class="sync-indicator" id="syncIndicator" title="Firebase Sync">
+          <span class="sync-dot"></span>
+          <span id="syncLabel">—</span>
+        </div>
+        <button class="btn btn-ghost" onclick="openGardenSizeModal()" style="gap:4px;font-size:11px;padding:5px 8px;white-space:nowrap" title="ตั้งจำนวนต้น">
+          🌳 <span id="gardenSizeBadge">182 ต้น</span>
+        </button>
+        <select class="year-select" id="yearSelect" title="เลือกปี" style="font-size:13px;padding:5px 8px"></select>
+        <button class="btn btn-primary" onclick="openAddModal()" style="padding:7px 12px;font-size:13px">
+          ＋ เพิ่มต้น
+        </button>
       </div>
-      
-      <button class="btn btn-ghost" onclick="openGardenSizeModal()" style="gap:5px;font-size:12px;padding:6px 10px" title="ตั้งจำนวนต้น">
-        🌳 <span id="gardenSizeBadge">182 ต้น</span>
-      </button>
-      <select class="year-select" id="yearSelect" title="เลือกปี"></select>
-      <button class="btn" style="background:linear-gradient(135deg,#FF9F0A,#FF6B35);color:#fff" onclick="openFastBloom()">
+    </div>
+    <!-- Row 2: main action buttons -->
+    <div class="header-row2">
+      <button class="btn" style="background:linear-gradient(135deg,#FF9F0A,#FF6B35);color:#fff;font-size:13px;padding:7px 14px" onclick="openFastBloom()">
         ⚡ บันทึกเร็ว
       </button>
-      <button class="btn btn-count" onclick="openCountMode()">
+      <button class="btn btn-count" style="font-size:13px;padding:7px 14px" onclick="openCountMode()">
         🍈 นับลูก
       </button>
-      <button class="btn btn-map" id="btnMapMode" onclick="openMapMode()">
+      <button class="btn btn-map" id="btnMapMode" style="font-size:13px;padding:7px 14px" onclick="openMapMode()">
         🗺️ แผนที่สวน
-      </button>
-      <button class="btn btn-primary" onclick="openAddModal()">
-        <span>＋</span> เพิ่มต้น
       </button>
     </div>
   </div>
@@ -2004,7 +2034,7 @@ function buildTreeCard(tree) {
     +   '</div>'
     +   '<div class="tree-actions">'
     +     '<button class="tree-action-btn btn-edit" onclick="openEditModal(\'' + tree.id + '\');event.stopPropagation()" title="\u0e41\u0e01\u0e49\u0e44\u0e02">\u270f\ufe0f</button>'
-    +     '<button class="tree-action-btn btn-delete" onclick="deleteTree(\'' + tree.id + '\');event.stopPropagation()" title="\u0e25\u0e1a">\U0001f5d1</button>'
+    +     '<button class="tree-action-btn btn-delete" onclick="deleteTree(\'' + tree.id + '\');event.stopPropagation()" title="\u0e25\u0e1a">🗑</button>'
     +   '</div>'
     + '</div>'
     + '<div class="tree-meta">'
@@ -2873,7 +2903,7 @@ function saveGardenSize() {
   if (mo && !mo.classList.contains('hidden')) generateMapGrid();
   if (fb && !fb.classList.contains('hidden')) generateFbGrid();
   if (co && !co.classList.contains('hidden')) { generateCntGrid(); cntUpdateSummary(); }
-  showToast('\U0001f333 \u0e15\u0e31\u0e49\u0e07\u0e08\u0e33\u0e19\u0e27\u0e19\u0e15\u0e49\u0e19 ' + v + ' \u0e15\u0e49\u0e19 \u2013 sync \u0e41\u0e25\u0e49\u0e27');
+  showToast('🌳 \u0e15\u0e31\u0e49\u0e07\u0e08\u0e33\u0e19\u0e27\u0e19\u0e15\u0e49\u0e19 ' + v + ' \u0e15\u0e49\u0e19 \u2013 sync \u0e41\u0e25\u0e49\u0e27');
 }
 
 function updateGardenSizeDisplay() {
@@ -2969,7 +2999,7 @@ function cntOpenPanel(treeNum) {
   _cntActiveTree = treeNum;
 
   const batchLabel = _cntBatch === 'all' ? '' : ' (\u0e23\u0e38\u0e48\u0e19 ' + _cntBatch + ')';
-  document.getElementById('cntPanelTitle').innerHTML = '\U0001f333 \u0e15\u0e49\u0e19 ' + treeNum + batchLabel;
+  document.getElementById('cntPanelTitle').innerHTML = '🌳 \u0e15\u0e49\u0e19 ' + treeNum + batchLabel;
 
   const existing = cntGetEntry(state.currentYear, treeNum, _cntBatch);
   document.getElementById('cntStepInput').value = existing ? (existing.noFruit ? 0 : (existing.count || 0)) : 0;
@@ -3029,7 +3059,7 @@ function cntNoFruit() {
   cntSetEntry(state.currentYear, treeNum, _cntBatch, { count: 0, variety: getSelectedVariety(), noFruit: true });
   closeCntPanel();
   cntUpdateSummary();
-  showToast('\U0001f6ab \u0e15\u0e49\u0e19 ' + treeNum + ': \u0e44\u0e21\u0e48\u0e21\u0e35\u0e25\u0e39\u0e01');
+  showToast('🚫 \u0e15\u0e49\u0e19 ' + treeNum + ': \u0e44\u0e21\u0e48\u0e21\u0e35\u0e25\u0e39\u0e01');
 }
 
 function cntClearThis() {
