@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>บัญชีสวนยาง</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+
+  :root {
+    --green: #2d8a4e;
+    --green-light: #e8f5ee;
+    --green-dark: #1a5c33;
+    --red: #c0392b;
+    --red-light: #fdecea;
+    --orange: #e07b1a;
+    --orange-light: #fef3e2;
+    --blue: #1a6bbf;
+    --blue-light: #e8f0fb;
+    --gray: #f5f5f5;
+    --text: #1a1a1a;
+    --text-light: #555;
+    --border: #ddd;
+    --white: #fff;
+    --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: #f0f4f0;
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 18px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--green-dark);
+    color: white;
+    padding: 18px 20px 14px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .header h1 { font-size: 24px; font-weight: 800; }
+  .header .sub { font-size: 14px; opacity: 0.85; margin-top: 2px; }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; padding: 18px 14px 100px; max-width: 520px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    display: flex;
+    border-top: 2px solid #e0e0e0;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 10px 4px 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 13px;
+    color: #888;
+    transition: all 0.15s;
+  }
+  .nav-btn.active { color: var(--green-dark); }
+  .nav-btn .icon { font-size: 26px; }
+
+  /* ===== HOME SCREEN ===== */
+  .debt-header {
+    background: linear-gradient(135deg, var(--green-dark), #2d8a4e);
+    color: white;
+    border-radius: var(--radius);
+    padding: 18px 16px 14px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .debt-header-title {
+    font-size: 15px; opacity: 0.9; text-align: center;
+    margin-bottom: 14px; font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .debt-two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .debt-col {
+    background: rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .debt-col .dc-label { font-size: 14px; opacity: 0.88; margin-bottom: 6px; }
+  .debt-col .dc-amount { font-size: 26px; font-weight: 800; line-height: 1; }
+  .debt-col .dc-sub { font-size: 12px; opacity: 0.72; margin-top: 5px; }
+
+  .big-btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .big-btn {
+    border: none;
+    border-radius: var(--radius);
+    padding: 22px 14px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+    min-height: 120px;
+    justify-content: center;
+  }
+  .big-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .big-btn .btn-icon { font-size: 34px; }
+  .btn-green { background: var(--green); }
+  .btn-red { background: var(--red); }
+  .btn-orange { background: var(--orange); }
+  .btn-blue { background: var(--blue); }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ===== FORM ===== */
+  .form-group { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  input[type="text"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 20px;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    background: white;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23555' d='M5 7l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 42px; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green); }
+  textarea { resize: none; height: 80px; font-size: 18px; }
+
+  .expense-type-select {
+    display: flex; gap: 10px; margin-top: 6px;
+  }
+  .type-radio {
+    flex: 1; text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    cursor: pointer;
+    font-size: 16px; font-weight: 600;
+    transition: all 0.15s;
+    color: var(--text-light);
+  }
+  .type-radio.selected-shared { border-color: var(--orange); background: var(--orange-light); color: var(--orange); }
+  .type-radio.selected-garden { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+  .calc-preview {
+    background: var(--gray);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 10px;
+  }
+  .calc-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 17px; }
+  .calc-row .val { font-weight: 700; }
+  .calc-row.total { border-top: 1px solid #ddd; margin-top: 6px; padding-top: 10px; font-size: 18px; }
+
+  .submit-btn {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: var(--shadow);
+    transition: transform 0.1s;
+  }
+  .submit-btn:active { transform: scale(0.98); }
+
+  .back-btn {
+    background: none;
+    border: none;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 17px;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== SUMMARY ===== */
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 18px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row .val { font-weight: 800; font-size: 20px; }
+  .val-green { color: var(--green-dark); }
+  .val-red { color: var(--red); }
+  .val-orange { color: var(--orange); }
+  .val-blue { color: var(--blue); }
+
+  /* ===== HISTORY ===== */
+  .history-item {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .history-icon {
+    font-size: 28px;
+    min-width: 40px;
+    text-align: center;
+    padding-top: 2px;
+  }
+  .history-info { flex: 1; }
+  .history-type { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .history-desc { font-size: 18px; font-weight: 700; margin: 2px 0; }
+  .history-date { font-size: 14px; color: #888; }
+  .history-amount { font-size: 20px; font-weight: 800; text-align: right; }
+  .history-sub { font-size: 13px; color: #888; text-align: right; margin-top: 2px; }
+  .history-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .action-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .action-btn:active { transform: scale(0.96); }
+  .edit-btn { background: #e8f0fb; color: var(--blue); }
+  .del-btn { background: #fdecea; color: var(--red); }
+
+  /* ===== CATEGORIES ===== */
+  .cat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 17px;
+  }
+  .cat-badge {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .badge-shared { background: var(--orange-light); color: var(--orange); }
+  .badge-garden { background: var(--red-light); color: var(--red); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title { font-size: 22px; font-weight: 800; margin-bottom: 18px; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 300;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== FILTER ===== */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .filter-chip {
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    background: white;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--text-light);
+  }
+  .filter-chip.active { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); }
+
+  .month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .month-btn {
+    border: none;
+    background: white;
+    border-radius: 10px;
+    width: 44px; height: 44px;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .month-label { font-size: 20px; font-weight: 800; flex: 1; text-align: center; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #aaa;
+    font-size: 18px;
+  }
+  .empty-state .emoji { font-size: 50px; margin-bottom: 10px; }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .add-cat-btn {
+    border: 2px dashed var(--green);
+    background: none;
+    border-radius: 12px;
+    padding: 14px;
+    width: 100%;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tab {
+    flex: 1;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background: white;
+    color: var(--text-light);
+    text-align: center;
+  }
+  .tab.active { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); }
+
+  .debt-info { font-size: 14px; margin-top: 8px; opacity: 0.8; }
+
+  /* ===== SYNC STATUS ===== */
+  .sync-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 0;
+    transition: background 0.3s, color 0.3s;
+  }
+  .sync-bar.synced   { background: #e8f5ee; color: #1a5c33; }
+  .sync-bar.syncing  { background: #fef3e2; color: #b45a00; }
+  .sync-bar.offline  { background: #fdecea; color: #9b1c1c; }
+  .sync-bar.loading  { background: #e8f0fb; color: #1a4a8a; }
+  .sync-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .synced  .sync-dot { background: #2d8a4e; }
+  .syncing .sync-dot { background: #e07b1a; animation: pulse 1s infinite; }
+  .offline .sync-dot { background: #c0392b; }
+  .loading .sync-dot { background: #1a6bbf; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🌿 บัญชีสวนยาง</h1>
+  <div class="sub">20 ไร่ · ระบบครอบครัว</div>
+</div>
+
+<div class="sync-bar loading" id="sync-bar">
+  <span class="sync-dot"></span>
+  <span id="sync-text">กำลังเชื่อมต่อ Firebase...</span>
+</div>
+
+<!-- ===== HOME ===== -->
+<div class="screen active" id="screen-home">
+  <div class="debt-header">
+    <div class="debt-header-title">💰 ยอดเงินที่ยังต้องคืน (สำรองจ่ายไปก่อน)</div>
+    <div class="debt-two-cols">
+      <div class="debt-col">
+        <div class="dc-label">🏡 ฝั่งสวน</div>
+        <div class="dc-amount" id="debt-garden">฿0</div>
+        <div class="dc-sub">ค่าสวน + ส่วนร่วม<br>หักด้วยเงินสวน 50%</div>
+      </div>
+      <div class="debt-col">
+        <div class="dc-label">🌿 คนตัดยาง</div>
+        <div class="dc-amount" id="debt-cutter">฿0</div>
+        <div class="dc-sub">ส่วนค่าร่วมของคนตัด<br>หักด้วยเงินคนตัด 50%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-btn-grid">
+    <button class="big-btn btn-green" onclick="showAdd('sale')">
+      <span class="btn-icon">💵</span>
+      <span>เพิ่มรายการ<br>ขายยาง</span>
+    </button>
+    <button class="big-btn btn-red" onclick="showAdd('expense')">
+      <span class="btn-icon">🧾</span>
+      <span>เพิ่ม<br>ค่าใช้จ่าย</span>
+    </button>
+    <button class="big-btn btn-orange" onclick="showScreen('summary')">
+      <span class="btn-icon">📊</span>
+      <span>ดูสรุป<br>รายเดือน</span>
+    </button>
+    <button class="big-btn btn-blue" onclick="showScreen('history')">
+      <span class="btn-icon">📋</span>
+      <span>ประวัติ<br>ทั้งหมด</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚙️ จัดการหมวดค่าใช้จ่าย</div>
+    <button class="add-cat-btn" onclick="showScreen('categories')">+ เพิ่ม / แก้ไข หมวดหมู่</button>
+  </div>
+
+  <div class="card" id="recent-card">
+    <div class="card-title">🕐 รายการล่าสุด</div>
+    <div id="recent-list"></div>
+  </div>
+</div>
+
+<!-- ===== ADD SALE ===== -->
+<div class="screen" id="screen-add-sale">
+  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
+  <div class="section-title">💵 เพิ่มรายการขายยาง</div>
+
+  <div class="card">
+    <div class="form-group">
+      <label>📅 วันที่</label>
+      <input type="date" id="sale-date">
+    </div>
+    <div class="form-group">
+      <label>💰 จำนวนเงินที่ขายได้ (บาท)</label>
+      <input type="number" id="sale-amount" placeholder="0" inputmode="decimal" oninput="updateSalePreview()">
+    </div>
+    <div class="form-group">
+      <label>📝 หมายเหตุ</label>
+      <textarea id="sale-note" placeholder="เช่น ยางแผ่น 200 กก."></textarea>
+    </div>
+
+    <div class="calc-preview" id="sale-preview" style="display:none">
+      <div class="calc-row">
+        <span>💵 ขายได้ทั้งหมด</span>
+        <span class="val" id="sp-total">-</span>
+      </div>
+      <div class="calc-row">
+        <span>🌿 คนตัดยางได้ (50%)</span>
+        <span class="val val-blue" id="sp-cutter">-</span>
+      </div>
+      <div class="calc-row total">
+        <span>🏡 ฝั่งสวนได้ (50%)</span>
+        <span class="val val-green" id="sp-garden">-</span>
+      </div>
+      <div class="calc-row" style="font-size:14px;color:#888;padding-top:4px">
+        <span>→ เงินแต่ละฝั่งจะนำไปหักหนี้ของตัวเองอัตโนมัติ</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" style="background:var(--green)" onclick="saveSale()">✅ บันทึกการขายยาง</button>
+</div>
+
+<!-- ===== ADD EXPENSE ===== -->
+<div class="screen" id="screen-add-expense">
+  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
+  <div class="section-title">🧾 เพิ่มค่าใช้จ่าย</div>
+
+  <div class="card">
+    <div class="form-group">
+      <label>📅 วันที่</label>
+      <input type="date" id="exp-date">
+    </div>
+    <div class="form-group">
+      <label>📂 หมวดค่าใช้จ่าย</label>
+      <select id="exp-category" onchange="updateExpPreview()">
+        <option value="">-- เลือกหมวด --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>💸 จำนวนเงิน (บาท)</label>
+      <input type="number" id="exp-amount" placeholder="0" inputmode="decimal" oninput="updateExpPreview()">
+    </div>
+    <div class="form-group">
+      <label>📝 หมายเหตุ</label>
+      <textarea id="exp-note" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+    </div>
+
+    <div class="calc-preview" id="exp-preview" style="display:none">
+      <div class="calc-row" id="ep-type-row">
+        <span>ประเภท</span><span class="val" id="ep-type">-</span>
+      </div>
+      <div class="calc-row" id="ep-cutter-row">
+        <span>🌿 คนตัดรับผิดชอบ</span>
+        <span class="val val-orange" id="ep-cutter">-</span>
+      </div>
+      <div class="calc-row total">
+        <span>🏡 ฝั่งสวนรับผิดชอบ</span>
+        <span class="val val-red" id="ep-garden">-</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" style="background:var(--red)" onclick="saveExpense()">✅ บันทึกค่าใช้จ่าย</button>
+</div>
+
+<!-- ===== SUMMARY ===== -->
+<div class="screen" id="screen-summary">
+  <div class="section-title">
+    📊 สรุปรายเดือน
+  </div>
+
+  <div class="month-selector">
+    <button class="month-btn" onclick="changeMonth(-1)">◀</button>
+    <div class="month-label" id="sum-month-label"></div>
+    <button class="month-btn" onclick="changeMonth(1)">▶</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💵 รายได้จากยาง</div>
+    <div class="summary-row">
+      <span>ขายยางได้ทั้งหมด</span>
+      <span class="val val-green" id="sum-sale-total">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>🌿 คนตัดยางได้</span>
+      <span class="val val-blue" id="sum-cutter">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>🏡 ฝั่งสวนได้ (ก่อนหักหนี้)</span>
+      <span class="val val-green" id="sum-garden-gross">฿0</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧾 ค่าใช้จ่าย</div>
+    <div class="summary-row">
+      <span>ค่าใช้จ่ายร่วม (รวม)</span>
+      <span class="val val-orange" id="sum-shared-total">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>&nbsp;&nbsp;↳ คนตัดรับผิดชอบ</span>
+      <span class="val val-orange" id="sum-shared-cutter">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>&nbsp;&nbsp;↳ ฝั่งสวนรับผิดชอบ</span>
+      <span class="val val-orange" id="sum-shared-garden">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>ค่าใช้จ่ายฝั่งสวนเท่านั้น</span>
+      <span class="val val-red" id="sum-garden-only">฿0</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 สรุปสุทธิ</div>
+    <div class="summary-row">
+      <span>🌿 คนตัดได้สุทธิ (หลังหักค่าร่วม)</span>
+      <span class="val val-blue" id="sum-cutter-net">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>🏡 ฝั่งสวนได้สุทธิ (ก่อนหักหนี้)</span>
+      <span class="val val-green" id="sum-garden-net">฿0</span>
+    </div>
+  </div>
+
+  <div class="card" style="border: 2px solid var(--green-dark)">
+    <div class="card-title" style="color:var(--green-dark)">📉 หนี้สะสม — ฝั่งสวน 🏡</div>
+    <div class="summary-row" style="font-size:15px;color:#888">
+      <span>ค่าใช้จ่าย = ค่าสวน 100% + ส่วนร่วม 50%</span>
+    </div>
+    <div class="summary-row">
+      <span>หนี้ต้นเดือน</span>
+      <span class="val" id="sum-gdebt-start">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>+ ค่าใช้จ่ายสวน (เต็ม)</span>
+      <span class="val val-red" id="sum-gdebt-garden-only">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>+ ส่วนร่วม (สวน 50%)</span>
+      <span class="val val-red" id="sum-gdebt-shared">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>- หักจากเงินสวน (50% ขายยาง)</span>
+      <span class="val val-green" id="sum-gdebt-paid">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span style="font-weight:800">🏡 หนี้สวนคงเหลือ</span>
+      <span class="val val-red" style="font-size:22px" id="sum-gdebt-remain">฿0</span>
+    </div>
+  </div>
+
+  <div class="card" style="border: 2px solid var(--blue)">
+    <div class="card-title" style="color:var(--blue)">📉 หนี้สะสม — คนตัดยาง 🌿</div>
+    <div class="summary-row" style="font-size:15px;color:#888">
+      <span>ค่าใช้จ่าย = ส่วนร่วมของคนตัด 50%</span>
+    </div>
+    <div class="summary-row">
+      <span>หนี้ต้นเดือน</span>
+      <span class="val" id="sum-cdebt-start">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>+ ส่วนร่วม (คนตัด 50%)</span>
+      <span class="val val-red" id="sum-cdebt-shared">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span>- หักจากเงินคนตัด (50% ขายยาง)</span>
+      <span class="val val-green" id="sum-cdebt-paid">฿0</span>
+    </div>
+    <div class="summary-row">
+      <span style="font-weight:800">🌿 หนี้คนตัดคงเหลือ</span>
+      <span class="val val-blue" style="font-size:22px" id="sum-cdebt-remain">฿0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HISTORY ===== -->
+<div class="screen" id="screen-history">
+  <div class="section-title">📋 ประวัติทั้งหมด</div>
+
+  <div class="filter-bar">
+    <button class="filter-chip active" onclick="filterHistory('all', this)">ทั้งหมด</button>
+    <button class="filter-chip" onclick="filterHistory('sale', this)">ขายยาง</button>
+    <button class="filter-chip" onclick="filterHistory('shared', this)">ค่าร่วม</button>
+    <button class="filter-chip" onclick="filterHistory('garden', this)">ค่าสวน</button>
+  </div>
+
+  <div id="history-list"></div>
+</div>
+
+<!-- ===== CATEGORIES ===== -->
+<div class="screen" id="screen-categories">
+  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
+  <div class="section-title">⚙️ หมวดค่าใช้จ่าย</div>
+
+  <div class="card">
+    <div id="cat-list"></div>
+    <button class="add-cat-btn" onclick="showAddCatModal()">+ เพิ่มหมวดใหม่</button>
+  </div>
+</div>
+
+<!-- ===== MODAL: ADD/EDIT CATEGORY ===== -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <div class="modal-title" id="cat-modal-title">➕ เพิ่มหมวดหมู่ใหม่</div>
+    <input type="hidden" id="cat-edit-id">
+    <div class="form-group">
+      <label>ชื่อหมวด</label>
+      <input type="text" id="cat-name" placeholder="เช่น ปุ๋ย, น้ำกรด">
+    </div>
+    <div class="form-group">
+      <label>ประเภท</label>
+      <div class="expense-type-select">
+        <div class="type-radio selected-shared" id="type-shared" onclick="selectType('shared')">
+          🤝 ร่วมกัน<br><small>หารครึ่ง</small>
+        </div>
+        <div class="type-radio" id="type-garden" onclick="selectType('garden')">
+          🏡 ฝั่งสวน<br><small>ออกเองทั้งหมด</small>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="cat-type-val" value="shared">
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="submit-btn" style="background:var(--green);flex:2" onclick="saveCat()">✅ บันทึก</button>
+      <button class="submit-btn" style="background:#888;flex:1" onclick="closeCatModal()">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: EDIT TRANSACTION ===== -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ แก้ไขรายการ</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label>📅 วันที่</label>
+      <input type="date" id="edit-date">
+    </div>
+    <div class="form-group" id="edit-cat-group" style="display:none">
+      <label>📂 หมวดค่าใช้จ่าย</label>
+      <select id="edit-category"></select>
+    </div>
+    <div class="form-group">
+      <label>💰 จำนวนเงิน (บาท)</label>
+      <input type="number" id="edit-amount" inputmode="decimal">
+    </div>
+    <div class="form-group">
+      <label>📝 หมายเหตุ</label>
+      <textarea id="edit-note"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="submit-btn" style="background:var(--blue);flex:2" onclick="saveEdit()">✅ บันทึก</button>
+      <button class="submit-btn" style="background:#888;flex:1" onclick="closeEditModal()">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM DELETE ===== -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-title">🗑️ ยืนยันการลบ?</div>
+    <p style="font-size:18px;margin-bottom:20px;color:#555">รายการนี้จะถูกลบถาวร ไม่สามารถกู้คืนได้</p>
+    <input type="hidden" id="confirm-delete-id">
+    <div style="display:flex;gap:10px">
+      <button class="submit-btn" style="background:var(--red);flex:2" onclick="confirmDelete()">🗑️ ลบเลย</button>
+      <button class="submit-btn" style="background:#888;flex:1" onclick="closeConfirmModal()">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
+    <span class="icon">🏠</span>หน้าหลัก
+  </button>
+  <button class="nav-btn" id="nav-summary" onclick="showScreen('summary')">
+    <span class="icon">📊</span>สรุป
+  </button>
+  <button class="nav-btn" id="nav-history" onclick="showScreen('history')">
+    <span class="icon">📋</span>ประวัติ
+  </button>
+  <button class="nav-btn" id="nav-categories" onclick="showScreen('categories')">
+    <span class="icon">⚙️</span>หมวด
+  </button>
+</div>
+
+<script>
+// ============================================================
+// DATA LAYER
+// ============================================================
+const STORAGE_KEY = 'rubber-farm-v3';
+let data = loadData();
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {
+    categories: [
+      { id: 'c1', name: 'ปุ๋ย', type: 'shared' },
+      { id: 'c2', name: 'น้ำกรด', type: 'shared' },
+      { id: 'c3', name: 'ค่าไฟ', type: 'shared' },
+      { id: 'c4', name: 'ถ้วยยาง', type: 'shared' },
+      { id: 'c5', name: 'ยาและอุปกรณ์', type: 'shared' },
+      { id: 'c6', name: 'บ้านพักคนตัด', type: 'garden' },
+      { id: 'c7', name: 'ค่าตัดหญ้า', type: 'garden' },
+      { id: 'c8', name: 'ทำถนน', type: 'garden' },
+      { id: 'c9', name: 'ระบบน้ำ', type: 'garden' },
+    ],
+    transactions: [],
+  };
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+let currentScreen = 'home';
+let sumMonth = new Date();
+let historyFilter = 'all';
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('active');
+  currentScreen = name;
+
+  if (name === 'home') renderHome();
+  if (name === 'summary') renderSummary();
+  if (name === 'history') renderHistory();
+  if (name === 'categories') renderCategories();
+}
+
+function showAdd(type) {
+  if (type === 'sale') {
+    document.getElementById('sale-date').value = todayStr();
+    document.getElementById('sale-amount').value = '';
+    document.getElementById('sale-note').value = '';
+    document.getElementById('sale-preview').style.display = 'none';
+    showScreen('add-sale');
+  } else {
+    document.getElementById('exp-date').value = todayStr();
+    document.getElementById('exp-amount').value = '';
+    document.getElementById('exp-note').value = '';
+    document.getElementById('exp-preview').style.display = 'none';
+    populateCategorySelect('exp-category');
+    showScreen('add-expense');
+  }
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// ============================================================
+// FORMATTING
+// ============================================================
+function fmt(n) {
+  return '฿' + Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(str) {
+  const d = new Date(str + 'T00:00:00');
+  return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ============================================================
+// HOME
+// ============================================================
+function renderHome() {
+  const { gardenDebt, cutterDebt } = calcDebtUpTo(null);
+  document.getElementById('debt-garden').textContent = fmt(gardenDebt);
+  document.getElementById('debt-cutter').textContent = fmt(cutterDebt);
+
+  // Recent 5 transactions
+  const list = document.getElementById('recent-list');
+  const sorted = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  if (sorted.length === 0) {
+    list.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px">ยังไม่มีรายการ</div>';
+    return;
+  }
+  list.innerHTML = sorted.map(t => miniCard(t)).join('');
+}
+
+function miniCard(t) {
+  const icon = t.type === 'sale' ? '💵' : (t.catType === 'shared' ? '🤝' : '🏡');
+  const color = t.type === 'sale' ? 'val-green' : 'val-red';
+  const sign = t.type === 'sale' ? '+' : '-';
+  return `<div class="summary-row">
+    <span>${icon} ${t.type === 'sale' ? 'ขายยาง' : t.catName}</span>
+    <span class="${color}" style="font-weight:700">${sign}${fmt(t.amount)}</span>
+  </div>`;
+}
+
+// ============================================================
+// CALC STATS
+// ============================================================
+function calcDebtUpTo(beforeDate) {
+  // Debt state for each party up to (not including) beforeDate
+  const txns = beforeDate
+    ? data.transactions.filter(t => new Date(t.date + 'T00:00:00') < beforeDate)
+    : data.transactions;
+
+  let gardenSaleShare = 0, cutterSaleShare = 0;
+  let sharedCutter = 0, sharedGarden = 0, gardenOnly = 0;
+
+  for (const t of txns) {
+    if (t.type === 'sale') {
+      gardenSaleShare += t.amount / 2;
+      cutterSaleShare += t.amount / 2;
+    } else if (t.catType === 'shared') {
+      sharedCutter += t.amount / 2;
+      sharedGarden += t.amount / 2;
+    } else if (t.catType === 'garden') {
+      gardenOnly += t.amount;
+    }
+  }
+
+  // Garden debt = (gardenOnly + sharedGarden) - gardenSaleShare
+  const gardenDebt = Math.max(0, (gardenOnly + sharedGarden) - gardenSaleShare);
+  // Cutter debt = sharedCutter - cutterSaleShare
+  const cutterDebt = Math.max(0, sharedCutter - cutterSaleShare);
+  return { gardenDebt, cutterDebt };
+}
+
+function calcStats(monthDate) {
+  let txns = data.transactions;
+  if (monthDate) {
+    const yy = monthDate.getFullYear();
+    const mm = monthDate.getMonth();
+    txns = txns.filter(t => {
+      const d = new Date(t.date + 'T00:00:00');
+      return d.getFullYear() === yy && d.getMonth() === mm;
+    });
+  }
+
+  let saleTotal = 0, cutterShare = 0, gardenGross = 0;
+  let sharedTotal = 0, sharedCutter = 0, sharedGarden = 0;
+  let gardenOnly = 0;
+
+  for (const t of txns) {
+    if (t.type === 'sale') {
+      saleTotal += t.amount;
+      cutterShare += t.amount / 2;
+      gardenGross += t.amount / 2;
+    } else if (t.catType === 'shared') {
+      sharedTotal += t.amount;
+      sharedCutter += t.amount / 2;
+      sharedGarden += t.amount / 2;
+    } else if (t.catType === 'garden') {
+      gardenOnly += t.amount;
+    }
+  }
+
+  const cutterNet = cutterShare - sharedCutter;
+  const gardenNet = gardenGross - sharedGarden;
+
+  // All-time debt
+  const { gardenDebt, cutterDebt } = calcDebtUpTo(null);
+
+  // Debt at start of month
+  let debtAtStart = { gardenDebt: 0, cutterDebt: 0 };
+  if (monthDate) {
+    const yy = monthDate.getFullYear();
+    const mm = monthDate.getMonth();
+    debtAtStart = calcDebtUpTo(new Date(yy, mm, 1));
+  }
+
+  return {
+    saleTotal, cutterShare, gardenGross,
+    sharedTotal, sharedCutter, sharedGarden,
+    gardenOnly, cutterNet, gardenNet,
+    // all-time
+    gardenDebt, cutterDebt,
+    // month-level
+    monthGardenOnly: gardenOnly,
+    monthSharedGarden: sharedGarden,
+    monthGardenPaid: gardenGross,
+    monthSharedCutter: sharedCutter,
+    monthCutterPaid: cutterShare,
+    debtAtStart,
+  };
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function renderSummary() {
+  document.getElementById('sum-month-label').textContent =
+    sumMonth.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+
+  const s = calcStats(sumMonth);
+  document.getElementById('sum-sale-total').textContent = fmt(s.saleTotal);
+  document.getElementById('sum-cutter').textContent = fmt(s.cutterShare);
+  document.getElementById('sum-garden-gross').textContent = fmt(s.gardenGross);
+  document.getElementById('sum-shared-total').textContent = fmt(s.sharedTotal);
+  document.getElementById('sum-shared-cutter').textContent = fmt(s.sharedCutter);
+  document.getElementById('sum-shared-garden').textContent = fmt(s.sharedGarden);
+  document.getElementById('sum-garden-only').textContent = fmt(s.gardenOnly);
+  document.getElementById('sum-cutter-net').textContent = fmt(s.cutterNet);
+  document.getElementById('sum-garden-net').textContent = fmt(s.gardenNet);
+
+  // Garden debt breakdown for this month
+  const gStart = s.debtAtStart.gardenDebt;
+  const gAdded1 = s.monthGardenOnly;   // garden-only expenses
+  const gAdded2 = s.monthSharedGarden; // shared expenses (garden half)
+  const gPaid = s.monthGardenPaid;     // garden's 50% from sales
+  const gRemain = Math.max(0, gStart + gAdded1 + gAdded2 - gPaid);
+  document.getElementById('sum-gdebt-start').textContent = fmt(gStart);
+  document.getElementById('sum-gdebt-garden-only').textContent = fmt(gAdded1);
+  document.getElementById('sum-gdebt-shared').textContent = fmt(gAdded2);
+  document.getElementById('sum-gdebt-paid').textContent = fmt(gPaid);
+  document.getElementById('sum-gdebt-remain').textContent = fmt(gRemain);
+
+  // Cutter debt breakdown for this month
+  const cStart = s.debtAtStart.cutterDebt;
+  const cAdded = s.monthSharedCutter;  // shared expenses (cutter half)
+  const cPaid = s.monthCutterPaid;     // cutter's 50% from sales
+  const cRemain = Math.max(0, cStart + cAdded - cPaid);
+  document.getElementById('sum-cdebt-start').textContent = fmt(cStart);
+  document.getElementById('sum-cdebt-shared').textContent = fmt(cAdded);
+  document.getElementById('sum-cdebt-paid').textContent = fmt(cPaid);
+  document.getElementById('sum-cdebt-remain').textContent = fmt(cRemain);
+}
+
+function changeMonth(dir) {
+  sumMonth = new Date(sumMonth.getFullYear(), sumMonth.getMonth() + dir, 1);
+  renderSummary();
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function renderHistory() {
+  const sorted = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date));
+  const filtered = historyFilter === 'all' ? sorted :
+    sorted.filter(t =>
+      historyFilter === 'sale' ? t.type === 'sale' :
+      historyFilter === 'shared' ? t.catType === 'shared' :
+      historyFilter === 'garden' ? t.catType === 'garden' : true
+    );
+
+  const el = document.getElementById('history-list');
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>ไม่มีรายการ</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(t => historyCard(t)).join('');
+}
+
+function historyCard(t) {
+  const isSale = t.type === 'sale';
+  const icon = isSale ? '💵' : (t.catType === 'shared' ? '🤝' : '🏡');
+  const color = isSale ? '#2d8a4e' : '#c0392b';
+  const typeLabel = isSale ? 'ขายยาง' : (t.catType === 'shared' ? 'ค่าร่วม' : 'ค่าสวน');
+  const typeLabelColor = isSale ? '#2d8a4e' : (t.catType === 'shared' ? '#e07b1a' : '#c0392b');
+  const desc = isSale ? 'ขายยาง' : (t.catName || '-');
+  let sub = '';
+  if (isSale) {
+    sub = `คนตัด ${fmt(t.amount/2)} · สวน ${fmt(t.amount/2)}`;
+  } else if (t.catType === 'shared') {
+    sub = `คนตัด ${fmt(t.amount/2)} · สวน ${fmt(t.amount/2)}`;
+  } else {
+    sub = `ฝั่งสวนออกทั้งหมด`;
+  }
+  return `
+  <div class="history-item">
+    <div class="history-icon">${icon}</div>
+    <div class="history-info">
+      <div class="history-type" style="color:${typeLabelColor}">${typeLabel}</div>
+      <div class="history-desc">${desc}${t.note ? ' · ' + t.note : ''}</div>
+      <div class="history-date">${fmtDate(t.date)}</div>
+      <div style="font-size:13px;color:#888;margin-top:2px">${sub}</div>
+      <div class="history-actions">
+        <button class="action-btn edit-btn" onclick="openEditModal('${t.id}')">✏️ แก้ไข</button>
+        <button class="action-btn del-btn" onclick="openConfirmModal('${t.id}')">🗑️ ลบ</button>
+      </div>
+    </div>
+    <div>
+      <div class="history-amount" style="color:${color}">${fmt(t.amount)}</div>
+    </div>
+  </div>`;
+}
+
+function filterHistory(f, btn) {
+  historyFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+
+// ============================================================
+// ADD SALE
+// ============================================================
+function updateSalePreview() {
+  const amt = parseFloat(document.getElementById('sale-amount').value) || 0;
+  if (amt <= 0) { document.getElementById('sale-preview').style.display = 'none'; return; }
+  document.getElementById('sale-preview').style.display = 'block';
+  document.getElementById('sp-total').textContent = fmt(amt);
+  document.getElementById('sp-cutter').textContent = fmt(amt / 2);
+  document.getElementById('sp-garden').textContent = fmt(amt / 2);
+}
+
+function saveSale() {
+  const date = document.getElementById('sale-date').value;
+  const amount = parseFloat(document.getElementById('sale-amount').value);
+  const note = document.getElementById('sale-note').value.trim();
+  if (!date) { toast('กรุณาเลือกวันที่'); return; }
+  if (!amount || amount <= 0) { toast('กรุณากรอกจำนวนเงิน'); return; }
+  data.transactions.push({ id: uid(), type: 'sale', date, amount, note });
+  saveData();
+  toast('✅ บันทึกการขายยางแล้ว');
+  showScreen('home');
+}
+
+// ============================================================
+// ADD EXPENSE
+// ============================================================
+function populateCategorySelect(selectId, selectedId) {
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = '<option value="">-- เลือกหมวด --</option>' +
+    data.categories.map(c =>
+      `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name} (${c.type === 'shared' ? 'ร่วม' : 'สวน'})</option>`
+    ).join('');
+}
+
+function updateExpPreview() {
+  const catId = document.getElementById('exp-category').value;
+  const amt = parseFloat(document.getElementById('exp-amount').value) || 0;
+  const cat = data.categories.find(c => c.id === catId);
+  const prev = document.getElementById('exp-preview');
+  if (!cat || amt <= 0) { prev.style.display = 'none'; return; }
+  prev.style.display = 'block';
+  document.getElementById('ep-type').textContent = cat.type === 'shared' ? '🤝 ค่าร่วม (หารครึ่ง)' : '🏡 ค่าสวน (ออกเองทั้งหมด)';
+  const cutterRow = document.getElementById('ep-cutter-row');
+  if (cat.type === 'shared') {
+    cutterRow.style.display = 'flex';
+    document.getElementById('ep-cutter').textContent = fmt(amt / 2);
+    document.getElementById('ep-garden').textContent = fmt(amt / 2);
+  } else {
+    cutterRow.style.display = 'none';
+    document.getElementById('ep-garden').textContent = fmt(amt);
+  }
+}
+
+function saveExpense() {
+  const date = document.getElementById('exp-date').value;
+  const catId = document.getElementById('exp-category').value;
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const note = document.getElementById('exp-note').value.trim();
+  const cat = data.categories.find(c => c.id === catId);
+  if (!date) { toast('กรุณาเลือกวันที่'); return; }
+  if (!cat) { toast('กรุณาเลือกหมวดค่าใช้จ่าย'); return; }
+  if (!amount || amount <= 0) { toast('กรุณากรอกจำนวนเงิน'); return; }
+  data.transactions.push({
+    id: uid(), type: 'expense', date, amount, note,
+    catId: cat.id, catName: cat.name, catType: cat.type
+  });
+  saveData();
+  toast('✅ บันทึกค่าใช้จ่ายแล้ว');
+  showScreen('home');
+}
+
+// ============================================================
+// EDIT / DELETE
+// ============================================================
+function openEditModal(id) {
+  const t = data.transactions.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-date').value = t.date;
+  document.getElementById('edit-amount').value = t.amount;
+  document.getElementById('edit-note').value = t.note || '';
+  const catGroup = document.getElementById('edit-cat-group');
+  if (t.type === 'expense') {
+    catGroup.style.display = 'block';
+    populateCategorySelect('edit-category', t.catId);
+  } else {
+    catGroup.style.display = 'none';
+  }
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+}
+
+function saveEdit() {
+  const id = document.getElementById('edit-id').value;
+  const idx = data.transactions.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  const t = data.transactions[idx];
+  t.date = document.getElementById('edit-date').value;
+  t.amount = parseFloat(document.getElementById('edit-amount').value) || 0;
+  t.note = document.getElementById('edit-note').value.trim();
+  if (t.type === 'expense') {
+    const catId = document.getElementById('edit-category').value;
+    const cat = data.categories.find(c => c.id === catId);
+    if (cat) { t.catId = cat.id; t.catName = cat.name; t.catType = cat.type; }
+  }
+  saveData();
+  closeEditModal();
+  toast('✅ แก้ไขรายการแล้ว');
+  renderHistory();
+  renderHome();
+}
+
+function openConfirmModal(id) {
+  document.getElementById('confirm-delete-id').value = id;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.remove('open');
+}
+
+function confirmDelete() {
+  const id = document.getElementById('confirm-delete-id').value;
+  data.transactions = data.transactions.filter(t => t.id !== id);
+  saveData();
+  closeConfirmModal();
+  toast('🗑️ ลบรายการแล้ว');
+  renderHistory();
+  renderHome();
+}
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+function renderCategories() {
+  const el = document.getElementById('cat-list');
+  if (data.categories.length === 0) {
+    el.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px">ยังไม่มีหมวดหมู่</div>';
+    return;
+  }
+  el.innerHTML = data.categories.map(c => `
+    <div class="cat-item">
+      <div>
+        <div style="font-weight:700;font-size:18px">${c.name}</div>
+        <span class="cat-badge ${c.type === 'shared' ? 'badge-shared' : 'badge-garden'}">
+          ${c.type === 'shared' ? '🤝 ร่วมกัน' : '🏡 ฝั่งสวน'}
+        </span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="action-btn edit-btn" onclick="editCat('${c.id}')">✏️</button>
+        <button class="action-btn del-btn" onclick="deleteCat('${c.id}')">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showAddCatModal() {
+  document.getElementById('cat-modal-title').textContent = '➕ เพิ่มหมวดหมู่ใหม่';
+  document.getElementById('cat-edit-id').value = '';
+  document.getElementById('cat-name').value = '';
+  selectType('shared');
+  document.getElementById('cat-modal').classList.add('open');
+}
+
+function editCat(id) {
+  const cat = data.categories.find(c => c.id === id);
+  if (!cat) return;
+  document.getElementById('cat-modal-title').textContent = '✏️ แก้ไขหมวดหมู่';
+  document.getElementById('cat-edit-id').value = id;
+  document.getElementById('cat-name').value = cat.name;
+  selectType(cat.type);
+  document.getElementById('cat-modal').classList.add('open');
+}
+
+function selectType(t) {
+  document.getElementById('cat-type-val').value = t;
+  document.getElementById('type-shared').className = 'type-radio' + (t === 'shared' ? ' selected-shared' : '');
+  document.getElementById('type-garden').className = 'type-radio' + (t === 'garden' ? ' selected-garden' : '');
+}
+
+function saveCat() {
+  const name = document.getElementById('cat-name').value.trim();
+  const type = document.getElementById('cat-type-val').value;
+  const editId = document.getElementById('cat-edit-id').value;
+  if (!name) { toast('กรุณากรอกชื่อหมวด'); return; }
+  if (editId) {
+    const cat = data.categories.find(c => c.id === editId);
+    if (cat) {
+      cat.name = name; cat.type = type;
+      // Update all transactions using this cat
+      data.transactions.forEach(t => {
+        if (t.catId === editId) { t.catName = name; t.catType = type; }
+      });
+    }
+    toast('✅ แก้ไขหมวดแล้ว');
+  } else {
+    data.categories.push({ id: uid(), name, type });
+    toast('✅ เพิ่มหมวดแล้ว');
+  }
+  saveData();
+  closeCatModal();
+  renderCategories();
+}
+
+function deleteCat(id) {
+  const inUse = data.transactions.some(t => t.catId === id);
+  if (inUse) { toast('⚠️ หมวดนี้มีรายการอยู่ ลบไม่ได้'); return; }
+  data.categories = data.categories.filter(c => c.id !== id);
+  saveData();
+  renderCategories();
+  toast('🗑️ ลบหมวดแล้ว');
+}
+
+function closeCatModal() {
+  document.getElementById('cat-modal').classList.remove('open');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderHome();
+sumMonth = new Date();
+</script>
+</body>
+</html>
