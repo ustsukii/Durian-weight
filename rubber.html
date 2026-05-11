@@ -1,1398 +1,562 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>บัญชีสวนยาง</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+import { useState, useMemo } from "react";
+
+const MONTHS_TH = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+const MONTHS_FULL = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
+
+const initialTransactions = [
+  { id: 1,  date: "2567-11-05", type: "income",  amount: 11000, note: "ขายยางแผ่น", party: "shared" },
+  { id: 2,  date: "2567-11-12", type: "expense", amount: 3000,  label: "ค่าปุ๋ย",    party: "shared", note: "" },
+  { id: 3,  date: "2567-12-08", type: "income",  amount: 13500, note: "ขายยางถ้วย", party: "shared" },
+  { id: 4,  date: "2567-12-20", type: "expense", amount: 900,   label: "ตัดหญ้า",   party: "garden", note: "" },
+  { id: 5,  date: "2568-01-10", type: "income",  amount: 10000, note: "ขายยางแผ่น", party: "shared" },
+  { id: 6,  date: "2568-01-15", type: "expense", amount: 2000,  label: "น้ำกรด",    party: "shared", note: "" },
+  { id: 7,  date: "2568-02-08", type: "income",  amount: 14000, note: "ขายยางแผ่น", party: "shared" },
+  { id: 8,  date: "2568-03-05", type: "income",  amount: 9500,  note: "ขายยางถ้วย", party: "shared" },
+  { id: 9,  date: "2568-03-18", type: "expense", amount: 5000,  label: "ปุ๋ยเคมี",  party: "shared", note: "" },
+  { id: 10, date: "2568-04-22", type: "income",  amount: 12000, note: "ขายยางแผ่น", party: "shared" },
+  { id: 11, date: "2568-05-01", type: "income",  amount: 12000, note: "ขายยางแผ่น", party: "shared" },
+  { id: 12, date: "2568-05-03", type: "expense", amount: 4000,  label: "ค่าปุ๋ย",   party: "shared", note: "" },
+  { id: 13, date: "2568-05-07", type: "expense", amount: 800,   label: "ตัดหญ้า",   party: "garden", note: "" },
+  { id: 14, date: "2568-05-10", type: "income",  amount: 9500,  note: "ขายยางถ้วย", party: "shared" },
+];
 
-  :root {
-    --green: #2d8a4e;
-    --green-light: #e8f5ee;
-    --green-dark: #1a5c33;
-    --red: #c0392b;
-    --red-light: #fdecea;
-    --orange: #e07b1a;
-    --orange-light: #fef3e2;
-    --blue: #1a6bbf;
-    --blue-light: #e8f0fb;
-    --gray: #f5f5f5;
-    --text: #1a1a1a;
-    --text-light: #555;
-    --border: #ddd;
-    --white: #fff;
-    --shadow: 0 4px 16px rgba(0,0,0,0.10);
-    --radius: 18px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: #f0f4f0;
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 18px;
-  }
-
-  /* ===== HEADER ===== */
-  .header {
-    background: var(--green-dark);
-    color: white;
-    padding: 18px 20px 14px;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  }
-  .header h1 { font-size: 24px; font-weight: 800; }
-  .header .sub { font-size: 14px; opacity: 0.85; margin-top: 2px; }
-
-  /* ===== SCREENS ===== */
-  .screen { display: none; padding: 18px 14px 100px; max-width: 520px; margin: 0 auto; }
-  .screen.active { display: block; }
-
-  /* ===== BOTTOM NAV ===== */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: white;
-    display: flex;
-    border-top: 2px solid #e0e0e0;
-    z-index: 100;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-  }
-  .nav-btn {
-    flex: 1;
-    padding: 10px 4px 8px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    color: #888;
-    transition: all 0.15s;
-  }
-  .nav-btn.active { color: var(--green-dark); }
-  .nav-btn .icon { font-size: 26px; }
-
-  /* ===== HOME SCREEN ===== */
-  .debt-header {
-    background: linear-gradient(135deg, var(--green-dark), #2d8a4e);
-    color: white;
-    border-radius: var(--radius);
-    padding: 18px 16px 14px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-  }
-  .debt-header-title {
-    font-size: 15px; opacity: 0.9; text-align: center;
-    margin-bottom: 14px; font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .debt-two-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .debt-col {
-    background: rgba(255,255,255,0.15);
-    border-radius: 14px;
-    padding: 14px 12px;
-    text-align: center;
-  }
-  .debt-col .dc-label { font-size: 14px; opacity: 0.88; margin-bottom: 6px; }
-  .debt-col .dc-amount { font-size: 26px; font-weight: 800; line-height: 1; }
-  .debt-col .dc-sub { font-size: 12px; opacity: 0.72; margin-top: 5px; }
-
-  .big-btn-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-  .big-btn {
-    border: none;
-    border-radius: var(--radius);
-    padding: 22px 14px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    box-shadow: var(--shadow);
-    transition: transform 0.1s, box-shadow 0.1s;
-    min-height: 120px;
-    justify-content: center;
-  }
-  .big-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-  .big-btn .btn-icon { font-size: 34px; }
-  .btn-green { background: var(--green); }
-  .btn-red { background: var(--red); }
-  .btn-orange { background: var(--orange); }
-  .btn-blue { background: var(--blue); }
-
-  /* ===== CARDS ===== */
-  .card {
-    background: white;
-    border-radius: var(--radius);
-    padding: 18px 16px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-  }
-  .card-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-light);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* ===== FORM ===== */
-  .form-group { margin-bottom: 18px; }
-  label {
-    display: block;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--text);
-  }
-  input[type="text"], input[type="number"], input[type="date"], select, textarea {
-    width: 100%;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 20px;
-    padding: 14px 16px;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    background: white;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23555' d='M5 7l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 42px; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--green); }
-  textarea { resize: none; height: 80px; font-size: 18px; }
-
-  .expense-type-select {
-    display: flex; gap: 10px; margin-top: 6px;
-  }
-  .type-radio {
-    flex: 1; text-align: center;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 8px;
-    cursor: pointer;
-    font-size: 16px; font-weight: 600;
-    transition: all 0.15s;
-    color: var(--text-light);
-  }
-  .type-radio.selected-shared { border-color: var(--orange); background: var(--orange-light); color: var(--orange); }
-  .type-radio.selected-garden { border-color: var(--red); background: var(--red-light); color: var(--red); }
-
-  .calc-preview {
-    background: var(--gray);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-top: 10px;
-  }
-  .calc-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 17px; }
-  .calc-row .val { font-weight: 700; }
-  .calc-row.total { border-top: 1px solid #ddd; margin-top: 6px; padding-top: 10px; font-size: 18px; }
-
-  .submit-btn {
-    width: 100%;
-    border: none;
-    border-radius: 14px;
-    padding: 18px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: white;
-    cursor: pointer;
-    margin-top: 8px;
-    box-shadow: var(--shadow);
-    transition: transform 0.1s;
-  }
-  .submit-btn:active { transform: scale(0.98); }
-
-  .back-btn {
-    background: none;
-    border: none;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 17px;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 8px 0;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* ===== SUMMARY ===== */
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 18px;
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-row .val { font-weight: 800; font-size: 20px; }
-  .val-green { color: var(--green-dark); }
-  .val-red { color: var(--red); }
-  .val-orange { color: var(--orange); }
-  .val-blue { color: var(--blue); }
-
-  /* ===== HISTORY ===== */
-  .history-item {
-    background: white;
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-  .history-icon {
-    font-size: 28px;
-    min-width: 40px;
-    text-align: center;
-    padding-top: 2px;
-  }
-  .history-info { flex: 1; }
-  .history-type { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-  .history-desc { font-size: 18px; font-weight: 700; margin: 2px 0; }
-  .history-date { font-size: 14px; color: #888; }
-  .history-amount { font-size: 20px; font-weight: 800; text-align: right; }
-  .history-sub { font-size: 13px; color: #888; text-align: right; margin-top: 2px; }
-  .history-actions { display: flex; gap: 8px; margin-top: 10px; }
-  .action-btn {
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  .action-btn:active { transform: scale(0.96); }
-  .edit-btn { background: #e8f0fb; color: var(--blue); }
-  .del-btn { background: #fdecea; color: var(--red); }
-
-  /* ===== CATEGORIES ===== */
-  .cat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 17px;
-  }
-  .cat-badge {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-  .badge-shared { background: var(--orange-light); color: var(--orange); }
-  .badge-garden { background: var(--red-light); color: var(--red); }
-
-  /* ===== MODAL ===== */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 200;
-    align-items: flex-end;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: white;
-    border-radius: 24px 24px 0 0;
-    padding: 24px 20px 40px;
-    width: 100%;
-    max-width: 520px;
-    margin: 0 auto;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal-title { font-size: 22px; font-weight: 800; margin-bottom: 18px; }
-
-  /* ===== TOAST ===== */
-  .toast {
-    position: fixed;
-    bottom: 90px;
-    left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--text);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 40px;
-    font-size: 16px;
-    font-weight: 600;
-    opacity: 0;
-    transition: all 0.3s;
-    z-index: 300;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ===== FILTER ===== */
-  .filter-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .filter-chip {
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 7px 16px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    background: white;
-    cursor: pointer;
-    white-space: nowrap;
-    color: var(--text-light);
-  }
-  .filter-chip.active { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); }
-
-  .month-selector {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 16px;
-  }
-  .month-btn {
-    border: none;
-    background: white;
-    border-radius: 10px;
-    width: 44px; height: 44px;
-    font-size: 22px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  }
-  .month-label { font-size: 20px; font-weight: 800; flex: 1; text-align: center; }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #aaa;
-    font-size: 18px;
-  }
-  .empty-state .emoji { font-size: 50px; margin-bottom: 10px; }
-
-  .section-title {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .add-cat-btn {
-    border: 2px dashed var(--green);
-    background: none;
-    border-radius: 12px;
-    padding: 14px;
-    width: 100%;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--green);
-    cursor: pointer;
-    margin-top: 8px;
-  }
-
-  .tab-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .tab {
-    flex: 1;
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    background: white;
-    color: var(--text-light);
-    text-align: center;
-  }
-  .tab.active { border-color: var(--green-dark); background: var(--green-light); color: var(--green-dark); }
-
-  .debt-info { font-size: 14px; margin-top: 8px; opacity: 0.8; }
-
-  /* ===== SYNC STATUS ===== */
-  .sync-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 7px 14px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 0;
-    transition: background 0.3s, color 0.3s;
-  }
-  .sync-bar.synced   { background: #e8f5ee; color: #1a5c33; }
-  .sync-bar.syncing  { background: #fef3e2; color: #b45a00; }
-  .sync-bar.offline  { background: #fdecea; color: #9b1c1c; }
-  .sync-bar.loading  { background: #e8f0fb; color: #1a4a8a; }
-  .sync-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    display: inline-block;
-    flex-shrink: 0;
-  }
-  .synced  .sync-dot { background: #2d8a4e; }
-  .syncing .sync-dot { background: #e07b1a; animation: pulse 1s infinite; }
-  .offline .sync-dot { background: #c0392b; }
-  .loading .sync-dot { background: #1a6bbf; animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-</style>
-</head>
-<body>
-
-<div class="header">
-  <h1>🌿 บัญชีสวนยาง</h1>
-  <div class="sub">20 ไร่ · ระบบครอบครัว</div>
-</div>
-
-<div class="sync-bar loading" id="sync-bar">
-  <span class="sync-dot"></span>
-  <span id="sync-text">กำลังเชื่อมต่อ Firebase...</span>
-</div>
-
-<!-- ===== HOME ===== -->
-<div class="screen active" id="screen-home">
-  <div class="debt-header">
-    <div class="debt-header-title">💰 ยอดเงินที่ยังต้องคืน (สำรองจ่ายไปก่อน)</div>
-    <div class="debt-two-cols">
-      <div class="debt-col">
-        <div class="dc-label">🏡 ฝั่งสวน</div>
-        <div class="dc-amount" id="debt-garden">฿0</div>
-        <div class="dc-sub">ค่าสวน + ส่วนร่วม<br>หักด้วยเงินสวน 50%</div>
-      </div>
-      <div class="debt-col">
-        <div class="dc-label">🌿 คนตัดยาง</div>
-        <div class="dc-amount" id="debt-cutter">฿0</div>
-        <div class="dc-sub">ส่วนค่าร่วมของคนตัด<br>หักด้วยเงินคนตัด 50%</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="big-btn-grid">
-    <button class="big-btn btn-green" onclick="showAdd('sale')">
-      <span class="btn-icon">💵</span>
-      <span>เพิ่มรายการ<br>ขายยาง</span>
-    </button>
-    <button class="big-btn btn-red" onclick="showAdd('expense')">
-      <span class="btn-icon">🧾</span>
-      <span>เพิ่ม<br>ค่าใช้จ่าย</span>
-    </button>
-    <button class="big-btn btn-orange" onclick="showScreen('summary')">
-      <span class="btn-icon">📊</span>
-      <span>ดูสรุป<br>รายเดือน</span>
-    </button>
-    <button class="big-btn btn-blue" onclick="showScreen('history')">
-      <span class="btn-icon">📋</span>
-      <span>ประวัติ<br>ทั้งหมด</span>
-    </button>
-  </div>
-
-  <div class="card">
-    <div class="card-title">⚙️ จัดการหมวดค่าใช้จ่าย</div>
-    <button class="add-cat-btn" onclick="showScreen('categories')">+ เพิ่ม / แก้ไข หมวดหมู่</button>
-  </div>
-
-  <div class="card" id="recent-card">
-    <div class="card-title">🕐 รายการล่าสุด</div>
-    <div id="recent-list"></div>
-  </div>
-</div>
-
-<!-- ===== ADD SALE ===== -->
-<div class="screen" id="screen-add-sale">
-  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
-  <div class="section-title">💵 เพิ่มรายการขายยาง</div>
-
-  <div class="card">
-    <div class="form-group">
-      <label>📅 วันที่</label>
-      <input type="date" id="sale-date">
-    </div>
-    <div class="form-group">
-      <label>💰 จำนวนเงินที่ขายได้ (บาท)</label>
-      <input type="number" id="sale-amount" placeholder="0" inputmode="decimal" oninput="updateSalePreview()">
-    </div>
-    <div class="form-group">
-      <label>📝 หมายเหตุ</label>
-      <textarea id="sale-note" placeholder="เช่น ยางแผ่น 200 กก."></textarea>
-    </div>
-
-    <div class="calc-preview" id="sale-preview" style="display:none">
-      <div class="calc-row">
-        <span>💵 ขายได้ทั้งหมด</span>
-        <span class="val" id="sp-total">-</span>
-      </div>
-      <div class="calc-row">
-        <span>🌿 คนตัดยางได้ (50%)</span>
-        <span class="val val-blue" id="sp-cutter">-</span>
-      </div>
-      <div class="calc-row total">
-        <span>🏡 ฝั่งสวนได้ (50%)</span>
-        <span class="val val-green" id="sp-garden">-</span>
-      </div>
-      <div class="calc-row" style="font-size:14px;color:#888;padding-top:4px">
-        <span>→ เงินแต่ละฝั่งจะนำไปหักหนี้ของตัวเองอัตโนมัติ</span>
-      </div>
-    </div>
-  </div>
-
-  <button class="submit-btn" style="background:var(--green)" onclick="saveSale()">✅ บันทึกการขายยาง</button>
-</div>
-
-<!-- ===== ADD EXPENSE ===== -->
-<div class="screen" id="screen-add-expense">
-  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
-  <div class="section-title">🧾 เพิ่มค่าใช้จ่าย</div>
-
-  <div class="card">
-    <div class="form-group">
-      <label>📅 วันที่</label>
-      <input type="date" id="exp-date">
-    </div>
-    <div class="form-group">
-      <label>📂 หมวดค่าใช้จ่าย</label>
-      <select id="exp-category" onchange="updateExpPreview()">
-        <option value="">-- เลือกหมวด --</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>💸 จำนวนเงิน (บาท)</label>
-      <input type="number" id="exp-amount" placeholder="0" inputmode="decimal" oninput="updateExpPreview()">
-    </div>
-    <div class="form-group">
-      <label>📝 หมายเหตุ</label>
-      <textarea id="exp-note" placeholder="รายละเอียดเพิ่มเติม"></textarea>
-    </div>
-
-    <div class="calc-preview" id="exp-preview" style="display:none">
-      <div class="calc-row" id="ep-type-row">
-        <span>ประเภท</span><span class="val" id="ep-type">-</span>
-      </div>
-      <div class="calc-row" id="ep-cutter-row">
-        <span>🌿 คนตัดรับผิดชอบ</span>
-        <span class="val val-orange" id="ep-cutter">-</span>
-      </div>
-      <div class="calc-row total">
-        <span>🏡 ฝั่งสวนรับผิดชอบ</span>
-        <span class="val val-red" id="ep-garden">-</span>
-      </div>
-    </div>
-  </div>
-
-  <button class="submit-btn" style="background:var(--red)" onclick="saveExpense()">✅ บันทึกค่าใช้จ่าย</button>
-</div>
-
-<!-- ===== SUMMARY ===== -->
-<div class="screen" id="screen-summary">
-  <div class="section-title">
-    📊 สรุปรายเดือน
-  </div>
-
-  <div class="month-selector">
-    <button class="month-btn" onclick="changeMonth(-1)">◀</button>
-    <div class="month-label" id="sum-month-label"></div>
-    <button class="month-btn" onclick="changeMonth(1)">▶</button>
-  </div>
-
-  <div class="card">
-    <div class="card-title">💵 รายได้จากยาง</div>
-    <div class="summary-row">
-      <span>ขายยางได้ทั้งหมด</span>
-      <span class="val val-green" id="sum-sale-total">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>🌿 คนตัดยางได้</span>
-      <span class="val val-blue" id="sum-cutter">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>🏡 ฝั่งสวนได้ (ก่อนหักหนี้)</span>
-      <span class="val val-green" id="sum-garden-gross">฿0</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">🧾 ค่าใช้จ่าย</div>
-    <div class="summary-row">
-      <span>ค่าใช้จ่ายร่วม (รวม)</span>
-      <span class="val val-orange" id="sum-shared-total">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>&nbsp;&nbsp;↳ คนตัดรับผิดชอบ</span>
-      <span class="val val-orange" id="sum-shared-cutter">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>&nbsp;&nbsp;↳ ฝั่งสวนรับผิดชอบ</span>
-      <span class="val val-orange" id="sum-shared-garden">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>ค่าใช้จ่ายฝั่งสวนเท่านั้น</span>
-      <span class="val val-red" id="sum-garden-only">฿0</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">💰 สรุปสุทธิ</div>
-    <div class="summary-row">
-      <span>🌿 คนตัดได้สุทธิ (หลังหักค่าร่วม)</span>
-      <span class="val val-blue" id="sum-cutter-net">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>🏡 ฝั่งสวนได้สุทธิ (ก่อนหักหนี้)</span>
-      <span class="val val-green" id="sum-garden-net">฿0</span>
-    </div>
-  </div>
-
-  <div class="card" style="border: 2px solid var(--green-dark)">
-    <div class="card-title" style="color:var(--green-dark)">📉 หนี้สะสม — ฝั่งสวน 🏡</div>
-    <div class="summary-row" style="font-size:15px;color:#888">
-      <span>ค่าใช้จ่าย = ค่าสวน 100% + ส่วนร่วม 50%</span>
-    </div>
-    <div class="summary-row">
-      <span>หนี้ต้นเดือน</span>
-      <span class="val" id="sum-gdebt-start">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>+ ค่าใช้จ่ายสวน (เต็ม)</span>
-      <span class="val val-red" id="sum-gdebt-garden-only">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>+ ส่วนร่วม (สวน 50%)</span>
-      <span class="val val-red" id="sum-gdebt-shared">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>- หักจากเงินสวน (50% ขายยาง)</span>
-      <span class="val val-green" id="sum-gdebt-paid">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span style="font-weight:800">🏡 หนี้สวนคงเหลือ</span>
-      <span class="val val-red" style="font-size:22px" id="sum-gdebt-remain">฿0</span>
-    </div>
-  </div>
-
-  <div class="card" style="border: 2px solid var(--blue)">
-    <div class="card-title" style="color:var(--blue)">📉 หนี้สะสม — คนตัดยาง 🌿</div>
-    <div class="summary-row" style="font-size:15px;color:#888">
-      <span>ค่าใช้จ่าย = ส่วนร่วมของคนตัด 50%</span>
-    </div>
-    <div class="summary-row">
-      <span>หนี้ต้นเดือน</span>
-      <span class="val" id="sum-cdebt-start">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>+ ส่วนร่วม (คนตัด 50%)</span>
-      <span class="val val-red" id="sum-cdebt-shared">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span>- หักจากเงินคนตัด (50% ขายยาง)</span>
-      <span class="val val-green" id="sum-cdebt-paid">฿0</span>
-    </div>
-    <div class="summary-row">
-      <span style="font-weight:800">🌿 หนี้คนตัดคงเหลือ</span>
-      <span class="val val-blue" style="font-size:22px" id="sum-cdebt-remain">฿0</span>
-    </div>
-  </div>
-</div>
-
-<!-- ===== HISTORY ===== -->
-<div class="screen" id="screen-history">
-  <div class="section-title">📋 ประวัติทั้งหมด</div>
-
-  <div class="filter-bar">
-    <button class="filter-chip active" onclick="filterHistory('all', this)">ทั้งหมด</button>
-    <button class="filter-chip" onclick="filterHistory('sale', this)">ขายยาง</button>
-    <button class="filter-chip" onclick="filterHistory('shared', this)">ค่าร่วม</button>
-    <button class="filter-chip" onclick="filterHistory('garden', this)">ค่าสวน</button>
-  </div>
-
-  <div id="history-list"></div>
-</div>
-
-<!-- ===== CATEGORIES ===== -->
-<div class="screen" id="screen-categories">
-  <button class="back-btn" onclick="showScreen('home')">← กลับ</button>
-  <div class="section-title">⚙️ หมวดค่าใช้จ่าย</div>
-
-  <div class="card">
-    <div id="cat-list"></div>
-    <button class="add-cat-btn" onclick="showAddCatModal()">+ เพิ่มหมวดใหม่</button>
-  </div>
-</div>
-
-<!-- ===== MODAL: ADD/EDIT CATEGORY ===== -->
-<div class="modal-overlay" id="cat-modal">
-  <div class="modal">
-    <div class="modal-title" id="cat-modal-title">➕ เพิ่มหมวดหมู่ใหม่</div>
-    <input type="hidden" id="cat-edit-id">
-    <div class="form-group">
-      <label>ชื่อหมวด</label>
-      <input type="text" id="cat-name" placeholder="เช่น ปุ๋ย, น้ำกรด">
-    </div>
-    <div class="form-group">
-      <label>ประเภท</label>
-      <div class="expense-type-select">
-        <div class="type-radio selected-shared" id="type-shared" onclick="selectType('shared')">
-          🤝 ร่วมกัน<br><small>หารครึ่ง</small>
-        </div>
-        <div class="type-radio" id="type-garden" onclick="selectType('garden')">
-          🏡 ฝั่งสวน<br><small>ออกเองทั้งหมด</small>
-        </div>
-      </div>
-    </div>
-    <input type="hidden" id="cat-type-val" value="shared">
-    <div style="display:flex;gap:10px;margin-top:6px">
-      <button class="submit-btn" style="background:var(--green);flex:2" onclick="saveCat()">✅ บันทึก</button>
-      <button class="submit-btn" style="background:#888;flex:1" onclick="closeCatModal()">ยกเลิก</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: EDIT TRANSACTION ===== -->
-<div class="modal-overlay" id="edit-modal">
-  <div class="modal">
-    <div class="modal-title">✏️ แก้ไขรายการ</div>
-    <input type="hidden" id="edit-id">
-    <div class="form-group">
-      <label>📅 วันที่</label>
-      <input type="date" id="edit-date">
-    </div>
-    <div class="form-group" id="edit-cat-group" style="display:none">
-      <label>📂 หมวดค่าใช้จ่าย</label>
-      <select id="edit-category"></select>
-    </div>
-    <div class="form-group">
-      <label>💰 จำนวนเงิน (บาท)</label>
-      <input type="number" id="edit-amount" inputmode="decimal">
-    </div>
-    <div class="form-group">
-      <label>📝 หมายเหตุ</label>
-      <textarea id="edit-note"></textarea>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:6px">
-      <button class="submit-btn" style="background:var(--blue);flex:2" onclick="saveEdit()">✅ บันทึก</button>
-      <button class="submit-btn" style="background:#888;flex:1" onclick="closeEditModal()">ยกเลิก</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== CONFIRM DELETE ===== -->
-<div class="modal-overlay" id="confirm-modal">
-  <div class="modal">
-    <div class="modal-title">🗑️ ยืนยันการลบ?</div>
-    <p style="font-size:18px;margin-bottom:20px;color:#555">รายการนี้จะถูกลบถาวร ไม่สามารถกู้คืนได้</p>
-    <input type="hidden" id="confirm-delete-id">
-    <div style="display:flex;gap:10px">
-      <button class="submit-btn" style="background:var(--red);flex:2" onclick="confirmDelete()">🗑️ ลบเลย</button>
-      <button class="submit-btn" style="background:#888;flex:1" onclick="closeConfirmModal()">ยกเลิก</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<div class="bottom-nav">
-  <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
-    <span class="icon">🏠</span>หน้าหลัก
-  </button>
-  <button class="nav-btn" id="nav-summary" onclick="showScreen('summary')">
-    <span class="icon">📊</span>สรุป
-  </button>
-  <button class="nav-btn" id="nav-history" onclick="showScreen('history')">
-    <span class="icon">📋</span>ประวัติ
-  </button>
-  <button class="nav-btn" id="nav-categories" onclick="showScreen('categories')">
-    <span class="icon">⚙️</span>หมวด
-  </button>
-</div>
-
-<script>
-// ============================================================
-// DATA LAYER
-// ============================================================
-const STORAGE_KEY = 'rubber-farm-v3';
-let data = loadData();
-
-function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return {
-    categories: [
-      { id: 'c1', name: 'ปุ๋ย', type: 'shared' },
-      { id: 'c2', name: 'น้ำกรด', type: 'shared' },
-      { id: 'c3', name: 'ค่าไฟ', type: 'shared' },
-      { id: 'c4', name: 'ถ้วยยาง', type: 'shared' },
-      { id: 'c5', name: 'ยาและอุปกรณ์', type: 'shared' },
-      { id: 'c6', name: 'บ้านพักคนตัด', type: 'garden' },
-      { id: 'c7', name: 'ค่าตัดหญ้า', type: 'garden' },
-      { id: 'c8', name: 'ทำถนน', type: 'garden' },
-      { id: 'c9', name: 'ระบบน้ำ', type: 'garden' },
-    ],
-    transactions: [],
-  };
-}
-
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-let currentScreen = 'home';
-let sumMonth = new Date();
-let historyFilter = 'all';
-
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const nb = document.getElementById('nav-' + name);
-  if (nb) nb.classList.add('active');
-  currentScreen = name;
-
-  if (name === 'home') renderHome();
-  if (name === 'summary') renderSummary();
-  if (name === 'history') renderHistory();
-  if (name === 'categories') renderCategories();
-}
-
-function showAdd(type) {
-  if (type === 'sale') {
-    document.getElementById('sale-date').value = todayStr();
-    document.getElementById('sale-amount').value = '';
-    document.getElementById('sale-note').value = '';
-    document.getElementById('sale-preview').style.display = 'none';
-    showScreen('add-sale');
-  } else {
-    document.getElementById('exp-date').value = todayStr();
-    document.getElementById('exp-amount').value = '';
-    document.getElementById('exp-note').value = '';
-    document.getElementById('exp-preview').style.display = 'none';
-    populateCategorySelect('exp-category');
-    showScreen('add-expense');
-  }
-}
-
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-// ============================================================
-// FORMATTING
-// ============================================================
 function fmt(n) {
-  return '฿' + Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return Math.abs(n).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
-function fmtDate(str) {
-  const d = new Date(str + 'T00:00:00');
-  return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+function toBE(year) { return year + 543; }
+function parseDateParts(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return { year: y, month: m, day: d };
 }
-
-// ============================================================
-// HOME
-// ============================================================
-function renderHome() {
-  const { gardenDebt, cutterDebt } = calcDebtUpTo(null);
-  document.getElementById('debt-garden').textContent = fmt(gardenDebt);
-  document.getElementById('debt-cutter').textContent = fmt(cutterDebt);
-
-  // Recent 5 transactions
-  const list = document.getElementById('recent-list');
-  const sorted = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
-  if (sorted.length === 0) {
-    list.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px">ยังไม่มีรายการ</div>';
-    return;
-  }
-  list.innerHTML = sorted.map(t => miniCard(t)).join('');
-}
-
-function miniCard(t) {
-  const icon = t.type === 'sale' ? '💵' : (t.catType === 'shared' ? '🤝' : '🏡');
-  const color = t.type === 'sale' ? 'val-green' : 'val-red';
-  const sign = t.type === 'sale' ? '+' : '-';
-  return `<div class="summary-row">
-    <span>${icon} ${t.type === 'sale' ? 'ขายยาง' : t.catName}</span>
-    <span class="${color}" style="font-weight:700">${sign}${fmt(t.amount)}</span>
-  </div>`;
-}
-
-// ============================================================
-// CALC STATS
-// ============================================================
-function calcDebtUpTo(beforeDate) {
-  // Debt state for each party up to (not including) beforeDate
-  const txns = beforeDate
-    ? data.transactions.filter(t => new Date(t.date + 'T00:00:00') < beforeDate)
-    : data.transactions;
-
-  let gardenSaleShare = 0, cutterSaleShare = 0;
-  let sharedCutter = 0, sharedGarden = 0, gardenOnly = 0;
-
-  for (const t of txns) {
-    if (t.type === 'sale') {
-      gardenSaleShare += t.amount / 2;
-      cutterSaleShare += t.amount / 2;
-    } else if (t.catType === 'shared') {
-      sharedCutter += t.amount / 2;
-      sharedGarden += t.amount / 2;
-    } else if (t.catType === 'garden') {
-      gardenOnly += t.amount;
+function computeSummary(txList) {
+  let totalIncome = 0, totalExpense = 0;
+  let gardenIncome = 0, tapperIncome = 0;
+  let gardenExpense = 0, tapperExpense = 0;
+  for (const t of txList) {
+    if (t.type === "income") {
+      totalIncome += t.amount;
+      gardenIncome += t.amount * 0.5;
+      tapperIncome += t.amount * 0.5;
+    } else {
+      totalExpense += t.amount;
+      if (t.party === "shared") { gardenExpense += t.amount * 0.5; tapperExpense += t.amount * 0.5; }
+      else if (t.party === "garden") { gardenExpense += t.amount; }
+      else { tapperExpense += t.amount; }
     }
   }
-
-  // Garden debt = (gardenOnly + sharedGarden) - gardenSaleShare
-  const gardenDebt = Math.max(0, (gardenOnly + sharedGarden) - gardenSaleShare);
-  // Cutter debt = sharedCutter - cutterSaleShare
-  const cutterDebt = Math.max(0, sharedCutter - cutterSaleShare);
-  return { gardenDebt, cutterDebt };
-}
-
-function calcStats(monthDate) {
-  let txns = data.transactions;
-  if (monthDate) {
-    const yy = monthDate.getFullYear();
-    const mm = monthDate.getMonth();
-    txns = txns.filter(t => {
-      const d = new Date(t.date + 'T00:00:00');
-      return d.getFullYear() === yy && d.getMonth() === mm;
-    });
-  }
-
-  let saleTotal = 0, cutterShare = 0, gardenGross = 0;
-  let sharedTotal = 0, sharedCutter = 0, sharedGarden = 0;
-  let gardenOnly = 0;
-
-  for (const t of txns) {
-    if (t.type === 'sale') {
-      saleTotal += t.amount;
-      cutterShare += t.amount / 2;
-      gardenGross += t.amount / 2;
-    } else if (t.catType === 'shared') {
-      sharedTotal += t.amount;
-      sharedCutter += t.amount / 2;
-      sharedGarden += t.amount / 2;
-    } else if (t.catType === 'garden') {
-      gardenOnly += t.amount;
-    }
-  }
-
-  const cutterNet = cutterShare - sharedCutter;
-  const gardenNet = gardenGross - sharedGarden;
-
-  // All-time debt
-  const { gardenDebt, cutterDebt } = calcDebtUpTo(null);
-
-  // Debt at start of month
-  let debtAtStart = { gardenDebt: 0, cutterDebt: 0 };
-  if (monthDate) {
-    const yy = monthDate.getFullYear();
-    const mm = monthDate.getMonth();
-    debtAtStart = calcDebtUpTo(new Date(yy, mm, 1));
-  }
-
+  const gardenNet = gardenIncome - gardenExpense;
+  const tapperNet = tapperIncome - tapperExpense;
   return {
-    saleTotal, cutterShare, gardenGross,
-    sharedTotal, sharedCutter, sharedGarden,
-    gardenOnly, cutterNet, gardenNet,
-    // all-time
-    gardenDebt, cutterDebt,
-    // month-level
-    monthGardenOnly: gardenOnly,
-    monthSharedGarden: sharedGarden,
-    monthGardenPaid: gardenGross,
-    monthSharedCutter: sharedCutter,
-    monthCutterPaid: cutterShare,
-    debtAtStart,
+    totalIncome, totalExpense,
+    gardenIncome, tapperIncome,
+    gardenExpense, tapperExpense,
+    gardenNet, tapperNet,
+    gardenDebt: gardenNet < 0 ? Math.abs(gardenNet) : 0,
+    tapperDebt: tapperNet < 0 ? Math.abs(tapperNet) : 0,
   };
 }
 
-// ============================================================
-// SUMMARY
-// ============================================================
-function renderSummary() {
-  document.getElementById('sum-month-label').textContent =
-    sumMonth.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+const inputStyle = {
+  width: "100%", border: "2px solid #e0e0e0", borderRadius: 12,
+  padding: "14px 14px", fontSize: 18, fontFamily: "Sarabun",
+  fontWeight: 600, outline: "none", background: "#fff", boxSizing: "border-box"
+};
 
-  const s = calcStats(sumMonth);
-  document.getElementById('sum-sale-total').textContent = fmt(s.saleTotal);
-  document.getElementById('sum-cutter').textContent = fmt(s.cutterShare);
-  document.getElementById('sum-garden-gross').textContent = fmt(s.gardenGross);
-  document.getElementById('sum-shared-total').textContent = fmt(s.sharedTotal);
-  document.getElementById('sum-shared-cutter').textContent = fmt(s.sharedCutter);
-  document.getElementById('sum-shared-garden').textContent = fmt(s.sharedGarden);
-  document.getElementById('sum-garden-only').textContent = fmt(s.gardenOnly);
-  document.getElementById('sum-cutter-net').textContent = fmt(s.cutterNet);
-  document.getElementById('sum-garden-net').textContent = fmt(s.gardenNet);
+export default function App() {
+  const [view, setView] = useState("dashboard");
+  const [mode, setMode] = useState("month"); // "month" | "year" | "all"
+  const [selectedYear, setSelectedYear] = useState(toBE(currentYear));
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [showYearPicker, setShowYearPicker] = useState(false);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [transactions, setTransactions] = useState(initialTransactions);
+  const [editingTx, setEditingTx] = useState(null);
+  const [form, setForm] = useState({ date: "", amount: "", label: "", party: "", note: "" });
 
-  // Garden debt breakdown for this month
-  const gStart = s.debtAtStart.gardenDebt;
-  const gAdded1 = s.monthGardenOnly;   // garden-only expenses
-  const gAdded2 = s.monthSharedGarden; // shared expenses (garden half)
-  const gPaid = s.monthGardenPaid;     // garden's 50% from sales
-  const gRemain = Math.max(0, gStart + gAdded1 + gAdded2 - gPaid);
-  document.getElementById('sum-gdebt-start').textContent = fmt(gStart);
-  document.getElementById('sum-gdebt-garden-only').textContent = fmt(gAdded1);
-  document.getElementById('sum-gdebt-shared').textContent = fmt(gAdded2);
-  document.getElementById('sum-gdebt-paid').textContent = fmt(gPaid);
-  document.getElementById('sum-gdebt-remain').textContent = fmt(gRemain);
+  const allYears = useMemo(() => {
+    const ys = [...new Set(transactions.map(t => parseDateParts(t.date).year))];
+    if (!ys.includes(selectedYear)) ys.push(selectedYear);
+    return ys.sort();
+  }, [transactions, selectedYear]);
 
-  // Cutter debt breakdown for this month
-  const cStart = s.debtAtStart.cutterDebt;
-  const cAdded = s.monthSharedCutter;  // shared expenses (cutter half)
-  const cPaid = s.monthCutterPaid;     // cutter's 50% from sales
-  const cRemain = Math.max(0, cStart + cAdded - cPaid);
-  document.getElementById('sum-cdebt-start').textContent = fmt(cStart);
-  document.getElementById('sum-cdebt-shared').textContent = fmt(cAdded);
-  document.getElementById('sum-cdebt-paid').textContent = fmt(cPaid);
-  document.getElementById('sum-cdebt-remain').textContent = fmt(cRemain);
-}
+  const filtered = useMemo(() => {
+    return transactions.filter(t => {
+      const { year, month } = parseDateParts(t.date);
+      if (mode === "all") return true;
+      if (mode === "year") return year === selectedYear;
+      return year === selectedYear && month === selectedMonth;
+    }).sort((a, b) => a.date.localeCompare(b.date));
+  }, [transactions, mode, selectedYear, selectedMonth]);
 
-function changeMonth(dir) {
-  sumMonth = new Date(sumMonth.getFullYear(), sumMonth.getMonth() + dir, 1);
-  renderSummary();
-}
+  const summary = useMemo(() => computeSummary(filtered), [filtered]);
 
-// ============================================================
-// HISTORY
-// ============================================================
-function renderHistory() {
-  const sorted = [...data.transactions].sort((a, b) => b.date.localeCompare(a.date));
-  const filtered = historyFilter === 'all' ? sorted :
-    sorted.filter(t =>
-      historyFilter === 'sale' ? t.type === 'sale' :
-      historyFilter === 'shared' ? t.catType === 'shared' :
-      historyFilter === 'garden' ? t.catType === 'garden' : true
-    );
+  const monthlyBreakdown = useMemo(() => {
+    if (mode !== "year") return [];
+    const byMonth = {};
+    transactions.filter(t => parseDateParts(t.date).year === selectedYear).forEach(t => {
+      const { month } = parseDateParts(t.date);
+      if (!byMonth[month]) byMonth[month] = [];
+      byMonth[month].push(t);
+    });
+    return Object.entries(byMonth).map(([m, txs]) => ({ month: Number(m), ...computeSummary(txs) })).sort((a, b) => a.month - b.month);
+  }, [transactions, mode, selectedYear]);
 
-  const el = document.getElementById('history-list');
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>ไม่มีรายการ</div>`;
-    return;
+  const yearlyBreakdown = useMemo(() => {
+    if (mode !== "all") return [];
+    const byYear = {};
+    transactions.forEach(t => {
+      const { year } = parseDateParts(t.date);
+      if (!byYear[year]) byYear[year] = [];
+      byYear[year].push(t);
+    });
+    return Object.entries(byYear).map(([y, txs]) => ({ year: Number(y), ...computeSummary(txs) })).sort((a, b) => a.year - b.year);
+  }, [transactions, mode]);
+
+  function defaultDate() {
+    const y = mode === "all" ? toBE(currentYear) : selectedYear;
+    const m = mode === "month" ? selectedMonth : currentMonth;
+    return `${y}-${String(m).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
   }
-  el.innerHTML = filtered.map(t => historyCard(t)).join('');
+
+  function openAddIncome() {
+    setForm({ date: defaultDate(), amount: "", label: "ขายยาง", party: "shared", note: "" });
+    setEditingTx(null); setView("add-income");
+  }
+  function openAddExpense() {
+    setForm({ date: defaultDate(), amount: "", label: "", party: "", note: "" });
+    setEditingTx(null); setView("add-expense");
+  }
+  function openEdit(tx) {
+    setForm({ date: tx.date, amount: String(tx.amount), label: tx.label || "ขายยาง", party: tx.party, note: tx.note || "" });
+    setEditingTx(tx);
+    setView(tx.type === "income" ? "add-income" : "add-expense");
+  }
+  function saveIncome() {
+    if (!form.amount || isNaN(Number(form.amount))) return alert("กรุณาใส่จำนวนเงิน");
+    const tx = { id: editingTx ? editingTx.id : Date.now(), date: form.date, type: "income", amount: Number(form.amount), note: form.note, party: "shared" };
+    setTransactions(prev => editingTx ? prev.map(t => t.id === editingTx.id ? tx : t) : [...prev, tx]);
+    setView("dashboard");
+  }
+  function saveExpense() {
+    if (!form.amount || isNaN(Number(form.amount))) return alert("กรุณาใส่จำนวนเงิน");
+    if (!form.party) return alert("กรุณาเลือกว่าใครจ่าย");
+    if (!form.label) return alert("กรุณาใส่ชื่อรายการ");
+    const tx = { id: editingTx ? editingTx.id : Date.now(), date: form.date, type: "expense", amount: Number(form.amount), label: form.label, party: form.party, note: form.note };
+    setTransactions(prev => editingTx ? prev.map(t => t.id === editingTx.id ? tx : t) : [...prev, tx]);
+    setView("dashboard");
+  }
+  function deleteTx(id) {
+    if (window.confirm("ลบรายการนี้?")) setTransactions(prev => prev.filter(t => t.id !== id));
+  }
+
+  const modeLabel = mode === "month" ? `${MONTHS_FULL[selectedMonth - 1]} ${selectedYear}`
+    : mode === "year" ? `ปี ${selectedYear}` : "ทุกปีรวมกัน";
+
+  return (
+    <div style={{ fontFamily: "'Sarabun', sans-serif", background: "#f0f4f0", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 110 }}>
+      <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+      {/* HEADER */}
+      <div style={{ background: "linear-gradient(135deg, #2d6a4f 0%, #40916c 100%)", padding: "18px 16px 14px", color: "#fff", position: "sticky", top: 0, zIndex: 100, boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div>
+            <div style={{ fontSize: 12, opacity: 0.8, letterSpacing: 1 }}>🌿 สวนยาง 20 ไร่</div>
+            <div style={{ fontSize: 20, fontWeight: 800 }}>บัญชีสวนยาง</div>
+          </div>
+          {(view === "dashboard" || view === "history") && (
+            <div style={{ display: "flex", background: "rgba(0,0,0,0.25)", borderRadius: 14, padding: 4, gap: 2 }}>
+              {[{ key: "month", label: "เดือน" }, { key: "year", label: "ปี" }, { key: "all", label: "ทั้งหมด" }].map(opt => (
+                <button key={opt.key}
+                  onClick={() => { setMode(opt.key); setShowYearPicker(false); setShowMonthPicker(false); }}
+                  style={{
+                    background: mode === opt.key ? "#fff" : "transparent",
+                    color: mode === opt.key ? "#2d6a4f" : "rgba(255,255,255,0.85)",
+                    border: "none", borderRadius: 10, padding: "8px 13px",
+                    fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun",
+                    transition: "all 0.15s"
+                  }}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Pickers */}
+        {(view === "dashboard" || view === "history") && mode !== "all" && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { setShowYearPicker(!showYearPicker); setShowMonthPicker(false); }}
+              style={{ flex: 1, background: "rgba(255,255,255,0.15)", color: "#fff", border: "2px solid rgba(255,255,255,0.35)", borderRadius: 12, padding: "11px 0", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun" }}>
+              ปี {selectedYear} {showYearPicker ? "▲" : "▼"}
+            </button>
+            {mode === "month" && (
+              <button onClick={() => { setShowMonthPicker(!showMonthPicker); setShowYearPicker(false); }}
+                style={{ flex: 1, background: "rgba(255,255,255,0.15)", color: "#fff", border: "2px solid rgba(255,255,255,0.35)", borderRadius: 12, padding: "11px 0", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun" }}>
+                {MONTHS_FULL[selectedMonth - 1]} {showMonthPicker ? "▲" : "▼"}
+              </button>
+            )}
+          </div>
+        )}
+
+        {showYearPicker && (
+          <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+            {allYears.map(y => (
+              <button key={y} onClick={() => { setSelectedYear(y); setShowYearPicker(false); }}
+                style={{ flex: 1, padding: "12px 0", borderRadius: 12, border: "none", fontFamily: "Sarabun", fontSize: 17, fontWeight: 700, background: y === selectedYear ? "#fff" : "rgba(255,255,255,0.2)", color: y === selectedYear ? "#2d6a4f" : "#fff", cursor: "pointer" }}>
+                {y}
+              </button>
+            ))}
+          </div>
+        )}
+        {showMonthPicker && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginTop: 10 }}>
+            {MONTHS_TH.map((m, i) => (
+              <button key={i} onClick={() => { setSelectedMonth(i + 1); setShowMonthPicker(false); }}
+                style={{ padding: "10px 0", borderRadius: 10, border: "none", fontFamily: "Sarabun", fontSize: 15, fontWeight: 700, background: (i + 1) === selectedMonth ? "#fff" : "rgba(255,255,255,0.2)", color: (i + 1) === selectedMonth ? "#2d6a4f" : "#fff", cursor: "pointer" }}>
+                {m}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ===== DASHBOARD ===== */}
+      {view === "dashboard" && (
+        <div style={{ padding: "16px 14px" }}>
+
+          {/* Big income card */}
+          <div style={{ background: "linear-gradient(135deg, #1b4332, #2d6a4f)", borderRadius: 20, padding: "20px 18px", color: "#fff", marginBottom: 14, boxShadow: "0 4px 16px rgba(45,106,79,0.3)" }}>
+            <div style={{ fontSize: 14, opacity: 0.85, marginBottom: 2 }}>💰 ยอดขายยางรวม</div>
+            <div style={{ fontSize: 42, fontWeight: 800, letterSpacing: -1, lineHeight: 1.1 }}>{fmt(summary.totalIncome)}</div>
+            <div style={{ fontSize: 14, opacity: 0.7, marginTop: 2, marginBottom: 14 }}>บาท — {modeLabel}</div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 12px" }}>
+                <div style={{ fontSize: 12, opacity: 0.8 }}>รายจ่ายรวม</div>
+                <div style={{ fontSize: 20, fontWeight: 800 }}>-{fmt(summary.totalExpense)}</div>
+              </div>
+              <div style={{ flex: 1, background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 12px" }}>
+                <div style={{ fontSize: 12, opacity: 0.8 }}>กำไรรวม</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: (summary.totalIncome - summary.totalExpense) >= 0 ? "#b7e4c7" : "#ffb3b3" }}>
+                  {(summary.totalIncome - summary.totalExpense) >= 0 ? "+" : "-"}{fmt(Math.abs(summary.totalIncome - summary.totalExpense))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Side cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+            <SideCard emoji="🏡" label="ฝั่งสวน" accent="#2d6a4f" light="#f0f7f4" border="#40916c"
+              income={summary.gardenIncome} expense={summary.gardenExpense} net={summary.gardenNet} debt={summary.gardenDebt} />
+            <SideCard emoji="🔪" label="ฝั่งคนตัด" accent="#1a759f" light="#e8f4f8" border="#1a759f"
+              income={summary.tapperIncome} expense={summary.tapperExpense} net={summary.tapperNet} debt={summary.tapperDebt} />
+          </div>
+
+          {/* Debt warning */}
+          {(summary.gardenDebt > 0 || summary.tapperDebt > 0) && (
+            <div style={{ background: "#fff8f0", border: "2px solid #f4a261", borderRadius: 16, padding: "14px 16px", marginBottom: 14 }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#c05621", marginBottom: 10 }}>⚠️ หนี้สะสม — {modeLabel}</div>
+              {summary.gardenDebt > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: summary.tapperDebt > 0 ? "1px dashed #f4c09f" : "none" }}>
+                  <span style={{ fontSize: 15 }}>🏡 ฝั่งสวนติดหนี้</span>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: "#c0392b" }}>{fmt(summary.gardenDebt)} บ.</span>
+                </div>
+              )}
+              {summary.tapperDebt > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
+                  <span style={{ fontSize: 15 }}>🔪 คนตัดติดหนี้</span>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: "#c0392b" }}>{fmt(summary.tapperDebt)} บ.</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Monthly breakdown (year mode) */}
+          {mode === "year" && monthlyBreakdown.length > 0 && (
+            <div style={{ background: "#fff", borderRadius: 16, padding: "14px", marginBottom: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1b4332", marginBottom: 10 }}>📅 สรุปรายเดือน — ปี {selectedYear}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 1fr 1fr", gap: 0 }}>
+                <div style={{ fontSize: 12, color: "#aaa", padding: "4px 0", fontWeight: 700 }}></div>
+                <div style={{ fontSize: 12, color: "#2d6a4f", padding: "4px 4px", fontWeight: 700, textAlign: "right" }}>รายได้</div>
+                <div style={{ fontSize: 12, color: "#c0392b", padding: "4px 4px", fontWeight: 700, textAlign: "right" }}>รายจ่าย</div>
+                <div style={{ fontSize: 12, color: "#555", padding: "4px 4px", fontWeight: 700, textAlign: "right" }}>กำไร</div>
+              </div>
+              {monthlyBreakdown.map(row => {
+                const net = row.gardenNet + row.tapperNet;
+                return (
+                  <div key={row.month} style={{ display: "grid", gridTemplateColumns: "40px 1fr 1fr 1fr", gap: 0, padding: "9px 0", borderTop: "1px solid #f0f0f0", alignItems: "center" }}>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: "#333" }}>{MONTHS_TH[row.month - 1]}</div>
+                    <div style={{ fontSize: 13, color: "#2d6a4f", fontWeight: 700, textAlign: "right" }}>{fmt(row.totalIncome)}</div>
+                    <div style={{ fontSize: 13, color: "#c0392b", fontWeight: 700, textAlign: "right" }}>{fmt(row.totalExpense)}</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: net >= 0 ? "#2d6a4f" : "#c0392b", textAlign: "right" }}>{net >= 0 ? "+" : "-"}{fmt(Math.abs(net))}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Yearly breakdown (all mode) */}
+          {mode === "all" && yearlyBreakdown.length > 0 && (
+            <div style={{ background: "#fff", borderRadius: 16, padding: "14px", marginBottom: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1b4332", marginBottom: 10 }}>📆 สรุปแยกรายปี</div>
+              {yearlyBreakdown.map(row => {
+                const net = row.gardenNet + row.tapperNet;
+                const totalDebt = row.gardenDebt + row.tapperDebt;
+                return (
+                  <div key={row.year} style={{ padding: "12px 0", borderTop: "1px solid #f0f0f0" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: "#1b4332" }}>ปี {row.year}</div>
+                      <div style={{ fontSize: 20, fontWeight: 800, color: net >= 0 ? "#2d6a4f" : "#c0392b" }}>
+                        {net >= 0 ? "+" : "-"}{fmt(Math.abs(net))} บ.
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 13, color: "#2d6a4f", background: "#e8f5e9", borderRadius: 8, padding: "3px 8px" }}>รายได้ {fmt(row.totalIncome)}</span>
+                      <span style={{ fontSize: 13, color: "#c0392b", background: "#fce4ec", borderRadius: 8, padding: "3px 8px" }}>รายจ่าย {fmt(row.totalExpense)}</span>
+                      {totalDebt > 0 && <span style={{ fontSize: 13, color: "#c05621", background: "#fff3e0", borderRadius: 8, padding: "3px 8px", fontWeight: 700 }}>⚠️ หนี้ {fmt(totalDebt)}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Recent list */}
+          <div style={{ background: "#fff", borderRadius: 16, padding: "14px", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#1b4332" }}>📋 รายการล่าสุด</div>
+              <button onClick={() => setView("history")} style={{ background: "none", border: "none", color: "#40916c", fontSize: 14, fontWeight: 700, cursor: "pointer", padding: "4px 8px", fontFamily: "Sarabun" }}>ดูทั้งหมด →</button>
+            </div>
+            {filtered.length === 0 && <div style={{ textAlign: "center", color: "#aaa", padding: 20, fontSize: 15 }}>ยังไม่มีรายการ</div>}
+            {filtered.slice(-6).reverse().map(tx => (
+              <TxRow key={tx.id} tx={tx} onEdit={() => openEdit(tx)} onDelete={() => deleteTx(tx.id)} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ===== ADD INCOME ===== */}
+      {view === "add-income" && (
+        <FormView title={editingTx ? "✏️ แก้ไขรายได้" : "💰 เพิ่มรายได้จากขายยาง"} onBack={() => setView("dashboard")} onSave={saveIncome}>
+          <FormField label="วันที่">
+            <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={inputStyle} />
+          </FormField>
+          <FormField label="ยอดขายยาง (บาท)">
+            <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" inputMode="decimal" style={{ ...inputStyle, fontSize: 30, fontWeight: 800, color: "#2d6a4f" }} />
+          </FormField>
+          {form.amount && !isNaN(Number(form.amount)) && Number(form.amount) > 0 && (
+            <div style={{ background: "#e8f5e9", borderRadius: 14, padding: 16 }}>
+              <div style={{ fontSize: 14, color: "#555", marginBottom: 8, fontWeight: 700 }}>แบ่งอัตโนมัติ 50/50 🤝</div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div><div style={{ fontSize: 12, color: "#888" }}>🏡 ฝั่งสวนได้</div><div style={{ fontSize: 22, fontWeight: 800, color: "#2d6a4f" }}>{fmt(Number(form.amount) / 2)} บ.</div></div>
+                <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: "#888" }}>🔪 คนตัดได้</div><div style={{ fontSize: 22, fontWeight: 800, color: "#1a759f" }}>{fmt(Number(form.amount) / 2)} บ.</div></div>
+              </div>
+            </div>
+          )}
+          <FormField label="หมายเหตุ (ไม่บังคับ)">
+            <input type="text" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="เช่น ยางแผ่น, ยางถ้วย..." style={inputStyle} />
+          </FormField>
+        </FormView>
+      )}
+
+      {/* ===== ADD EXPENSE ===== */}
+      {view === "add-expense" && (
+        <FormView title={editingTx ? "✏️ แก้ไขค่าใช้จ่าย" : "💸 เพิ่มค่าใช้จ่าย"} onBack={() => setView("dashboard")} onSave={saveExpense}>
+          <FormField label="วันที่">
+            <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={inputStyle} />
+          </FormField>
+          <FormField label="ชื่อรายการ">
+            <input type="text" value={form.label} onChange={e => setForm(f => ({ ...f, label: e.target.value }))} placeholder="เช่น ปุ๋ย ค่าไฟ ตัดหญ้า..." style={inputStyle} />
+          </FormField>
+          <FormField label="จำนวนเงิน (บาท)">
+            <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" inputMode="decimal" style={{ ...inputStyle, fontSize: 30, fontWeight: 800, color: "#c0392b" }} />
+          </FormField>
+          <FormField label="ใครจ่าย?">
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { key: "shared", emoji: "🤝", label: "จ่ายร่วมกัน", desc: "หาร 50/50 — เช่น ปุ๋ย น้ำกรด ค่าไฟ", color: "#7b2d8b", light: "#f5e8f9" },
+                { key: "garden", emoji: "🏡", label: "ฝั่งสวนจ่าย", desc: "เช่น ตัดหญ้า บ้านพัก ซ่อมสวน", color: "#2d6a4f", light: "#e8f5e9" },
+                { key: "tapper", emoji: "🔪", label: "ฝั่งคนตัดจ่าย", desc: "ค่าใช้จ่ายของคนตัดยาง", color: "#1a759f", light: "#e3f2fd" },
+              ].map(opt => (
+                <button key={opt.key} onClick={() => setForm(f => ({ ...f, party: opt.key }))}
+                  style={{ background: form.party === opt.key ? opt.light : "#f8f8f8", border: `2px solid ${form.party === opt.key ? opt.color : "#e0e0e0"}`, borderRadius: 14, padding: "14px 16px", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 26 }}>{opt.emoji}</span>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: form.party === opt.key ? opt.color : "#333", fontFamily: "Sarabun" }}>{opt.label}</div>
+                    <div style={{ fontSize: 13, color: "#888", fontFamily: "Sarabun" }}>{opt.desc}</div>
+                  </div>
+                  {form.party === opt.key && <span style={{ marginLeft: "auto", fontSize: 22, color: opt.color }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          </FormField>
+          {form.amount && form.party && !isNaN(Number(form.amount)) && Number(form.amount) > 0 && (
+            <div style={{ background: "#fff3f3", borderRadius: 12, padding: 14, border: "1px solid #ffcdd2" }}>
+              <div style={{ fontSize: 14, color: "#555", marginBottom: 6, fontWeight: 700 }}>ผลที่จะเกิดขึ้น</div>
+              {form.party === "shared" && (
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div><div style={{ fontSize: 12, color: "#888" }}>🏡 ฝั่งสวนจ่าย</div><div style={{ fontSize: 20, fontWeight: 800, color: "#c0392b" }}>{fmt(Number(form.amount) / 2)} บ.</div></div>
+                  <div style={{ textAlign: "right" }}><div style={{ fontSize: 12, color: "#888" }}>🔪 คนตัดจ่าย</div><div style={{ fontSize: 20, fontWeight: 800, color: "#c0392b" }}>{fmt(Number(form.amount) / 2)} บ.</div></div>
+                </div>
+              )}
+              {form.party === "garden" && <div style={{ fontSize: 17, color: "#c0392b", fontWeight: 800 }}>🏡 ฝั่งสวนจ่ายทั้งหมด {fmt(Number(form.amount))} บ.</div>}
+              {form.party === "tapper" && <div style={{ fontSize: 17, color: "#c0392b", fontWeight: 800 }}>🔪 คนตัดจ่ายทั้งหมด {fmt(Number(form.amount))} บ.</div>}
+            </div>
+          )}
+          <FormField label="หมายเหตุ (ไม่บังคับ)">
+            <input type="text" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="หมายเหตุเพิ่มเติม..." style={inputStyle} />
+          </FormField>
+        </FormView>
+      )}
+
+      {/* ===== HISTORY ===== */}
+      {view === "history" && (
+        <div style={{ padding: "14px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <button onClick={() => setView("dashboard")} style={{ background: "#2d6a4f", color: "#fff", border: "none", borderRadius: 12, padding: "10px 16px", fontSize: 16, cursor: "pointer", fontFamily: "Sarabun", fontWeight: 700 }}>← กลับ</button>
+            <div style={{ fontSize: 17, fontWeight: 800, color: "#1b4332" }}>ประวัติ — {modeLabel}</div>
+          </div>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 14, overflowX: "auto", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f0f7f4" }}>
+                  {["วันที่", "รายการ", "ประเภท", "รวม", "ฝั่งสวน", "คนตัด", ""].map((h, i) => (
+                    <th key={i} style={{ padding: "9px 6px", textAlign: "left", color: "#2d6a4f", fontFamily: "Sarabun", fontWeight: 700, borderBottom: "2px solid #e0e0e0", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", padding: 24, color: "#aaa" }}>ไม่มีรายการ</td></tr>}
+                {filtered.slice().reverse().map((tx, i) => {
+                  const { day, month, year } = parseDateParts(tx.date);
+                  const isIncome = tx.type === "income";
+                  let gardenAmt = 0, tapperAmt = 0;
+                  if (isIncome) { gardenAmt = tx.amount / 2; tapperAmt = tx.amount / 2; }
+                  else if (tx.party === "shared") { gardenAmt = -(tx.amount / 2); tapperAmt = -(tx.amount / 2); }
+                  else if (tx.party === "garden") { gardenAmt = -tx.amount; }
+                  else { tapperAmt = -tx.amount; }
+                  return (
+                    <tr key={tx.id} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb", borderBottom: "1px solid #f0f0f0" }}>
+                      <td style={{ padding: "8px 5px", whiteSpace: "nowrap", fontSize: 12 }}>{day}/{month}/{String(year).slice(-2)}</td>
+                      <td style={{ padding: "8px 5px", maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tx.label || tx.note || "ขายยาง"}</td>
+                      <td style={{ padding: "8px 5px" }}>
+                        <span style={{ background: isIncome ? "#e8f5e9" : "#fce4ec", color: isIncome ? "#2d6a4f" : "#c0392b", borderRadius: 6, padding: "2px 5px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>
+                          {isIncome ? "รายได้" : tx.party === "shared" ? "ร่วม" : tx.party === "garden" ? "สวน" : "ตัด"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "8px 5px", fontWeight: 700, color: isIncome ? "#2d6a4f" : "#c0392b", whiteSpace: "nowrap" }}>{isIncome ? "+" : "-"}{fmt(tx.amount)}</td>
+                      <td style={{ padding: "8px 5px", color: gardenAmt >= 0 ? "#2d6a4f" : "#c0392b", fontWeight: 600, whiteSpace: "nowrap" }}>{gardenAmt >= 0 ? "+" : ""}{fmt(Math.abs(gardenAmt))}</td>
+                      <td style={{ padding: "8px 5px", color: tapperAmt >= 0 ? "#1a759f" : "#c0392b", fontWeight: 600, whiteSpace: "nowrap" }}>{tapperAmt >= 0 ? "+" : ""}{fmt(Math.abs(tapperAmt))}</td>
+                      <td style={{ padding: "8px 5px", whiteSpace: "nowrap" }}>
+                        <button onClick={() => openEdit(tx)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15 }}>✏️</button>
+                        <button onClick={() => deleteTx(tx.id)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15 }}>🗑️</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr style={{ background: "#f0f7f4", fontWeight: 800 }}>
+                  <td colSpan={3} style={{ padding: "10px 6px", color: "#1b4332", fontFamily: "Sarabun" }}>รวม</td>
+                  <td style={{ padding: "10px 6px", color: "#2d6a4f", fontFamily: "Sarabun" }}>+{fmt(summary.totalIncome)}</td>
+                  <td style={{ padding: "10px 6px", color: summary.gardenNet >= 0 ? "#2d6a4f" : "#c0392b", fontFamily: "Sarabun" }}>{summary.gardenNet >= 0 ? "+" : ""}{fmt(Math.abs(summary.gardenNet))}</td>
+                  <td style={{ padding: "10px 6px", color: summary.tapperNet >= 0 ? "#1a759f" : "#c0392b", fontFamily: "Sarabun" }}>{summary.tapperNet >= 0 ? "+" : ""}{fmt(Math.abs(summary.tapperNet))}</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* BOTTOM BUTTONS */}
+      {(view === "dashboard" || view === "history") && (
+        <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "1px solid #e0e0e0", padding: "12px 14px", display: "flex", gap: 10, zIndex: 200, boxShadow: "0 -2px 12px rgba(0,0,0,0.08)" }}>
+          <button onClick={openAddIncome}
+            style={{ flex: 1, background: "linear-gradient(135deg, #2d6a4f, #52b788)", color: "#fff", border: "none", borderRadius: 16, padding: "16px 8px", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun", boxShadow: "0 4px 12px rgba(45,106,79,0.3)" }}>
+            💰 เพิ่มรายได้
+          </button>
+          <button onClick={openAddExpense}
+            style={{ flex: 1, background: "linear-gradient(135deg, #c0392b, #e74c3c)", color: "#fff", border: "none", borderRadius: 16, padding: "16px 8px", fontSize: 16, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun", boxShadow: "0 4px 12px rgba(192,57,43,0.3)" }}>
+            💸 เพิ่มรายจ่าย
+          </button>
+          <button onClick={() => setView(view === "history" ? "dashboard" : "history")}
+            style={{ background: "#f0f4f0", color: "#2d6a4f", border: "2px solid #2d6a4f", borderRadius: 16, padding: "16px 12px", fontSize: 22, cursor: "pointer" }}>
+            📋
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
-function historyCard(t) {
-  const isSale = t.type === 'sale';
-  const icon = isSale ? '💵' : (t.catType === 'shared' ? '🤝' : '🏡');
-  const color = isSale ? '#2d8a4e' : '#c0392b';
-  const typeLabel = isSale ? 'ขายยาง' : (t.catType === 'shared' ? 'ค่าร่วม' : 'ค่าสวน');
-  const typeLabelColor = isSale ? '#2d8a4e' : (t.catType === 'shared' ? '#e07b1a' : '#c0392b');
-  const desc = isSale ? 'ขายยาง' : (t.catName || '-');
-  let sub = '';
-  if (isSale) {
-    sub = `คนตัด ${fmt(t.amount/2)} · สวน ${fmt(t.amount/2)}`;
-  } else if (t.catType === 'shared') {
-    sub = `คนตัด ${fmt(t.amount/2)} · สวน ${fmt(t.amount/2)}`;
-  } else {
-    sub = `ฝั่งสวนออกทั้งหมด`;
-  }
-  return `
-  <div class="history-item">
-    <div class="history-icon">${icon}</div>
-    <div class="history-info">
-      <div class="history-type" style="color:${typeLabelColor}">${typeLabel}</div>
-      <div class="history-desc">${desc}${t.note ? ' · ' + t.note : ''}</div>
-      <div class="history-date">${fmtDate(t.date)}</div>
-      <div style="font-size:13px;color:#888;margin-top:2px">${sub}</div>
-      <div class="history-actions">
-        <button class="action-btn edit-btn" onclick="openEditModal('${t.id}')">✏️ แก้ไข</button>
-        <button class="action-btn del-btn" onclick="openConfirmModal('${t.id}')">🗑️ ลบ</button>
+function SideCard({ emoji, label, accent, light, border, income, expense, net, debt }) {
+  return (
+    <div style={{ background: light, borderRadius: 16, padding: "14px 12px", border: `2px solid ${border}`, boxShadow: "0 2px 6px rgba(0,0,0,0.05)" }}>
+      <div style={{ fontSize: 13, color: accent, fontWeight: 800, marginBottom: 10 }}>{emoji} {label}</div>
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ fontSize: 11, color: "#888" }}>รายได้</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: accent }}>+{fmt(income)}</div>
+      </div>
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ fontSize: 11, color: "#888" }}>รายจ่าย</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#c0392b" }}>-{fmt(expense)}</div>
+      </div>
+      <div style={{ borderTop: "1px dashed #ccc", marginTop: 8, paddingTop: 8 }}>
+        <div style={{ fontSize: 11, color: "#888" }}>คงเหลือ</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: net >= 0 ? accent : "#c0392b" }}>{net >= 0 ? "+" : "-"}{fmt(Math.abs(net))}</div>
+      </div>
+      {debt > 0 && <div style={{ marginTop: 8, background: "#ffe0e0", borderRadius: 8, padding: "5px 8px", fontSize: 12, color: "#c0392b", fontWeight: 800 }}>⚠️ หนี้ {fmt(debt)}</div>}
+    </div>
+  );
+}
+
+function TxRow({ tx, onEdit, onDelete }) {
+  const isIncome = tx.type === "income";
+  const { day, month, year } = parseDateParts(tx.date);
+  return (
+    <div style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f0f0f0", gap: 10 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 10, background: isIncome ? "#e8f5e9" : "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+        {isIncome ? "💰" : tx.party === "shared" ? "🤝" : tx.party === "garden" ? "🏡" : "🔪"}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#1b4332", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tx.label || tx.note || "ขายยาง"}</div>
+        <div style={{ fontSize: 12, color: "#999" }}>{day}/{month}/{year}</div>
+      </div>
+      <div style={{ textAlign: "right", flexShrink: 0 }}>
+        <div style={{ fontSize: 16, fontWeight: 800, color: isIncome ? "#2d6a4f" : "#c0392b" }}>{isIncome ? "+" : "-"}{fmt(tx.amount)}</div>
+        <div style={{ fontSize: 11, color: "#aaa" }}>บาท</div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <button onClick={onEdit} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: "2px" }}>✏️</button>
+        <button onClick={onDelete} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, padding: "2px" }}>🗑️</button>
       </div>
     </div>
+  );
+}
+
+function FormView({ title, onBack, onSave, children }) {
+  return (
+    <div style={{ padding: "14px 14px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <button onClick={onBack} style={{ background: "#2d6a4f", color: "#fff", border: "none", borderRadius: 12, padding: "10px 16px", fontSize: 16, cursor: "pointer", fontFamily: "Sarabun", fontWeight: 700 }}>← กลับ</button>
+        <div style={{ fontSize: 17, fontWeight: 800, color: "#1b4332" }}>{title}</div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>{children}</div>
+      <button onClick={onSave} style={{ width: "100%", marginTop: 24, marginBottom: 20, background: "linear-gradient(135deg, #2d6a4f, #52b788)", color: "#fff", border: "none", borderRadius: 16, padding: "20px", fontSize: 20, fontWeight: 800, cursor: "pointer", fontFamily: "Sarabun", boxShadow: "0 4px 16px rgba(45,106,79,0.3)" }}>
+        ✅ บันทึก
+      </button>
+    </div>
+  );
+}
+
+function FormField({ label, children }) {
+  return (
     <div>
-      <div class="history-amount" style="color:${color}">${fmt(t.amount)}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "#444", marginBottom: 8 }}>{label}</div>
+      {children}
     </div>
-  </div>`;
+  );
 }
-
-function filterHistory(f, btn) {
-  historyFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  renderHistory();
-}
-
-// ============================================================
-// ADD SALE
-// ============================================================
-function updateSalePreview() {
-  const amt = parseFloat(document.getElementById('sale-amount').value) || 0;
-  if (amt <= 0) { document.getElementById('sale-preview').style.display = 'none'; return; }
-  document.getElementById('sale-preview').style.display = 'block';
-  document.getElementById('sp-total').textContent = fmt(amt);
-  document.getElementById('sp-cutter').textContent = fmt(amt / 2);
-  document.getElementById('sp-garden').textContent = fmt(amt / 2);
-}
-
-function saveSale() {
-  const date = document.getElementById('sale-date').value;
-  const amount = parseFloat(document.getElementById('sale-amount').value);
-  const note = document.getElementById('sale-note').value.trim();
-  if (!date) { toast('กรุณาเลือกวันที่'); return; }
-  if (!amount || amount <= 0) { toast('กรุณากรอกจำนวนเงิน'); return; }
-  data.transactions.push({ id: uid(), type: 'sale', date, amount, note });
-  saveData();
-  toast('✅ บันทึกการขายยางแล้ว');
-  showScreen('home');
-}
-
-// ============================================================
-// ADD EXPENSE
-// ============================================================
-function populateCategorySelect(selectId, selectedId) {
-  const sel = document.getElementById(selectId);
-  sel.innerHTML = '<option value="">-- เลือกหมวด --</option>' +
-    data.categories.map(c =>
-      `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name} (${c.type === 'shared' ? 'ร่วม' : 'สวน'})</option>`
-    ).join('');
-}
-
-function updateExpPreview() {
-  const catId = document.getElementById('exp-category').value;
-  const amt = parseFloat(document.getElementById('exp-amount').value) || 0;
-  const cat = data.categories.find(c => c.id === catId);
-  const prev = document.getElementById('exp-preview');
-  if (!cat || amt <= 0) { prev.style.display = 'none'; return; }
-  prev.style.display = 'block';
-  document.getElementById('ep-type').textContent = cat.type === 'shared' ? '🤝 ค่าร่วม (หารครึ่ง)' : '🏡 ค่าสวน (ออกเองทั้งหมด)';
-  const cutterRow = document.getElementById('ep-cutter-row');
-  if (cat.type === 'shared') {
-    cutterRow.style.display = 'flex';
-    document.getElementById('ep-cutter').textContent = fmt(amt / 2);
-    document.getElementById('ep-garden').textContent = fmt(amt / 2);
-  } else {
-    cutterRow.style.display = 'none';
-    document.getElementById('ep-garden').textContent = fmt(amt);
-  }
-}
-
-function saveExpense() {
-  const date = document.getElementById('exp-date').value;
-  const catId = document.getElementById('exp-category').value;
-  const amount = parseFloat(document.getElementById('exp-amount').value);
-  const note = document.getElementById('exp-note').value.trim();
-  const cat = data.categories.find(c => c.id === catId);
-  if (!date) { toast('กรุณาเลือกวันที่'); return; }
-  if (!cat) { toast('กรุณาเลือกหมวดค่าใช้จ่าย'); return; }
-  if (!amount || amount <= 0) { toast('กรุณากรอกจำนวนเงิน'); return; }
-  data.transactions.push({
-    id: uid(), type: 'expense', date, amount, note,
-    catId: cat.id, catName: cat.name, catType: cat.type
-  });
-  saveData();
-  toast('✅ บันทึกค่าใช้จ่ายแล้ว');
-  showScreen('home');
-}
-
-// ============================================================
-// EDIT / DELETE
-// ============================================================
-function openEditModal(id) {
-  const t = data.transactions.find(x => x.id === id);
-  if (!t) return;
-  document.getElementById('edit-id').value = id;
-  document.getElementById('edit-date').value = t.date;
-  document.getElementById('edit-amount').value = t.amount;
-  document.getElementById('edit-note').value = t.note || '';
-  const catGroup = document.getElementById('edit-cat-group');
-  if (t.type === 'expense') {
-    catGroup.style.display = 'block';
-    populateCategorySelect('edit-category', t.catId);
-  } else {
-    catGroup.style.display = 'none';
-  }
-  document.getElementById('edit-modal').classList.add('open');
-}
-
-function closeEditModal() {
-  document.getElementById('edit-modal').classList.remove('open');
-}
-
-function saveEdit() {
-  const id = document.getElementById('edit-id').value;
-  const idx = data.transactions.findIndex(x => x.id === id);
-  if (idx === -1) return;
-  const t = data.transactions[idx];
-  t.date = document.getElementById('edit-date').value;
-  t.amount = parseFloat(document.getElementById('edit-amount').value) || 0;
-  t.note = document.getElementById('edit-note').value.trim();
-  if (t.type === 'expense') {
-    const catId = document.getElementById('edit-category').value;
-    const cat = data.categories.find(c => c.id === catId);
-    if (cat) { t.catId = cat.id; t.catName = cat.name; t.catType = cat.type; }
-  }
-  saveData();
-  closeEditModal();
-  toast('✅ แก้ไขรายการแล้ว');
-  renderHistory();
-  renderHome();
-}
-
-function openConfirmModal(id) {
-  document.getElementById('confirm-delete-id').value = id;
-  document.getElementById('confirm-modal').classList.add('open');
-}
-
-function closeConfirmModal() {
-  document.getElementById('confirm-modal').classList.remove('open');
-}
-
-function confirmDelete() {
-  const id = document.getElementById('confirm-delete-id').value;
-  data.transactions = data.transactions.filter(t => t.id !== id);
-  saveData();
-  closeConfirmModal();
-  toast('🗑️ ลบรายการแล้ว');
-  renderHistory();
-  renderHome();
-}
-
-// ============================================================
-// CATEGORIES
-// ============================================================
-function renderCategories() {
-  const el = document.getElementById('cat-list');
-  if (data.categories.length === 0) {
-    el.innerHTML = '<div style="color:#aaa;text-align:center;padding:20px">ยังไม่มีหมวดหมู่</div>';
-    return;
-  }
-  el.innerHTML = data.categories.map(c => `
-    <div class="cat-item">
-      <div>
-        <div style="font-weight:700;font-size:18px">${c.name}</div>
-        <span class="cat-badge ${c.type === 'shared' ? 'badge-shared' : 'badge-garden'}">
-          ${c.type === 'shared' ? '🤝 ร่วมกัน' : '🏡 ฝั่งสวน'}
-        </span>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="action-btn edit-btn" onclick="editCat('${c.id}')">✏️</button>
-        <button class="action-btn del-btn" onclick="deleteCat('${c.id}')">🗑️</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function showAddCatModal() {
-  document.getElementById('cat-modal-title').textContent = '➕ เพิ่มหมวดหมู่ใหม่';
-  document.getElementById('cat-edit-id').value = '';
-  document.getElementById('cat-name').value = '';
-  selectType('shared');
-  document.getElementById('cat-modal').classList.add('open');
-}
-
-function editCat(id) {
-  const cat = data.categories.find(c => c.id === id);
-  if (!cat) return;
-  document.getElementById('cat-modal-title').textContent = '✏️ แก้ไขหมวดหมู่';
-  document.getElementById('cat-edit-id').value = id;
-  document.getElementById('cat-name').value = cat.name;
-  selectType(cat.type);
-  document.getElementById('cat-modal').classList.add('open');
-}
-
-function selectType(t) {
-  document.getElementById('cat-type-val').value = t;
-  document.getElementById('type-shared').className = 'type-radio' + (t === 'shared' ? ' selected-shared' : '');
-  document.getElementById('type-garden').className = 'type-radio' + (t === 'garden' ? ' selected-garden' : '');
-}
-
-function saveCat() {
-  const name = document.getElementById('cat-name').value.trim();
-  const type = document.getElementById('cat-type-val').value;
-  const editId = document.getElementById('cat-edit-id').value;
-  if (!name) { toast('กรุณากรอกชื่อหมวด'); return; }
-  if (editId) {
-    const cat = data.categories.find(c => c.id === editId);
-    if (cat) {
-      cat.name = name; cat.type = type;
-      // Update all transactions using this cat
-      data.transactions.forEach(t => {
-        if (t.catId === editId) { t.catName = name; t.catType = type; }
-      });
-    }
-    toast('✅ แก้ไขหมวดแล้ว');
-  } else {
-    data.categories.push({ id: uid(), name, type });
-    toast('✅ เพิ่มหมวดแล้ว');
-  }
-  saveData();
-  closeCatModal();
-  renderCategories();
-}
-
-function deleteCat(id) {
-  const inUse = data.transactions.some(t => t.catId === id);
-  if (inUse) { toast('⚠️ หมวดนี้มีรายการอยู่ ลบไม่ได้'); return; }
-  data.categories = data.categories.filter(c => c.id !== id);
-  saveData();
-  renderCategories();
-  toast('🗑️ ลบหมวดแล้ว');
-}
-
-function closeCatModal() {
-  document.getElementById('cat-modal').classList.remove('open');
-}
-
-// ============================================================
-// TOAST
-// ============================================================
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-// ============================================================
-// INIT
-// ============================================================
-renderHome();
-sumMonth = new Date();
-</script>
-</body>
-</html>
