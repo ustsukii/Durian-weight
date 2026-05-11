@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>บัญชีสวนยาง</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: #f0f4f0;
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 110px;
+  }
+
+  /* HEADER */
+  #header {
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+    padding: 18px 16px 14px;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  #header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .header-subtitle { font-size: 12px; opacity: 0.8; letter-spacing: 1px; }
+  .header-title { font-size: 20px; font-weight: 800; }
+
+  /* MODE TOGGLE */
+  #mode-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.25);
+    border-radius: 14px;
+    padding: 4px;
+    gap: 2px;
+  }
+  .mode-btn {
+    background: transparent;
+    color: rgba(255,255,255,0.85);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 13px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    transition: all 0.15s;
+  }
+  .mode-btn.active {
+    background: #fff;
+    color: #2d6a4f;
+  }
+
+  /* PICKERS */
+  #pickers { display: flex; gap: 8px; margin-bottom: 0; }
+  .picker-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-radius: 12px;
+    padding: 11px 0;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+  }
+  #year-grid {
+    display: none;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  #year-grid.open { display: flex; }
+  #month-grid {
+    display: none;
+    grid-template-columns: repeat(4,1fr);
+    gap: 6px;
+    margin-top: 10px;
+  }
+  #month-grid.open { display: grid; }
+  .yr-btn, .mo-btn {
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .yr-btn { flex: 1; font-size: 17px; border-radius: 12px; }
+  .yr-btn.sel, .mo-btn.sel { background: #fff; color: #2d6a4f; }
+
+  /* VIEWS */
+  .view { display: none; padding: 16px 14px; }
+  .view.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 16px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-bottom: 14px;
+  }
+  .card-green {
+    background: linear-gradient(135deg, #1b4332, #2d6a4f);
+    color: #fff;
+    border-radius: 20px;
+    padding: 20px 18px;
+    box-shadow: 0 4px 16px rgba(45,106,79,0.3);
+    margin-bottom: 14px;
+  }
+  .big-income-label { font-size: 14px; opacity: 0.85; margin-bottom: 2px; }
+  .big-income-num { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+  .big-income-sub { font-size: 14px; opacity: 0.7; margin-top: 2px; margin-bottom: 14px; }
+  .income-row { display: flex; gap: 10px; }
+  .income-box {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .income-box .lbl { font-size: 12px; opacity: 0.8; }
+  .income-box .val { font-size: 20px; font-weight: 800; }
+
+  /* SIDE CARDS */
+  .side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .side-card {
+    border-radius: 16px;
+    padding: 14px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .side-card .sc-label { font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+  .sc-row { margin-bottom: 4px; }
+  .sc-row .sc-sub { font-size: 11px; color: #888; }
+  .sc-row .sc-val { font-size: 18px; font-weight: 800; }
+  .sc-row .sc-val.small { font-size: 15px; font-weight: 700; }
+  .sc-divider { border-top: 1px dashed #ccc; margin: 8px 0; }
+  .sc-debt { margin-top: 8px; background: #ffe0e0; border-radius: 8px; padding: 5px 8px; font-size: 12px; color: #c0392b; font-weight: 800; }
+
+  /* DEBT BOX */
+  .debt-box {
+    background: #fff8f0;
+    border: 2px solid #f4a261;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .debt-title { font-size: 16px; font-weight: 800; color: #c05621; margin-bottom: 10px; }
+  .debt-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+  .debt-row.border-b { border-bottom: 1px dashed #f4c09f; }
+  .debt-row .debt-label { font-size: 15px; }
+  .debt-row .debt-val { font-size: 20px; font-weight: 800; color: #c0392b; }
+
+  /* BREAKDOWN TABLE */
+  .breakdown-card { background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .breakdown-title { font-size: 16px; font-weight: 800; color: #1b4332; margin-bottom: 10px; }
+  .bk-header { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; gap: 0; margin-bottom: 2px; }
+  .bk-header span { font-size: 12px; font-weight: 700; text-align: right; padding: 4px 4px; }
+  .bk-row { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; gap: 0; padding: 9px 0; border-top: 1px solid #f0f0f0; align-items: center; }
+  .bk-row span { font-size: 13px; text-align: right; padding: 0 4px; font-weight: 700; }
+  .bk-row .bk-mo { font-size: 15px; font-weight: 800; color: #333; text-align: left; padding: 0; }
+
+  /* YEAR BREAKDOWN */
+  .ybk-row { padding: 12px 0; border-top: 1px solid #f0f0f0; }
+  .ybk-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .ybk-year { font-size: 18px; font-weight: 800; color: #1b4332; }
+  .ybk-net { font-size: 20px; font-weight: 800; }
+  .ybk-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ybk-tag { font-size: 13px; border-radius: 8px; padding: 3px 8px; }
+
+  /* RECENT LIST */
+  .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .list-title { font-size: 16px; font-weight: 800; color: #1b4332; }
+  .list-more { background: none; border: none; color: #40916c; font-size: 14px; font-weight: 700; cursor: pointer; padding: 4px 8px; font-family: 'Sarabun', sans-serif; }
+  .empty-msg { text-align: center; color: #aaa; padding: 20px; font-size: 15px; }
+
+  /* TX ROW */
+  .tx-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; gap: 10px; }
+  .tx-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-name { font-size: 15px; font-weight: 700; color: #1b4332; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tx-date { font-size: 12px; color: #999; }
+  .tx-amount { text-align: right; flex-shrink: 0; }
+  .tx-amount .amt { font-size: 16px; font-weight: 800; }
+  .tx-amount .unit { font-size: 11px; color: #aaa; }
+  .tx-actions { display: flex; flex-direction: column; gap: 4px; }
+  .tx-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 2px; line-height: 1; }
+
+  /* FORM VIEW */
+  #form-view { display: none; padding: 14px; }
+  #form-view.active { display: block; }
+  .form-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .back-btn { background: #2d6a4f; color: #fff; border: none; border-radius: 12px; padding: 10px 16px; font-size: 16px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-weight: 700; }
+  .form-title { font-size: 17px; font-weight: 800; color: #1b4332; }
+  .form-field { margin-bottom: 16px; }
+  .field-label { font-size: 15px; font-weight: 700; color: #444; margin-bottom: 8px; }
+  .field-input {
+    width: 100%; border: 2px solid #e0e0e0; border-radius: 12px;
+    padding: 14px; font-size: 18px; font-family: 'Sarabun', sans-serif;
+    font-weight: 600; outline: none; background: #fff;
+  }
+  .field-input.big { font-size: 30px; font-weight: 800; }
+  .split-preview {
+    background: #e8f5e9; border-radius: 14px; padding: 16px;
+    display: none;
+  }
+  .split-preview.show { display: block; }
+  .split-preview .sp-title { font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 700; }
+  .split-row { display: flex; justify-content: space-between; }
+  .split-item .sp-sub { font-size: 12px; color: #888; }
+  .split-item .sp-val { font-size: 22px; font-weight: 800; }
+  .expense-preview {
+    background: #fff3f3; border-radius: 12px; padding: 14px;
+    border: 1px solid #ffcdd2; display: none;
+  }
+  .expense-preview.show { display: block; }
+  .expense-preview .ep-title { font-size: 14px; color: #555; font-weight: 700; margin-bottom: 6px; }
+  .ep-val { font-size: 17px; color: #c0392b; font-weight: 800; }
+
+  /* PARTY BUTTONS */
+  .party-btns { display: flex; flex-direction: column; gap: 10px; }
+  .party-btn {
+    background: #f8f8f8;
+    border: 2px solid #e0e0e0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Sarabun', sans-serif;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .party-btn.sel-shared { background: #f5e8f9; border-color: #7b2d8b; }
+  .party-btn.sel-garden { background: #e8f5e9; border-color: #2d6a4f; }
+  .party-btn.sel-tapper { background: #e3f2fd; border-color: #1a759f; }
+  .party-emoji { font-size: 26px; }
+  .party-info { flex: 1; }
+  .party-name { font-size: 16px; font-weight: 800; color: #333; }
+  .party-btn.sel-shared .party-name { color: #7b2d8b; }
+  .party-btn.sel-garden .party-name { color: #2d6a4f; }
+  .party-btn.sel-tapper .party-name { color: #1a759f; }
+  .party-desc { font-size: 13px; color: #888; }
+  .party-check { margin-left: auto; font-size: 22px; display: none; }
+  .party-btn.sel-shared .party-check,
+  .party-btn.sel-garden .party-check,
+  .party-btn.sel-tapper .party-check { display: block; }
+  .party-btn.sel-shared .party-check { color: #7b2d8b; }
+  .party-btn.sel-garden .party-check { color: #2d6a4f; }
+  .party-btn.sel-tapper .party-check { color: #1a759f; }
+
+  /* SAVE BTN */
+  .save-btn {
+    width: 100%; margin-top: 24px; margin-bottom: 20px;
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    color: #fff; border: none; border-radius: 16px;
+    padding: 20px; font-size: 20px; font-weight: 800;
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+    box-shadow: 0 4px 16px rgba(45,106,79,0.3);
+  }
+
+  /* HISTORY VIEW */
+  #history-view { display: none; padding: 14px; }
+  #history-view.active { display: block; }
+  .history-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .history-title { font-size: 17px; font-weight: 800; color: #1b4332; }
+  .table-wrap { background: #fff; border-radius: 16px; padding: 14px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #f0f7f4; }
+  th { padding: 9px 5px; text-align: left; color: #2d6a4f; font-family: 'Sarabun', sans-serif; font-weight: 700; border-bottom: 2px solid #e0e0e0; white-space: nowrap; }
+  td { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
+  .tag { border-radius: 6px; padding: 2px 5px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .tag-in { background: #e8f5e9; color: #2d6a4f; }
+  .tag-ex { background: #fce4ec; color: #c0392b; }
+
+  /* BOTTOM BUTTONS */
+  #bottom-bar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid #e0e0e0;
+    padding: 12px 14px; display: flex; gap: 10px;
+    z-index: 200; box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  }
+  .bottom-green {
+    flex: 1; background: linear-gradient(135deg, #2d6a4f, #52b788);
+    color: #fff; border: none; border-radius: 16px;
+    padding: 16px 8px; font-size: 16px; font-weight: 800;
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+    box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+  }
+  .bottom-red {
+    flex: 1; background: linear-gradient(135deg, #c0392b, #e74c3c);
+    color: #fff; border: none; border-radius: 16px;
+    padding: 16px 8px; font-size: 16px; font-weight: 800;
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+    box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+  }
+  .bottom-hist {
+    background: #f0f4f0; color: #2d6a4f;
+    border: 2px solid #2d6a4f; border-radius: 16px;
+    padding: 16px 12px; font-size: 22px; cursor: pointer;
+  }
+
+  /* MODAL (confirm delete) */
+  #modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 500;
+    align-items: center; justify-content: center;
+  }
+  #modal-overlay.open { display: flex; }
+  #modal-box {
+    background: #fff; border-radius: 20px;
+    padding: 28px 24px; max-width: 320px; width: 90%;
+    text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal-icon { font-size: 40px; margin-bottom: 12px; }
+  .modal-msg { font-size: 18px; font-weight: 700; color: #1b4332; margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-cancel {
+    flex: 1; background: #f0f0f0; color: #555;
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif;
+  }
+  .modal-confirm {
+    flex: 1; background: #c0392b; color: #fff;
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif;
+  }
+  .col-green { color: #2d6a4f; }
+  .col-blue  { color: #1a759f; }
+  .col-red   { color: #c0392b; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div id="header-top">
+    <div>
+      <div class="header-subtitle">🌿 สวนยาง 20 ไร่</div>
+      <div class="header-title">บัญชีสวนยาง</div>
+    </div>
+    <div id="mode-toggle">
+      <button class="mode-btn active" onclick="setMode('month')">เดือน</button>
+      <button class="mode-btn" onclick="setMode('year')">ปี</button>
+      <button class="mode-btn" onclick="setMode('all')">ทั้งหมด</button>
+    </div>
+  </div>
+
+  <div id="pickers">
+    <button class="picker-btn" id="yr-picker-btn" onclick="toggleYearGrid()">ปี <span id="yr-label"></span> ▼</button>
+    <button class="picker-btn" id="mo-picker-btn" onclick="toggleMonthGrid()">เดือน <span id="mo-label"></span> ▼</button>
+  </div>
+  <div id="year-grid"></div>
+  <div id="month-grid"></div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div class="view active" id="dashboard-view">
+  <!-- Big card -->
+  <div class="card-green">
+    <div class="big-income-label">💰 ยอดขายยางรวม</div>
+    <div class="big-income-num" id="total-income-num">0.00</div>
+    <div class="big-income-sub" id="total-income-period">บาท</div>
+    <div class="income-row">
+      <div class="income-box">
+        <div class="lbl">รายจ่ายรวม</div>
+        <div class="val" id="total-expense-num">0.00</div>
+      </div>
+      <div class="income-box">
+        <div class="lbl">กำไรรวม</div>
+        <div class="val" id="total-profit-num">0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side cards -->
+  <div class="side-grid">
+    <!-- Garden -->
+    <div class="side-card" style="background:#f0f7f4;border:2px solid #40916c;">
+      <div class="sc-label" style="color:#2d6a4f;">🏡 ฝั่งสวน</div>
+      <div class="sc-row">
+        <div class="sc-sub">รายได้</div>
+        <div class="sc-val col-green" id="garden-income">+0.00</div>
+      </div>
+      <div class="sc-row">
+        <div class="sc-sub">รายจ่าย</div>
+        <div class="sc-val small col-red" id="garden-expense">-0.00</div>
+      </div>
+      <div class="sc-divider"></div>
+      <div class="sc-row">
+        <div class="sc-sub">คงเหลือ</div>
+        <div class="sc-val" id="garden-net">+0.00</div>
+      </div>
+      <div class="sc-debt" id="garden-debt" style="display:none;"></div>
+    </div>
+    <!-- Tapper -->
+    <div class="side-card" style="background:#e8f4f8;border:2px solid #1a759f;">
+      <div class="sc-label" style="color:#1a759f;">🔪 ฝั่งคนตัด</div>
+      <div class="sc-row">
+        <div class="sc-sub">รายได้</div>
+        <div class="sc-val col-blue" id="tapper-income">+0.00</div>
+      </div>
+      <div class="sc-row">
+        <div class="sc-sub">รายจ่าย</div>
+        <div class="sc-val small col-red" id="tapper-expense">-0.00</div>
+      </div>
+      <div class="sc-divider"></div>
+      <div class="sc-row">
+        <div class="sc-sub">คงเหลือ</div>
+        <div class="sc-val" id="tapper-net">+0.00</div>
+      </div>
+      <div class="sc-debt" id="tapper-debt" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Debt box -->
+  <div class="debt-box" id="debt-box" style="display:none;">
+    <div class="debt-title">⚠️ หนี้สะสม — <span id="debt-period"></span></div>
+    <div class="debt-row border-b" id="debt-garden-row" style="display:none;">
+      <span class="debt-label">🏡 ฝั่งสวนติดหนี้</span>
+      <span class="debt-val" id="debt-garden-val"></span>
+    </div>
+    <div class="debt-row" id="debt-tapper-row" style="display:none;">
+      <span class="debt-label">🔪 คนตัดติดหนี้</span>
+      <span class="debt-val" id="debt-tapper-val"></span>
+    </div>
+  </div>
+
+  <!-- Monthly breakdown -->
+  <div class="breakdown-card" id="monthly-breakdown" style="display:none;">
+    <div class="breakdown-title">📅 สรุปรายเดือน — ปี <span id="breakdown-year"></span></div>
+    <div class="bk-header">
+      <span></span>
+      <span style="color:#2d6a4f;">รายได้</span>
+      <span style="color:#c0392b;">รายจ่าย</span>
+      <span style="color:#555;">กำไร</span>
+    </div>
+    <div id="monthly-breakdown-rows"></div>
+  </div>
+
+  <!-- Yearly breakdown -->
+  <div class="breakdown-card" id="yearly-breakdown" style="display:none;">
+    <div class="breakdown-title">📆 สรุปแยกรายปี</div>
+    <div id="yearly-breakdown-rows"></div>
+  </div>
+
+  <!-- Recent list -->
+  <div class="card">
+    <div class="list-header">
+      <div class="list-title">📋 รายการล่าสุด</div>
+      <button class="list-more" onclick="showHistory()">ดูทั้งหมด →</button>
+    </div>
+    <div id="recent-list"><div class="empty-msg">ยังไม่มีรายการ</div></div>
+  </div>
+</div>
+
+<!-- HISTORY VIEW -->
+<div id="history-view">
+  <div class="history-header">
+    <button class="back-btn" onclick="showDashboard()">← กลับ</button>
+    <div class="history-title">ประวัติ — <span id="history-period"></span></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>วันที่</th><th>รายการ</th><th>ประเภท</th>
+          <th>รวม</th><th>ฝั่งสวน</th><th>คนตัด</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody"></tbody>
+      <tfoot><tr id="history-tfoot"></tr></tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- FORM VIEW -->
+<div id="form-view">
+  <div class="form-header">
+    <button class="back-btn" onclick="showDashboard()">← กลับ</button>
+    <div class="form-title" id="form-title"></div>
+  </div>
+
+  <div class="form-field">
+    <div class="field-label">วันที่</div>
+    <input type="date" class="field-input" id="f-date">
+  </div>
+
+  <div class="form-field" id="f-label-field" style="display:none;">
+    <div class="field-label">ชื่อรายการ</div>
+    <input type="text" class="field-input" id="f-label" placeholder="เช่น ปุ๋ย ค่าไฟ ตัดหญ้า...">
+  </div>
+
+  <div class="form-field">
+    <div class="field-label" id="f-amount-label">ยอดขายยาง (บาท)</div>
+    <input type="number" class="field-input big" id="f-amount" placeholder="0.00" inputmode="decimal" oninput="updatePreview()">
+  </div>
+
+  <!-- Income split preview -->
+  <div class="split-preview" id="split-preview">
+    <div class="sp-title">แบ่งอัตโนมัติ 50/50 🤝</div>
+    <div class="split-row">
+      <div class="split-item">
+        <div class="sp-sub">🏡 ฝั่งสวนได้</div>
+        <div class="sp-val col-green" id="sp-garden">0.00 บ.</div>
+      </div>
+      <div class="split-item" style="text-align:right;">
+        <div class="sp-sub">🔪 คนตัดได้</div>
+        <div class="sp-val col-blue" id="sp-tapper">0.00 บ.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expense party selector -->
+  <div class="form-field" id="f-party-field" style="display:none;">
+    <div class="field-label">ใครจ่าย?</div>
+    <div class="party-btns">
+      <button class="party-btn" id="party-shared" onclick="selectParty('shared')">
+        <span class="party-emoji">🤝</span>
+        <div class="party-info">
+          <div class="party-name">จ่ายร่วมกัน</div>
+          <div class="party-desc">หาร 50/50 — เช่น ปุ๋ย น้ำกรด ค่าไฟ</div>
+        </div>
+        <span class="party-check">✓</span>
+      </button>
+      <button class="party-btn" id="party-garden" onclick="selectParty('garden')">
+        <span class="party-emoji">🏡</span>
+        <div class="party-info">
+          <div class="party-name">ฝั่งสวนจ่าย</div>
+          <div class="party-desc">เช่น ตัดหญ้า บ้านพัก ซ่อมสวน</div>
+        </div>
+        <span class="party-check">✓</span>
+      </button>
+      <button class="party-btn" id="party-tapper" onclick="selectParty('tapper')">
+        <span class="party-emoji">🔪</span>
+        <div class="party-info">
+          <div class="party-name">ฝั่งคนตัดจ่าย</div>
+          <div class="party-desc">ค่าใช้จ่ายของคนตัดยาง</div>
+        </div>
+        <span class="party-check">✓</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Expense result preview -->
+  <div class="expense-preview" id="expense-preview">
+    <div class="ep-title">ผลที่จะเกิดขึ้น</div>
+    <div class="ep-val" id="ep-val"></div>
+  </div>
+
+  <div class="form-field">
+    <div class="field-label">หมายเหตุ (ไม่บังคับ)</div>
+    <input type="text" class="field-input" id="f-note" placeholder="หมายเหตุเพิ่มเติม...">
+  </div>
+
+  <button class="save-btn" onclick="saveForm()">✅ บันทึก</button>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottom-bar">
+  <button class="bottom-green" onclick="openAddIncome()">💰 เพิ่มรายได้</button>
+  <button class="bottom-red" onclick="openAddExpense()">💸 เพิ่มรายจ่าย</button>
+  <button class="bottom-hist" onclick="toggleHistory()">📋</button>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-msg">ลบรายการนี้?</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="modal-confirm" onclick="confirmDelete()">ลบเลย</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let transactions = [];
+let mode = 'month'; // month | year | all
+let selectedYear = new Date().getFullYear() + 543;
+let selectedMonth = new Date().getMonth() + 1;
+let formType = 'income'; // income | expense
+let editingId = null;
+let selectedParty = '';
+let deletePendingId = null;
+
+const MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const MONTHS_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+// ===== UTILS =====
+function fmt(n) {
+  return Math.abs(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function parseParts(dateStr) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return { year:y, month:m, day:d };
+}
+function todayStr() {
+  const now = new Date();
+  const y = now.getFullYear() + 543;
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function getFiltered() {
+  return transactions.filter(t => {
+    const { year, month } = parseParts(t.date);
+    if (mode === 'all') return true;
+    if (mode === 'year') return year === selectedYear;
+    return year === selectedYear && month === selectedMonth;
+  }).sort((a,b) => a.date.localeCompare(b.date));
+}
+function computeSummary(txList) {
+  let totalIncome=0, totalExpense=0;
+  let gardenIncome=0, tapperIncome=0, gardenExpense=0, tapperExpense=0;
+  for (const t of txList) {
+    if (t.type==='income') {
+      totalIncome += t.amount;
+      gardenIncome += t.amount*0.5;
+      tapperIncome += t.amount*0.5;
+    } else {
+      totalExpense += t.amount;
+      if (t.party==='shared') { gardenExpense+=t.amount*0.5; tapperExpense+=t.amount*0.5; }
+      else if (t.party==='garden') gardenExpense+=t.amount;
+      else tapperExpense+=t.amount;
+    }
+  }
+  const gardenNet = gardenIncome - gardenExpense;
+  const tapperNet = tapperIncome - tapperExpense;
+  return { totalIncome, totalExpense, gardenIncome, tapperIncome,
+    gardenExpense, tapperExpense, gardenNet, tapperNet,
+    gardenDebt: gardenNet<0?Math.abs(gardenNet):0,
+    tapperDebt: tapperNet<0?Math.abs(tapperNet):0 };
+}
+function getModeLabel() {
+  if (mode==='all') return 'ทุกปีรวมกัน';
+  if (mode==='year') return 'ปี '+selectedYear;
+  return MONTHS_FULL[selectedMonth-1]+' '+selectedYear;
+}
+function getAllYears() {
+  const ys = [...new Set(transactions.map(t=>parseParts(t.date).year))];
+  if (!ys.includes(selectedYear)) ys.push(selectedYear);
+  return ys.sort();
+}
+
+// ===== HEADER PICKERS =====
+function updatePickerHeader() {
+  document.getElementById('yr-label').textContent = selectedYear;
+  document.getElementById('mo-label').textContent = MONTHS_FULL[selectedMonth-1];
+  const pickers = document.getElementById('pickers');
+  const moPicker = document.getElementById('mo-picker-btn');
+  if (mode === 'all') {
+    pickers.style.display = 'none';
+  } else {
+    pickers.style.display = 'flex';
+    moPicker.style.display = mode==='month' ? 'block' : 'none';
+  }
+  buildYearGrid();
+  buildMonthGrid();
+}
+function buildYearGrid() {
+  const grid = document.getElementById('year-grid');
+  const years = getAllYears();
+  grid.innerHTML = years.map(y =>
+    `<button class="yr-btn${y===selectedYear?' sel':''}" onclick="selectYear(${y})">${y}</button>`
+  ).join('');
+}
+function buildMonthGrid() {
+  const grid = document.getElementById('month-grid');
+  grid.innerHTML = MONTHS_TH.map((m,i) =>
+    `<button class="mo-btn${(i+1)===selectedMonth?' sel':''}" onclick="selectMonth(${i+1})">${m}</button>`
+  ).join('');
+}
+function toggleYearGrid() {
+  document.getElementById('year-grid').classList.toggle('open');
+  document.getElementById('month-grid').classList.remove('open');
+}
+function toggleMonthGrid() {
+  document.getElementById('month-grid').classList.toggle('open');
+  document.getElementById('year-grid').classList.remove('open');
+}
+function selectYear(y) {
+  selectedYear = y;
+  document.getElementById('year-grid').classList.remove('open');
+  updatePickerHeader(); render();
+}
+function selectMonth(m) {
+  selectedMonth = m;
+  document.getElementById('month-grid').classList.remove('open');
+  updatePickerHeader(); render();
+}
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['month','year','all'][i]===m);
+  });
+  document.getElementById('year-grid').classList.remove('open');
+  document.getElementById('month-grid').classList.remove('open');
+  updatePickerHeader(); render();
+}
+
+// ===== RENDER =====
+function render() {
+  const filtered = getFiltered();
+  const s = computeSummary(filtered);
+  const periodLabel = getModeLabel();
+
+  // Big card
+  document.getElementById('total-income-num').textContent = fmt(s.totalIncome);
+  document.getElementById('total-income-period').textContent = 'บาท — '+periodLabel;
+  document.getElementById('total-expense-num').textContent = '-'+fmt(s.totalExpense);
+  const profit = s.totalIncome - s.totalExpense;
+  const profitEl = document.getElementById('total-profit-num');
+  profitEl.textContent = (profit>=0?'+':'-')+fmt(Math.abs(profit));
+  profitEl.style.color = profit>=0?'#b7e4c7':'#ffb3b3';
+
+  // Side cards
+  setEl('garden-income', '+'+fmt(s.gardenIncome), s.gardenIncome>=0?'#2d6a4f':'#c0392b');
+  setEl('garden-expense', '-'+fmt(s.gardenExpense), '#c0392b');
+  setEl('garden-net', (s.gardenNet>=0?'+':'-')+fmt(Math.abs(s.gardenNet)), s.gardenNet>=0?'#2d6a4f':'#c0392b');
+  setEl('tapper-income', '+'+fmt(s.tapperIncome), '#1a759f');
+  setEl('tapper-expense', '-'+fmt(s.tapperExpense), '#c0392b');
+  setEl('tapper-net', (s.tapperNet>=0?'+':'-')+fmt(Math.abs(s.tapperNet)), s.tapperNet>=0?'#1a759f':'#c0392b');
+
+  const gDebt = document.getElementById('garden-debt');
+  const tDebt = document.getElementById('tapper-debt');
+  if (s.gardenDebt>0) { gDebt.textContent='⚠️ หนี้ '+fmt(s.gardenDebt)+' บ.'; gDebt.style.display='block'; }
+  else gDebt.style.display='none';
+  if (s.tapperDebt>0) { tDebt.textContent='⚠️ หนี้ '+fmt(s.tapperDebt)+' บ.'; tDebt.style.display='block'; }
+  else tDebt.style.display='none';
+
+  // Debt box
+  const debtBox = document.getElementById('debt-box');
+  if (s.gardenDebt>0 || s.tapperDebt>0) {
+    debtBox.style.display='block';
+    document.getElementById('debt-period').textContent = periodLabel;
+    const gr = document.getElementById('debt-garden-row');
+    const tr = document.getElementById('debt-tapper-row');
+    if (s.gardenDebt>0) { gr.style.display='flex'; document.getElementById('debt-garden-val').textContent=fmt(s.gardenDebt)+' บ.'; }
+    else gr.style.display='none';
+    if (s.tapperDebt>0) { tr.style.display='flex'; document.getElementById('debt-tapper-val').textContent=fmt(s.tapperDebt)+' บ.'; }
+    else tr.style.display='none';
+  } else debtBox.style.display='none';
+
+  // Monthly breakdown
+  const mbCard = document.getElementById('monthly-breakdown');
+  const ybCard = document.getElementById('yearly-breakdown');
+  if (mode==='year') {
+    mbCard.style.display='block'; ybCard.style.display='none';
+    document.getElementById('breakdown-year').textContent = selectedYear;
+    const byMonth = {};
+    transactions.filter(t=>parseParts(t.date).year===selectedYear).forEach(t=>{
+      const {month} = parseParts(t.date);
+      if (!byMonth[month]) byMonth[month]=[];
+      byMonth[month].push(t);
+    });
+    const rows = Object.entries(byMonth).sort((a,b)=>a[0]-b[0]).map(([m,txs])=>{
+      const ms = computeSummary(txs);
+      const net = ms.gardenNet+ms.tapperNet;
+      return `<div class="bk-row">
+        <span class="bk-mo">${MONTHS_TH[m-1]}</span>
+        <span class="col-green">${fmt(ms.totalIncome)}</span>
+        <span class="col-red">${fmt(ms.totalExpense)}</span>
+        <span style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('monthly-breakdown-rows').innerHTML = rows || '<div class="empty-msg">ไม่มีข้อมูล</div>';
+  } else if (mode==='all') {
+    mbCard.style.display='none'; ybCard.style.display='block';
+    const byYear = {};
+    transactions.forEach(t=>{
+      const {year} = parseParts(t.date);
+      if (!byYear[year]) byYear[year]=[];
+      byYear[year].push(t);
+    });
+    const rows = Object.entries(byYear).sort((a,b)=>a[0]-b[0]).map(([y,txs])=>{
+      const ys = computeSummary(txs);
+      const net = ys.gardenNet+ys.tapperNet;
+      const td = ys.gardenDebt+ys.tapperDebt;
+      return `<div class="ybk-row">
+        <div class="ybk-top">
+          <span class="ybk-year">ปี ${y}</span>
+          <span class="ybk-net" style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))} บ.</span>
+        </div>
+        <div class="ybk-tags">
+          <span class="ybk-tag" style="color:#2d6a4f;background:#e8f5e9;">รายได้ ${fmt(ys.totalIncome)}</span>
+          <span class="ybk-tag" style="color:#c0392b;background:#fce4ec;">รายจ่าย ${fmt(ys.totalExpense)}</span>
+          ${td>0?`<span class="ybk-tag" style="color:#c05621;background:#fff3e0;font-weight:800;">⚠️ หนี้ ${fmt(td)}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('yearly-breakdown-rows').innerHTML = rows || '<div class="empty-msg">ไม่มีข้อมูล</div>';
+  } else {
+    mbCard.style.display='none'; ybCard.style.display='none';
+  }
+
+  // Recent list
+  renderRecentList(filtered);
+  // History (if open)
+  if (document.getElementById('history-view').classList.contains('active')) {
+    renderHistory(filtered, periodLabel);
+  }
+}
+
+function setEl(id, text, color) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  if (color) el.style.color = color;
+}
+
+function renderRecentList(filtered) {
+  const el = document.getElementById('recent-list');
+  const recent = filtered.slice(-6).reverse();
+  if (!recent.length) { el.innerHTML='<div class="empty-msg">ยังไม่มีรายการ</div>'; return; }
+  el.innerHTML = recent.map(tx => txRowHTML(tx, true)).join('');
+}
+
+function txRowHTML(tx, compact=false) {
+  const isIncome = tx.type==='income';
+  const {day,month,year} = parseParts(tx.date);
+  const icon = isIncome?'💰':tx.party==='shared'?'🤝':tx.party==='garden'?'🏡':'🔪';
+  const iconBg = isIncome?'#e8f5e9':'#fce4ec';
+  const name = tx.label||tx.note||'ขายยาง';
+  const amtColor = isIncome?'#2d6a4f':'#c0392b';
+  const amtStr = (isIncome?'+':'-')+fmt(tx.amount);
+  return `<div class="tx-row">
+    <div class="tx-icon" style="background:${iconBg}">${icon}</div>
+    <div class="tx-info">
+      <div class="tx-name">${name}</div>
+      <div class="tx-date">${day}/${month}/${year}</div>
+    </div>
+    <div class="tx-amount">
+      <div class="amt" style="color:${amtColor}">${amtStr}</div>
+      <div class="unit">บาท</div>
+    </div>
+    <div class="tx-actions">
+      <button class="tx-btn" onclick="editTx(${tx.id})">✏️</button>
+      <button class="tx-btn" onclick="askDelete(${tx.id})">🗑️</button>
+    </div>
+  </div>`;
+}
+
+function renderHistory(filtered, periodLabel) {
+  document.getElementById('history-period').textContent = periodLabel;
+  const tbody = document.getElementById('history-tbody');
+  const tfoot = document.getElementById('history-tfoot');
+  const s = computeSummary(filtered);
+  const rows = filtered.slice().reverse();
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">ไม่มีรายการ</td></tr>`;
+    tfoot.innerHTML = '';
+    return;
+  }
+  tbody.innerHTML = rows.map((tx,i) => {
+    const isIncome = tx.type==='income';
+    const {day,month,year} = parseParts(tx.date);
+    let ga=0, ta=0;
+    if (isIncome) { ga=tx.amount/2; ta=tx.amount/2; }
+    else if (tx.party==='shared') { ga=-(tx.amount/2); ta=-(tx.amount/2); }
+    else if (tx.party==='garden') ga=-tx.amount;
+    else ta=-tx.amount;
+    const tagClass = isIncome?'tag-in':'tag-ex';
+    const tagLabel = isIncome?'รายได้':tx.party==='shared'?'ร่วม':tx.party==='garden'?'สวน':'ตัด';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:12px;">${day}/${month}/${String(year).slice(-2)}</td>
+      <td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${tx.label||tx.note||'ขายยาง'}</td>
+      <td><span class="tag ${tagClass}">${tagLabel}</span></td>
+      <td style="font-weight:700;color:${isIncome?'#2d6a4f':'#c0392b'};white-space:nowrap;">${isIncome?'+':'-'}${fmt(tx.amount)}</td>
+      <td style="color:${ga>=0?'#2d6a4f':'#c0392b'};font-weight:600;white-space:nowrap;">${ga>=0?'+':''}${fmt(Math.abs(ga))}</td>
+      <td style="color:${ta>=0?'#1a759f':'#c0392b'};font-weight:600;white-space:nowrap;">${ta>=0?'+':''}${fmt(Math.abs(ta))}</td>
+      <td style="white-space:nowrap;">
+        <button class="tx-btn" onclick="editTx(${tx.id})" style="font-size:15px;">✏️</button>
+        <button class="tx-btn" onclick="askDelete(${tx.id})" style="font-size:15px;">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tfoot.innerHTML = `
+    <td colspan="3">รวม</td>
+    <td style="color:#2d6a4f;">+${fmt(s.totalIncome)}</td>
+    <td style="color:${s.gardenNet>=0?'#2d6a4f':'#c0392b'}">${s.gardenNet>=0?'+':''}${fmt(Math.abs(s.gardenNet))}</td>
+    <td style="color:${s.tapperNet>=0?'#1a759f':'#c0392b'}">${s.tapperNet>=0?'+':''}${fmt(Math.abs(s.tapperNet))}</td>
+    <td></td>`;
+}
+
+// ===== NAVIGATION =====
+function showDashboard() {
+  document.querySelector('.view.active')?.classList.remove('active');
+  document.getElementById('dashboard-view').classList.add('active');
+  document.getElementById('history-view').classList.remove('active');
+  document.getElementById('form-view').style.display='none';
+  document.getElementById('bottom-bar').style.display='flex';
+  document.getElementById('header').style.display='block';
+  render();
+}
+function showHistory() {
+  document.querySelector('.view.active')?.classList.remove('active');
+  document.getElementById('history-view').classList.add('active');
+  document.getElementById('form-view').style.display='none';
+  document.getElementById('bottom-bar').style.display='flex';
+  document.getElementById('header').style.display='block';
+  renderHistory(getFiltered(), getModeLabel());
+}
+function toggleHistory() {
+  const hv = document.getElementById('history-view');
+  const dv = document.getElementById('dashboard-view');
+  if (hv.classList.contains('active')) {
+    showDashboard();
+  } else {
+    showHistory();
+    dv.classList.remove('active');
+  }
+}
+function showFormView() {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('history-view').classList.remove('active');
+  document.getElementById('form-view').style.display='block';
+  document.getElementById('bottom-bar').style.display='none';
+  document.getElementById('header').style.display='none';
+}
+
+// ===== ADD / EDIT =====
+function openAddIncome() {
+  formType='income'; editingId=null;
+  document.getElementById('form-title').textContent='💰 เพิ่มรายได้จากขายยาง';
+  document.getElementById('f-date').value = todayStr();
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-amount').style.color='#2d6a4f';
+  document.getElementById('f-amount-label').textContent='ยอดขายยาง (บาท)';
+  document.getElementById('f-label-field').style.display='none';
+  document.getElementById('f-party-field').style.display='none';
+  document.getElementById('f-note').value='';
+  document.getElementById('split-preview').classList.remove('show');
+  document.getElementById('expense-preview').classList.remove('show');
+  showFormView();
+}
+function openAddExpense() {
+  formType='expense'; editingId=null; selectedParty='';
+  document.getElementById('form-title').textContent='💸 เพิ่มค่าใช้จ่าย';
+  document.getElementById('f-date').value = todayStr();
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-amount').style.color='#c0392b';
+  document.getElementById('f-amount-label').textContent='จำนวนเงิน (บาท)';
+  document.getElementById('f-label-field').style.display='block';
+  document.getElementById('f-label').value='';
+  document.getElementById('f-party-field').style.display='block';
+  document.getElementById('f-note').value='';
+  document.getElementById('split-preview').classList.remove('show');
+  document.getElementById('expense-preview').classList.remove('show');
+  ['shared','garden','tapper'].forEach(p => {
+    document.getElementById('party-'+p).className='party-btn';
+  });
+  showFormView();
+}
+function editTx(id) {
+  const tx = transactions.find(t=>t.id===id);
+  if (!tx) return;
+  editingId = id;
+  formType = tx.type;
+  if (tx.type==='income') {
+    document.getElementById('form-title').textContent='✏️ แก้ไขรายได้';
+    document.getElementById('f-amount-label').textContent='ยอดขายยาง (บาท)';
+    document.getElementById('f-amount').style.color='#2d6a4f';
+    document.getElementById('f-label-field').style.display='none';
+    document.getElementById('f-party-field').style.display='none';
+  } else {
+    document.getElementById('form-title').textContent='✏️ แก้ไขค่าใช้จ่าย';
+    document.getElementById('f-amount-label').textContent='จำนวนเงิน (บาท)';
+    document.getElementById('f-amount').style.color='#c0392b';
+    document.getElementById('f-label-field').style.display='block';
+    document.getElementById('f-label').value=tx.label||'';
+    document.getElementById('f-party-field').style.display='block';
+    selectParty(tx.party, false);
+  }
+  document.getElementById('f-date').value=tx.date;
+  document.getElementById('f-amount').value=tx.amount;
+  document.getElementById('f-note').value=tx.note||'';
+  updatePreview();
+  showFormView();
+}
+function selectParty(p, update=true) {
+  selectedParty=p;
+  ['shared','garden','tapper'].forEach(k => {
+    const btn = document.getElementById('party-'+k);
+    btn.className = 'party-btn'+(k===p?' sel-'+k:'');
+  });
+  if (update) updatePreview();
+}
+function updatePreview() {
+  const amt = parseFloat(document.getElementById('f-amount').value)||0;
+  if (formType==='income') {
+    const sp = document.getElementById('split-preview');
+    if (amt>0) {
+      sp.classList.add('show');
+      document.getElementById('sp-garden').textContent = fmt(amt/2)+' บ.';
+      document.getElementById('sp-tapper').textContent = fmt(amt/2)+' บ.';
+    } else sp.classList.remove('show');
+  } else {
+    const ep = document.getElementById('expense-preview');
+    if (amt>0 && selectedParty) {
+      ep.classList.add('show');
+      let msg='';
+      if (selectedParty==='shared') msg=`🏡 ฝั่งสวนจ่าย ${fmt(amt/2)} บ. &nbsp;&nbsp; 🔪 คนตัดจ่าย ${fmt(amt/2)} บ.`;
+      else if (selectedParty==='garden') msg=`🏡 ฝั่งสวนจ่ายทั้งหมด ${fmt(amt)} บ.`;
+      else msg=`🔪 คนตัดจ่ายทั้งหมด ${fmt(amt)} บ.`;
+      document.getElementById('ep-val').innerHTML=msg;
+    } else ep.classList.remove('show');
+  }
+}
+function saveForm() {
+  const date=document.getElementById('f-date').value;
+  const amount=parseFloat(document.getElementById('f-amount').value);
+  const note=document.getElementById('f-note').value.trim();
+  if (!date) return alert('กรุณาใส่วันที่');
+  if (!amount||isNaN(amount)||amount<=0) return alert('กรุณาใส่จำนวนเงิน');
+  if (formType==='expense') {
+    if (!selectedParty) return alert('กรุณาเลือกว่าใครจ่าย');
+    const label=document.getElementById('f-label').value.trim();
+    if (!label) return alert('กรุณาใส่ชื่อรายการ');
+    const tx={id: editingId||Date.now(), date, type:'expense', amount, label, party:selectedParty, note};
+    if (editingId) transactions=transactions.map(t=>t.id===editingId?tx:t);
+    else transactions.push(tx);
+  } else {
+    const tx={id: editingId||Date.now(), date, type:'income', amount, note, party:'shared'};
+    if (editingId) transactions=transactions.map(t=>t.id===editingId?tx:t);
+    else transactions.push(tx);
+  }
+  saveData();
+  showDashboard();
+}
+
+// ===== DELETE =====
+function askDelete(id) {
+  deletePendingId = id;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  deletePendingId = null;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+function confirmDelete() {
+  if (deletePendingId!==null) {
+    transactions = transactions.filter(t=>t.id!==deletePendingId);
+    saveData();
+    deletePendingId=null;
+  }
+  document.getElementById('modal-overlay').classList.remove('open');
+  render();
+  // Re-render history if open
+  if (document.getElementById('history-view').classList.contains('active')) {
+    renderHistory(getFiltered(), getModeLabel());
+  }
+}
+
+// ===== STORAGE =====
+function saveData() {
+  try { localStorage.setItem('suanyaang_tx', JSON.stringify(transactions)); } catch(e){}
+}
+function loadData() {
+  try {
+    const d = localStorage.getItem('suanyaang_tx');
+    if (d) transactions = JSON.parse(d);
+  } catch(e){ transactions=[]; }
+}
+
+// ===== INIT =====
+loadData();
+updatePickerHeader();
+render();
+</script>
+</body>
+</html>
