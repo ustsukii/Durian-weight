@@ -7,89 +7,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Sarabun', sans-serif;
-  background: #f0f4f0;
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-  padding-bottom: 110px;
-}
+body { font-family: 'Sarabun', sans-serif; background: #f0f4f0; min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 120px; }
+
+/* LOADING */
+#loading-screen { position: fixed; inset: 0; background: #1b4332; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; color: #fff; gap: 16px; }
+#loading-screen .ls-icon { font-size: 56px; }
+#loading-screen .ls-title { font-size: 22px; font-weight: 800; }
+#loading-screen .ls-sub { font-size: 15px; opacity: 0.75; }
+.spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 /* SYNC BAR */
-#sync-bar {
-  background: #1b4332;
-  padding: 6px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #fff;
-  min-height: 32px;
-}
-#sync-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: #aaa;
-  flex-shrink: 0;
-  transition: background 0.4s;
-}
-#sync-dot.ok      { background: #52b788; }
+#sync-bar { background: #1b4332; padding: 6px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; min-height: 32px; }
+#sync-dot { width: 10px; height: 10px; border-radius: 50%; background: #aaa; flex-shrink: 0; transition: background 0.4s; }
+#sync-dot.ok { background: #52b788; }
 #sync-dot.syncing { background: #f4a261; animation: pulse 1s infinite; }
 #sync-dot.offline { background: #aaa; }
-#sync-dot.error   { background: #c0392b; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+#sync-dot.error { background: #c0392b; }
 #sync-txt { font-weight: 700; }
 
 /* HEADER */
-#header {
-  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
-  padding: 18px 16px 14px;
-  color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-}
+#header { background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%); padding: 18px 16px 14px; color: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
 #header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .header-subtitle { font-size: 12px; opacity: 0.8; letter-spacing: 1px; }
 .header-title { font-size: 20px; font-weight: 800; }
-
-#mode-toggle {
-  display: flex;
-  background: rgba(0,0,0,0.25);
-  border-radius: 14px;
-  padding: 4px;
-  gap: 2px;
-}
-.mode-btn {
-  background: transparent;
-  color: rgba(255,255,255,0.85);
-  border: none; border-radius: 10px;
-  padding: 8px 13px; font-size: 14px; font-weight: 800;
-  cursor: pointer; font-family: 'Sarabun', sans-serif; transition: all 0.15s;
-}
+#mode-toggle { display: flex; background: rgba(0,0,0,0.25); border-radius: 14px; padding: 4px; gap: 2px; }
+.mode-btn { background: transparent; color: rgba(255,255,255,0.85); border: none; border-radius: 10px; padding: 8px 11px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; transition: all 0.15s; }
 .mode-btn.active { background: #fff; color: #2d6a4f; }
-
 #pickers { display: flex; gap: 8px; }
-.picker-btn {
-  flex: 1;
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.35);
-  border-radius: 12px; padding: 11px 0;
-  font-size: 16px; font-weight: 800;
-  cursor: pointer; font-family: 'Sarabun', sans-serif;
-}
-#year-grid  { display: none; gap: 8px; margin-top: 10px; }
-#year-grid.open  { display: flex; }
+.picker-btn { flex: 1; background: rgba(255,255,255,0.15); color: #fff; border: 2px solid rgba(255,255,255,0.35); border-radius: 12px; padding: 11px 0; font-size: 16px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; }
+#year-grid { display: none; gap: 8px; margin-top: 10px; }
+#year-grid.open { display: flex; }
 #month-grid { display: none; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 10px; }
 #month-grid.open { display: grid; }
-.yr-btn, .mo-btn {
-  padding: 10px 0; border-radius: 10px; border: none;
-  font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 700;
-  background: rgba(255,255,255,0.2); color: #fff; cursor: pointer;
-}
+.yr-btn, .mo-btn { padding: 10px 0; border-radius: 10px; border: none; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 700; background: rgba(255,255,255,0.2); color: #fff; cursor: pointer; }
 .yr-btn { flex: 1; font-size: 17px; border-radius: 12px; }
 .yr-btn.sel, .mo-btn.sel { background: #fff; color: #2d6a4f; }
 
@@ -99,11 +51,7 @@ body {
 
 /* CARDS */
 .card { background: #fff; border-radius: 18px; padding: 16px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 14px; }
-.card-green {
-  background: linear-gradient(135deg, #1b4332, #2d6a4f);
-  color: #fff; border-radius: 20px; padding: 20px 18px;
-  box-shadow: 0 4px 16px rgba(45,106,79,0.3); margin-bottom: 14px;
-}
+.card-green { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: #fff; border-radius: 20px; padding: 20px 18px; box-shadow: 0 4px 16px rgba(45,106,79,0.3); margin-bottom: 14px; }
 .big-income-label { font-size: 14px; opacity: 0.85; margin-bottom: 2px; }
 .big-income-num { font-size: 42px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
 .big-income-sub { font-size: 14px; opacity: 0.7; margin-top: 2px; margin-bottom: 14px; }
@@ -111,8 +59,6 @@ body {
 .income-box { flex: 1; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 12px; }
 .income-box .lbl { font-size: 12px; opacity: 0.8; }
 .income-box .val { font-size: 20px; font-weight: 800; }
-
-/* SIDE CARDS */
 .side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 .side-card { border-radius: 16px; padding: 14px 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .side-card .sc-label { font-size: 13px; font-weight: 800; margin-bottom: 10px; }
@@ -122,21 +68,17 @@ body {
 .sc-row .sc-val.small { font-size: 15px; font-weight: 700; }
 .sc-divider { border-top: 1px dashed #ccc; margin: 8px 0; }
 .sc-debt { margin-top: 8px; background: #ffe0e0; border-radius: 8px; padding: 5px 8px; font-size: 12px; color: #c0392b; font-weight: 800; }
-
-/* DEBT BOX */
 .debt-box { background: #fff8f0; border: 2px solid #f4a261; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; }
 .debt-title { font-size: 16px; font-weight: 800; color: #c05621; margin-bottom: 10px; }
 .debt-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
 .debt-row.border-b { border-bottom: 1px dashed #f4c09f; }
 .debt-row .debt-label { font-size: 15px; }
 .debt-row .debt-val { font-size: 20px; font-weight: 800; color: #c0392b; }
-
-/* BREAKDOWN */
 .breakdown-card { background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .breakdown-title { font-size: 16px; font-weight: 800; color: #1b4332; margin-bottom: 10px; }
-.bk-header { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; gap: 0; margin-bottom: 2px; }
+.bk-header { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; margin-bottom: 2px; }
 .bk-header span { font-size: 12px; font-weight: 700; text-align: right; padding: 4px; }
-.bk-row { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; gap: 0; padding: 9px 0; border-top: 1px solid #f0f0f0; align-items: center; }
+.bk-row { display: grid; grid-template-columns: 44px 1fr 1fr 1fr; padding: 9px 0; border-top: 1px solid #f0f0f0; align-items: center; }
 .bk-row span { font-size: 13px; text-align: right; padding: 0 4px; font-weight: 700; }
 .bk-row .bk-mo { font-size: 15px; font-weight: 800; color: #333; text-align: left; padding: 0; }
 .ybk-row { padding: 12px 0; border-top: 1px solid #f0f0f0; }
@@ -145,14 +87,10 @@ body {
 .ybk-net { font-size: 20px; font-weight: 800; }
 .ybk-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .ybk-tag { font-size: 13px; border-radius: 8px; padding: 3px 8px; }
-
-/* LIST */
 .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .list-title { font-size: 16px; font-weight: 800; color: #1b4332; }
 .list-more { background: none; border: none; color: #40916c; font-size: 14px; font-weight: 700; cursor: pointer; padding: 4px 8px; font-family: 'Sarabun', sans-serif; }
 .empty-msg { text-align: center; color: #aaa; padding: 20px; font-size: 15px; }
-
-/* TX ROW */
 .tx-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; gap: 10px; }
 .tx-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .tx-info { flex: 1; min-width: 0; }
@@ -163,6 +101,52 @@ body {
 .tx-amount .unit { font-size: 11px; color: #aaa; }
 .tx-actions { display: flex; flex-direction: column; gap: 4px; }
 .tx-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px; line-height: 1; }
+
+/* ====== TAPPER VIEW ====== */
+#tapper-view { display: none; padding: 14px; }
+#tapper-view.open { display: block; }
+.tapper-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.tapper-title { font-size: 18px; font-weight: 800; color: #1b4332; }
+
+/* pending debts banner */
+.pending-banner { background: linear-gradient(135deg, #c05621, #f4a261); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; color: #fff; }
+.pending-banner .pb-title { font-size: 14px; opacity: 0.9; margin-bottom: 6px; }
+.pending-banner .pb-amount { font-size: 32px; font-weight: 800; }
+.pending-banner .pb-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+.pending-item { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border-left: 4px solid #f4a261; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.pending-item.fully-paid { border-left-color: #52b788; opacity: 0.7; }
+.pi-top { display: flex; justify-content: space-between; align-items: center; }
+.pi-name { font-size: 15px; font-weight: 800; color: #1b4332; }
+.pi-date { font-size: 12px; color: #999; margin-top: 2px; }
+.pi-amounts { display: flex; gap: 12px; margin-top: 8px; font-size: 13px; }
+.pi-total { color: #888; }
+.pi-paid { color: #2d6a4f; font-weight: 700; }
+.pi-remain { color: #c0392b; font-weight: 800; }
+.pi-status { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 20px; }
+.pi-status.pending { background: #fff3e0; color: #c05621; }
+.pi-status.partial { background: #e3f2fd; color: #1565c0; }
+.pi-status.done { background: #e8f5e9; color: #2d6a4f; }
+
+/* round card */
+.round-card { background: #fff; border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden; }
+.round-header { background: linear-gradient(135deg, #1a759f, #2196f3); padding: 14px 16px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+.round-num { font-size: 13px; opacity: 0.85; }
+.round-date { font-size: 16px; font-weight: 800; }
+.round-income { text-align: right; }
+.round-income .ri-label { font-size: 12px; opacity: 0.85; }
+.round-income .ri-val { font-size: 20px; font-weight: 800; }
+.round-body { padding: 12px 16px; }
+.round-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
+.round-row:last-child { border-bottom: none; }
+.round-row .rr-label { color: #555; }
+.round-row .rr-val { font-weight: 700; }
+.round-total { display: flex; justify-content: space-between; align-items: center; background: #e8f4f8; border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
+.round-total .rt-label { font-size: 15px; font-weight: 700; color: #1a759f; }
+.round-total .rt-val { font-size: 22px; font-weight: 800; color: #1a759f; }
+.round-note { font-size: 12px; color: #aaa; margin-top: 6px; font-style: italic; }
+.round-deductions { margin-top: 10px; }
+.rd-title { font-size: 13px; color: #888; font-weight: 700; margin-bottom: 6px; }
+.deduction-tag { display: inline-flex; align-items: center; gap: 6px; background: #fce4ec; border-radius: 8px; padding: 4px 10px; font-size: 13px; color: #c0392b; font-weight: 700; margin-right: 6px; margin-bottom: 6px; }
 
 /* FORM */
 #form-view { display: none; padding: 14px; }
@@ -202,6 +186,28 @@ body {
 .save-btn { width: 100%; margin-top: 24px; margin-bottom: 20px; background: linear-gradient(135deg, #2d6a4f, #52b788); color: #fff; border: none; border-radius: 16px; padding: 20px; font-size: 20px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; box-shadow: 0 4px 16px rgba(45,106,79,0.3); }
 .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* SETTLEMENT PANEL (inside income form) */
+#settlement-panel { display: none; background: #f0f7ff; border: 2px solid #1a759f; border-radius: 16px; padding: 16px; margin-top: 4px; }
+#settlement-panel.show { display: block; }
+.sett-title { font-size: 16px; font-weight: 800; color: #1a759f; margin-bottom: 4px; }
+.sett-subtitle { font-size: 13px; color: #666; margin-bottom: 14px; }
+.sett-tapper-share { display: flex; justify-content: space-between; align-items: center; background: #e3f2fd; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
+.sett-tapper-share .sts-label { font-size: 14px; color: #1a759f; }
+.sett-tapper-share .sts-val { font-size: 22px; font-weight: 800; color: #1a759f; }
+.pending-debt-item { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid #e0e0e0; }
+.pdi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.pdi-name { font-size: 15px; font-weight: 800; color: #333; }
+.pdi-remain { font-size: 13px; color: #c0392b; font-weight: 700; background: #fce4ec; padding: 2px 8px; border-radius: 20px; }
+.pdi-date { font-size: 12px; color: #aaa; margin-top: 2px; }
+.pdi-input-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.pdi-input-label { font-size: 14px; color: #555; white-space: nowrap; }
+.pdi-input { flex: 1; border: 2px solid #1a759f; border-radius: 10px; padding: 10px 12px; font-size: 18px; font-family: 'Sarabun', sans-serif; font-weight: 700; color: #c0392b; outline: none; background: #fff; }
+.pdi-max-btn { background: #1a759f; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif; white-space: nowrap; }
+.no-pending { text-align: center; color: #aaa; padding: 12px; font-size: 14px; }
+.sett-summary { background: #1a759f; border-radius: 12px; padding: 14px 16px; margin-top: 6px; color: #fff; }
+.sett-sum-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; opacity: 0.9; }
+.sett-sum-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 10px; }
+
 /* HISTORY */
 #history-view { display: none; padding: 14px; }
 #history-view.open { display: block; }
@@ -219,38 +225,22 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
 .tag-ex { background: #fce4ec; color: #c0392b; }
 
 /* BOTTOM BAR */
-#bottom-bar {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 480px;
-  background: #fff; border-top: 1px solid #e0e0e0;
-  padding: 12px 14px; display: flex; gap: 10px;
-  z-index: 200; box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
-}
-.bottom-green { flex: 1; background: linear-gradient(135deg, #2d6a4f, #52b788); color: #fff; border: none; border-radius: 16px; padding: 16px 8px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; box-shadow: 0 4px 12px rgba(45,106,79,0.3); }
-.bottom-red { flex: 1; background: linear-gradient(135deg, #c0392b, #e74c3c); color: #fff; border: none; border-radius: 16px; padding: 16px 8px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; box-shadow: 0 4px 12px rgba(192,57,43,0.3); }
-.bottom-hist { background: #f0f4f0; color: #2d6a4f; border: 2px solid #2d6a4f; border-radius: 16px; padding: 16px 12px; font-size: 22px; cursor: pointer; }
+#bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; border-top: 1px solid #e0e0e0; padding: 10px 12px; display: flex; gap: 8px; z-index: 200; box-shadow: 0 -2px 12px rgba(0,0,0,0.08); }
+.bottom-green { flex: 1; background: linear-gradient(135deg, #2d6a4f, #52b788); color: #fff; border: none; border-radius: 14px; padding: 14px 4px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; }
+.bottom-red { flex: 1; background: linear-gradient(135deg, #c0392b, #e74c3c); color: #fff; border: none; border-radius: 14px; padding: 14px 4px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; }
+.bottom-blue { flex: 1; background: linear-gradient(135deg, #1a759f, #2196f3); color: #fff; border: none; border-radius: 14px; padding: 14px 4px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: 'Sarabun', sans-serif; }
+.bottom-hist { background: #f0f4f0; color: #2d6a4f; border: 2px solid #2d6a4f; border-radius: 14px; padding: 14px 10px; font-size: 20px; cursor: pointer; }
 
 /* MODAL */
 #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: center; justify-content: center; }
 #modal-overlay.open { display: flex; }
 #modal-box { background: #fff; border-radius: 20px; padding: 28px 24px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .modal-icon { font-size: 40px; margin-bottom: 12px; }
-.modal-msg { font-size: 18px; font-weight: 700; color: #1b4332; margin-bottom: 20px; }
+.modal-msg { font-size: 18px; font-weight: 700; color: #1b4332; margin-bottom: 6px; }
+.modal-sub { font-size: 14px; color: #c0392b; font-weight: 700; margin-bottom: 20px; }
 .modal-btns { display: flex; gap: 10px; }
 .modal-cancel { flex: 1; background: #f0f0f0; color: #555; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif; }
 .modal-confirm { flex: 1; background: #c0392b; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sarabun', sans-serif; }
-
-/* LOADING OVERLAY */
-#loading-screen {
-  position: fixed; inset: 0; background: #1b4332;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 999; color: #fff; gap: 16px;
-}
-#loading-screen .ls-icon { font-size: 56px; }
-#loading-screen .ls-title { font-size: 22px; font-weight: 800; }
-#loading-screen .ls-sub { font-size: 15px; opacity: 0.75; }
-.spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
 .col-green { color: #2d6a4f; }
 .col-blue  { color: #1a759f; }
@@ -287,14 +277,14 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
     </div>
   </div>
   <div id="pickers">
-    <button class="picker-btn" id="yr-picker-btn" onclick="toggleYearGrid()">ปี <span id="yr-label"></span> ▼</button>
-    <button class="picker-btn" id="mo-picker-btn" onclick="toggleMonthGrid()">เดือน <span id="mo-label"></span> ▼</button>
+    <button class="picker-btn" onclick="toggleYearGrid()">ปี <span id="yr-label"></span> ▼</button>
+    <button class="picker-btn" id="mo-picker-btn" onclick="toggleMonthGrid()"><span id="mo-label"></span> ▼</button>
   </div>
   <div id="year-grid"></div>
   <div id="month-grid"></div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ===== DASHBOARD ===== -->
 <div class="view active" id="dashboard-view">
   <div class="card-green">
     <div class="big-income-label">💰 ยอดขายยางรวม</div>
@@ -328,26 +318,18 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
   <div class="debt-box" id="debt-box" style="display:none;">
     <div class="debt-title">⚠️ หนี้สะสม — <span id="debt-period"></span></div>
     <div class="debt-row border-b" id="debt-garden-row" style="display:none;">
-      <span class="debt-label">🏡 ฝั่งสวนติดหนี้</span>
-      <span class="debt-val" id="debt-garden-val"></span>
+      <span class="debt-label">🏡 ฝั่งสวนติดหนี้</span><span class="debt-val" id="debt-garden-val"></span>
     </div>
     <div class="debt-row" id="debt-tapper-row" style="display:none;">
-      <span class="debt-label">🔪 คนตัดติดหนี้</span>
-      <span class="debt-val" id="debt-tapper-val"></span>
+      <span class="debt-label">🔪 คนตัดติดหนี้</span><span class="debt-val" id="debt-tapper-val"></span>
     </div>
   </div>
 
   <div class="breakdown-card" id="monthly-breakdown" style="display:none;">
     <div class="breakdown-title">📅 สรุปรายเดือน — ปี <span id="breakdown-year"></span></div>
-    <div class="bk-header">
-      <span></span>
-      <span style="color:#2d6a4f;">รายได้</span>
-      <span style="color:#c0392b;">รายจ่าย</span>
-      <span style="color:#555;">กำไร</span>
-    </div>
+    <div class="bk-header"><span></span><span style="color:#2d6a4f;">รายได้</span><span style="color:#c0392b;">รายจ่าย</span><span style="color:#555;">กำไร</span></div>
     <div id="monthly-breakdown-rows"></div>
   </div>
-
   <div class="breakdown-card" id="yearly-breakdown" style="display:none;">
     <div class="breakdown-title">📆 สรุปแยกรายปี</div>
     <div id="yearly-breakdown-rows"></div>
@@ -362,7 +344,27 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
   </div>
 </div>
 
-<!-- HISTORY -->
+<!-- ===== TAPPER VIEW ===== -->
+<div id="tapper-view">
+  <div class="tapper-header">
+    <button class="back-btn" onclick="showDashboard()">← กลับ</button>
+    <div class="tapper-title">🔪 บัญชีคนตัดยาง</div>
+  </div>
+
+  <!-- pending debts summary -->
+  <div id="tapper-pending-banner"></div>
+
+  <!-- pending debt items -->
+  <div id="tapper-pending-list"></div>
+
+  <!-- rounds -->
+  <div class="breakdown-card" style="margin-bottom:14px;">
+    <div class="breakdown-title">📦 ประวัติการจ่ายเงินงวดต่องวด</div>
+    <div id="tapper-rounds-list"><div class="empty-msg">ยังไม่มีงวดขาย</div></div>
+  </div>
+</div>
+
+<!-- ===== HISTORY ===== -->
 <div id="history-view">
   <div class="history-header">
     <button class="back-btn" onclick="showDashboard()">← กลับ</button>
@@ -377,7 +379,7 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
   </div>
 </div>
 
-<!-- FORM -->
+<!-- ===== FORM ===== -->
 <div id="form-view">
   <div class="form-header">
     <button class="back-btn" onclick="showDashboard()">← กลับ</button>
@@ -394,23 +396,19 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
   </div>
   <div class="form-field">
     <div class="field-label" id="f-amount-label">ยอดขายยาง (บาท)</div>
-    <input type="number" class="field-input big" id="f-amount" placeholder="0.00" inputmode="decimal" oninput="updatePreview()">
+    <input type="number" class="field-input big" id="f-amount" placeholder="0.00" inputmode="decimal" oninput="onAmountInput()">
   </div>
 
+  <!-- income split preview -->
   <div class="split-preview" id="split-preview">
     <div class="sp-title">แบ่งอัตโนมัติ 50/50 🤝</div>
     <div class="split-row">
-      <div class="split-item">
-        <div class="sp-sub">🏡 ฝั่งสวนได้</div>
-        <div class="sp-val col-green" id="sp-garden">0.00 บ.</div>
-      </div>
-      <div class="split-item" style="text-align:right;">
-        <div class="sp-sub">🔪 คนตัดได้</div>
-        <div class="sp-val col-blue" id="sp-tapper">0.00 บ.</div>
-      </div>
+      <div class="split-item"><div class="sp-sub">🏡 ฝั่งสวนได้</div><div class="sp-val col-green" id="sp-garden">0.00 บ.</div></div>
+      <div class="split-item" style="text-align:right;"><div class="sp-sub">🔪 คนตัดได้</div><div class="sp-val col-blue" id="sp-tapper">0.00 บ.</div></div>
     </div>
   </div>
 
+  <!-- expense party selector -->
   <div class="form-field" id="f-party-field" style="display:none;">
     <div class="field-label">ใครจ่าย?</div>
     <div class="party-btns">
@@ -431,24 +429,39 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
       </button>
     </div>
   </div>
-
   <div class="expense-preview" id="expense-preview">
     <div class="ep-title">ผลที่จะเกิดขึ้น</div>
     <div class="ep-val" id="ep-val"></div>
   </div>
 
-  <div class="form-field">
+  <!-- ===== SETTLEMENT PANEL (income only) ===== -->
+  <div id="settlement-panel">
+    <div class="sett-title">💳 จ่ายเงินคนตัดยาง — งวดนี้</div>
+    <div class="sett-subtitle">มีค่าใช้จ่ายค้างอยู่ — ใส่จำนวนที่จะหักได้เลย (0 = ยกไปงวดหน้า)</div>
+    <div class="sett-tapper-share">
+      <span class="sts-label">🔪 คนตัดควรได้งวดนี้</span>
+      <span class="sts-val" id="sett-tapper-share">0.00 บ.</span>
+    </div>
+    <div id="sett-pending-items"><div class="no-pending">✅ ไม่มีค่าใช้จ่ายค้างอยู่</div></div>
+    <div class="sett-summary" id="sett-summary" style="display:none;">
+      <div class="sett-sum-row"><span>ส่วนแบ่งคนตัด</span><span id="ss-share">0</span></div>
+      <div class="sett-sum-row"><span>หักค่าใช้จ่ายรวม</span><span id="ss-deduct">-0</span></div>
+      <div class="sett-sum-total"><span>💵 คนตัดรับเงิน</span><span id="ss-total">0 บ.</span></div>
+    </div>
+  </div>
+
+  <div class="form-field" style="margin-top:16px;">
     <div class="field-label">หมายเหตุ (ไม่บังคับ)</div>
     <input type="text" class="field-input" id="f-note" placeholder="หมายเหตุเพิ่มเติม...">
   </div>
-
   <button class="save-btn" id="save-btn" onclick="saveForm()">✅ บันทึก</button>
 </div>
 
 <!-- BOTTOM BAR -->
 <div id="bottom-bar">
-  <button class="bottom-green" onclick="openAddIncome()">💰 เพิ่มรายได้</button>
-  <button class="bottom-red" onclick="openAddExpense()">💸 เพิ่มรายจ่าย</button>
+  <button class="bottom-green" onclick="openAddIncome()">💰 รายได้</button>
+  <button class="bottom-red" onclick="openAddExpense()">💸 รายจ่าย</button>
+  <button class="bottom-blue" onclick="showTapper()">🔪 คนตัด</button>
   <button class="bottom-hist" onclick="toggleHistory()">📋</button>
 </div>
 
@@ -456,7 +469,8 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="modal-icon">🗑️</div>
-    <div class="modal-msg">ลบรายการนี้?<br><span id="modal-item-name" style="font-size:15px;color:#c0392b;font-weight:700;"></span></div>
+    <div class="modal-msg">ลบรายการนี้?</div>
+    <div class="modal-sub" id="modal-item-name"></div>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">ยกเลิก</button>
       <button class="modal-confirm" onclick="confirmDelete()">ลบเลย</button>
@@ -465,9 +479,6 @@ tfoot tr td { background: #f0f7f4; font-weight: 800; padding: 10px 5px; }
 </div>
 
 <script type="module">
-// ============================================================
-// FIREBASE IMPORTS
-// ============================================================
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -476,9 +487,7 @@ import {
   enableIndexedDbPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ============================================================
-// FIREBASE CONFIG
-// ============================================================
+// ── Firebase config ──────────────────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyA0pCY_tcbGXsnqhUjgKmq3IsauyJdhhKY",
   authDomain:        "durianfarm-e924f.firebaseapp.com",
@@ -488,18 +497,13 @@ const firebaseConfig = {
   appId:             "1:307965945526:web:05e82947ea4f5e8877e817",
   measurementId:     "G-2PGMW25WE8"
 };
-
 const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const COL   = "suanyaang_transactions";
+enableIndexedDbPersistence(db).catch(()=>{});
 
-// enable offline cache
-enableIndexedDbPersistence(db).catch(() => {});
-
-// ============================================================
-// STATE
-// ============================================================
-let transactions  = [];
+// ── State ────────────────────────────────────────────────────
+let transactions  = [];   // all tx (income + expense)
 let mode          = 'month';
 let selectedYear  = new Date().getFullYear() + 543;
 let selectedMonth = new Date().getMonth() + 1;
@@ -508,298 +512,235 @@ let editingId     = null;
 let selectedParty = '';
 let deletePendingId = null;
 
+// settlement deduction inputs: { expenseId -> amount }
+let settlementInputs = {};
+
 const MONTHS_TH   = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const MONTHS_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
                      'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
-// ============================================================
-// SYNC STATUS
-// ============================================================
-function setSyncStatus(state) {
+// ── Sync status ──────────────────────────────────────────────
+function setSyncStatus(s) {
   const dot = document.getElementById('sync-dot');
   const txt = document.getElementById('sync-txt');
-  dot.className = '';
-  dot.classList.add(state);
-  const map = {
-    syncing: 'กำลังซิงค์...',
-    ok:      '☁️ ซิงค์แล้ว — ข้อมูลปลอดภัย',
-    offline: '📵 ออฟไลน์ — ใช้ข้อมูลในเครื่อง',
-    error:   '⚠️ ซิงค์ไม่ได้ — ลองใหม่อีกครั้ง',
-  };
-  txt.textContent = map[state] || '';
+  dot.className = s;
+  const map = { syncing:'กำลังซิงค์...', ok:'☁️ ซิงค์แล้ว — ข้อมูลปลอดภัย', offline:'📵 ออฟไลน์', error:'⚠️ ซิงค์ไม่ได้' };
+  txt.textContent = map[s]||'';
 }
 
-// ============================================================
-// FIREBASE SAVE / DELETE
-// ============================================================
+// ── Firebase CRUD ────────────────────────────────────────────
 async function fbSave(tx) {
   setSyncStatus('syncing');
-  try {
-    await setDoc(doc(db, COL, String(tx.id)), tx);
-    setSyncStatus('ok');
-  } catch (e) {
-    console.error('fbSave error', e);
-    setSyncStatus('error');
-  }
+  try { await setDoc(doc(db, COL, String(tx.id)), tx); setSyncStatus('ok'); }
+  catch(e) { console.error(e); setSyncStatus('error'); }
 }
-
 async function fbDelete(id) {
   setSyncStatus('syncing');
-  try {
-    await deleteDoc(doc(db, COL, String(id)));
-    setSyncStatus('ok');
-  } catch (e) {
-    console.error('fbDelete error', e);
-    setSyncStatus('error');
-  }
+  try { await deleteDoc(doc(db, COL, String(id))); setSyncStatus('ok'); }
+  catch(e) { console.error(e); setSyncStatus('error'); }
 }
-
-// ============================================================
-// REALTIME LISTENER — single source of truth
-// ============================================================
 function startSync() {
   setSyncStatus('syncing');
-  onSnapshot(
-    collection(db, COL),
-    (snapshot) => {
-      transactions = snapshot.docs
-        .map(d => d.data())
-        .sort((a, b) => String(a.date).localeCompare(String(b.date)));
-      setSyncStatus('ok');
-      hideLoading();
-      render();
-      if (document.getElementById('history-view').classList.contains('open')) {
-        renderHistory(getFiltered(), getModeLabel());
-      }
-    },
-    (err) => {
-      console.error('onSnapshot error', err);
-      setSyncStatus('offline');
-      hideLoading();
-      render();
-    }
-  );
+  onSnapshot(collection(db, COL), snap => {
+    transactions = snap.docs.map(d => d.data()).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+    setSyncStatus('ok');
+    hideLoading();
+    refreshAll();
+  }, err => { console.error(err); setSyncStatus('offline'); hideLoading(); refreshAll(); });
 }
-
 function hideLoading() {
   const ls = document.getElementById('loading-screen');
-  if (ls) { ls.style.opacity = '0'; ls.style.transition = 'opacity 0.4s'; setTimeout(() => ls.remove(), 400); }
+  if (ls) { ls.style.opacity='0'; ls.style.transition='opacity 0.4s'; setTimeout(()=>ls.remove(),400); }
 }
 
-// ============================================================
-// UTILS
-// ============================================================
-function fmt(n) {
-  return Math.abs(n).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function parseParts(dateStr) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return { year: y, month: m, day: d };
-}
+// ── Utils ────────────────────────────────────────────────────
+function fmt(n) { return Math.abs(n).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function parseParts(d) { const [y,m,dd]=d.split('-').map(Number); return {year:y,month:m,day:dd}; }
 function todayStr() {
-  const n = new Date();
+  const n=new Date();
   return `${n.getFullYear()+543}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
 }
+function getModeLabel() {
+  if (mode==='all') return 'ทุกปีรวมกัน';
+  if (mode==='year') return 'ปี '+selectedYear;
+  return MONTHS_FULL[selectedMonth-1]+' '+selectedYear;
+}
+function getAllYears() {
+  const ys=[...new Set(transactions.map(t=>parseParts(t.date).year))];
+  if (!ys.includes(selectedYear)) ys.push(selectedYear);
+  return ys.sort();
+}
 function getFiltered() {
-  return transactions.filter(t => {
-    const { year, month } = parseParts(t.date);
-    if (mode === 'all')  return true;
-    if (mode === 'year') return year === selectedYear;
-    return year === selectedYear && month === selectedMonth;
+  return transactions.filter(t=>{
+    const {year,month}=parseParts(t.date);
+    if (mode==='all') return true;
+    if (mode==='year') return year===selectedYear;
+    return year===selectedYear && month===selectedMonth;
   });
 }
 function computeSummary(txList) {
-  let totalIncome=0, totalExpense=0;
-  let gI=0, tI=0, gE=0, tE=0;
+  let totalIncome=0,totalExpense=0,gI=0,tI=0,gE=0,tE=0;
   for (const t of txList) {
-    if (t.type === 'income') {
-      totalIncome += t.amount; gI += t.amount*0.5; tI += t.amount*0.5;
+    if (t.type==='income') {
+      totalIncome+=t.amount; gI+=t.amount*.5; tI+=t.amount*.5;
     } else {
-      totalExpense += t.amount;
-      if (t.party==='shared') { gE+=t.amount*0.5; tE+=t.amount*0.5; }
+      totalExpense+=t.amount;
+      if (t.party==='shared'){gE+=t.amount*.5;tE+=t.amount*.5;}
       else if (t.party==='garden') gE+=t.amount;
       else tE+=t.amount;
     }
   }
   const gN=gI-gE, tN=tI-tE;
-  return { totalIncome, totalExpense,
-    gardenIncome:gI, tapperIncome:tI, gardenExpense:gE, tapperExpense:tE,
-    gardenNet:gN, tapperNet:tN,
-    gardenDebt:gN<0?Math.abs(gN):0, tapperDebt:tN<0?Math.abs(tN):0 };
-}
-function getModeLabel() {
-  if (mode==='all')  return 'ทุกปีรวมกัน';
-  if (mode==='year') return 'ปี '+selectedYear;
-  return MONTHS_FULL[selectedMonth-1]+' '+selectedYear;
-}
-function getAllYears() {
-  const ys = [...new Set(transactions.map(t=>parseParts(t.date).year))];
-  if (!ys.includes(selectedYear)) ys.push(selectedYear);
-  return ys.sort();
+  return {totalIncome,totalExpense,gardenIncome:gI,tapperIncome:tI,gardenExpense:gE,tapperExpense:tE,
+    gardenNet:gN,tapperNet:tN,gardenDebt:gN<0?Math.abs(gN):0,tapperDebt:tN<0?Math.abs(tN):0};
 }
 
-// ============================================================
-// PICKER HEADER
-// ============================================================
+// ── Pending debts logic ──────────────────────────────────────
+// A "pending debt" is any expense where party==='shared' OR party==='tapper'
+// It may have been partially paid via deductions stored in income tx's `deductions` array
+// deductions: [{expenseId, amount}]
+
+function getTapperExpenses() {
+  // all expenses that affect tapper side (shared or tapper-only)
+  return transactions.filter(t => t.type==='expense' && (t.party==='shared'||t.party==='tapper'));
+}
+function getTapperShareOf(tx) {
+  // how much tapper owes for this expense
+  if (tx.party==='shared') return tx.amount*0.5;
+  return tx.amount;
+}
+function getPaidForExpense(expenseId) {
+  // sum of deductions across all income tx
+  let paid = 0;
+  transactions.forEach(tx => {
+    if (tx.type==='income' && tx.deductions) {
+      tx.deductions.forEach(d => {
+        if (String(d.expenseId)===String(expenseId)) paid += (d.amount||0);
+      });
+    }
+  });
+  return paid;
+}
+function getPendingDebts() {
+  return getTapperExpenses().map(ex => {
+    const total  = getTapperShareOf(ex);
+    const paid   = getPaidForExpense(ex.id);
+    const remain = Math.max(0, total - paid);
+    return { ...ex, tapperTotal: total, paid, remain };
+  }).filter(d => d.remain > 0);
+}
+function getTotalPending() {
+  return getPendingDebts().reduce((s,d)=>s+d.remain, 0);
+}
+
+// ── Header pickers ───────────────────────────────────────────
 function updatePickerHeader() {
   document.getElementById('yr-label').textContent = selectedYear;
   document.getElementById('mo-label').textContent = MONTHS_FULL[selectedMonth-1];
   const pickers = document.getElementById('pickers');
-  const moPicker = document.getElementById('mo-picker-btn');
   pickers.style.display = mode==='all' ? 'none' : 'flex';
-  moPicker.style.display = mode==='month' ? 'block' : 'none';
-  buildYearGrid();
-  buildMonthGrid();
+  document.getElementById('mo-picker-btn').style.display = mode==='month' ? 'block' : 'none';
+  buildYearGrid(); buildMonthGrid();
 }
 function buildYearGrid() {
-  const grid = document.getElementById('year-grid');
-  grid.innerHTML = getAllYears().map(y =>
+  document.getElementById('year-grid').innerHTML = getAllYears().map(y =>
     `<button class="yr-btn${y===selectedYear?' sel':''}" onclick="selectYear(${y})">${y}</button>`
   ).join('');
 }
 function buildMonthGrid() {
-  const grid = document.getElementById('month-grid');
-  grid.innerHTML = MONTHS_TH.map((m,i) =>
+  document.getElementById('month-grid').innerHTML = MONTHS_TH.map((m,i) =>
     `<button class="mo-btn${(i+1)===selectedMonth?' sel':''}" onclick="selectMonth(${i+1})">${m}</button>`
   ).join('');
 }
-
-// expose to onclick attrs
 window.toggleYearGrid  = () => { document.getElementById('year-grid').classList.toggle('open'); document.getElementById('month-grid').classList.remove('open'); };
 window.toggleMonthGrid = () => { document.getElementById('month-grid').classList.toggle('open'); document.getElementById('year-grid').classList.remove('open'); };
-window.selectYear  = (y) => { selectedYear=y; document.getElementById('year-grid').classList.remove('open'); updatePickerHeader(); render(); };
-window.selectMonth = (m) => { selectedMonth=m; document.getElementById('month-grid').classList.remove('open'); updatePickerHeader(); render(); };
-window.setMode = (m) => {
-  mode = m;
-  document.querySelectorAll('.mode-btn').forEach((b,i) => b.classList.toggle('active', ['month','year','all'][i]===m));
+window.selectYear  = y => { selectedYear=y; document.getElementById('year-grid').classList.remove('open'); updatePickerHeader(); render(); };
+window.selectMonth = m => { selectedMonth=m; document.getElementById('month-grid').classList.remove('open'); updatePickerHeader(); render(); };
+window.setMode = m => {
+  mode=m;
+  document.querySelectorAll('.mode-btn').forEach((b,i)=>b.classList.toggle('active',['month','year','all'][i]===m));
   document.getElementById('year-grid').classList.remove('open');
   document.getElementById('month-grid').classList.remove('open');
   updatePickerHeader(); render();
 };
 
-// ============================================================
-// RENDER
-// ============================================================
-function setEl(id, text, color) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  if (color) el.style.color = color;
-}
+// ── Dashboard render ─────────────────────────────────────────
+function setEl(id,text,color) { const e=document.getElementById(id); e.textContent=text; if(color)e.style.color=color; }
 
 function render() {
   const filtered = getFiltered();
   const s = computeSummary(filtered);
-  const periodLabel = getModeLabel();
+  const lbl = getModeLabel();
 
-  // Big card
   setEl('total-income-num', fmt(s.totalIncome));
-  setEl('total-income-period', 'บาท — '+periodLabel);
+  setEl('total-income-period', 'บาท — '+lbl);
   setEl('total-expense-num', '-'+fmt(s.totalExpense));
-  const profit = s.totalIncome - s.totalExpense;
-  const profitEl = document.getElementById('total-profit-num');
-  profitEl.textContent = (profit>=0?'+':'-')+fmt(Math.abs(profit));
-  profitEl.style.color = profit>=0 ? '#b7e4c7' : '#ffb3b3';
+  const profit = s.totalIncome-s.totalExpense;
+  const pe = document.getElementById('total-profit-num');
+  pe.textContent = (profit>=0?'+':'-')+fmt(Math.abs(profit));
+  pe.style.color = profit>=0?'#b7e4c7':'#ffb3b3';
 
-  // Side cards
-  setEl('garden-income',  '+'+fmt(s.gardenIncome), '#2d6a4f');
+  setEl('garden-income',  '+'+fmt(s.gardenIncome),  '#2d6a4f');
   setEl('garden-expense', '-'+fmt(s.gardenExpense), '#c0392b');
   setEl('garden-net', (s.gardenNet>=0?'+':'-')+fmt(Math.abs(s.gardenNet)), s.gardenNet>=0?'#2d6a4f':'#c0392b');
-  setEl('tapper-income',  '+'+fmt(s.tapperIncome), '#1a759f');
+  setEl('tapper-income',  '+'+fmt(s.tapperIncome),  '#1a759f');
   setEl('tapper-expense', '-'+fmt(s.tapperExpense), '#c0392b');
   setEl('tapper-net', (s.tapperNet>=0?'+':'-')+fmt(Math.abs(s.tapperNet)), s.tapperNet>=0?'#1a759f':'#c0392b');
 
-  const gD = document.getElementById('garden-debt');
-  const tD = document.getElementById('tapper-debt');
-  if (s.gardenDebt>0) { gD.textContent='⚠️ หนี้ '+fmt(s.gardenDebt)+' บ.'; gD.style.display='block'; } else gD.style.display='none';
-  if (s.tapperDebt>0) { tD.textContent='⚠️ หนี้ '+fmt(s.tapperDebt)+' บ.'; tD.style.display='block'; } else tD.style.display='none';
+  const gD=document.getElementById('garden-debt'), tD=document.getElementById('tapper-debt');
+  if(s.gardenDebt>0){gD.textContent='⚠️ หนี้ '+fmt(s.gardenDebt)+' บ.';gD.style.display='block';}else gD.style.display='none';
+  if(s.tapperDebt>0){tD.textContent='⚠️ หนี้ '+fmt(s.tapperDebt)+' บ.';tD.style.display='block';}else tD.style.display='none';
 
-  // Debt box
-  const debtBox = document.getElementById('debt-box');
-  if (s.gardenDebt>0 || s.tapperDebt>0) {
-    debtBox.style.display='block';
-    document.getElementById('debt-period').textContent = periodLabel;
-    const gr = document.getElementById('debt-garden-row');
-    const tr = document.getElementById('debt-tapper-row');
-    if (s.gardenDebt>0) { gr.style.display='flex'; document.getElementById('debt-garden-val').textContent=fmt(s.gardenDebt)+' บ.'; } else gr.style.display='none';
-    if (s.tapperDebt>0) { tr.style.display='flex'; document.getElementById('debt-tapper-val').textContent=fmt(s.tapperDebt)+' บ.'; } else tr.style.display='none';
-  } else debtBox.style.display='none';
+  // debt box
+  const db2=document.getElementById('debt-box');
+  if(s.gardenDebt>0||s.tapperDebt>0){
+    db2.style.display='block';
+    document.getElementById('debt-period').textContent=lbl;
+    const gr=document.getElementById('debt-garden-row'), tr=document.getElementById('debt-tapper-row');
+    if(s.gardenDebt>0){gr.style.display='flex';document.getElementById('debt-garden-val').textContent=fmt(s.gardenDebt)+' บ.';}else gr.style.display='none';
+    if(s.tapperDebt>0){tr.style.display='flex';document.getElementById('debt-tapper-val').textContent=fmt(s.tapperDebt)+' บ.';}else tr.style.display='none';
+  } else db2.style.display='none';
 
-  // Breakdowns
-  const mbCard = document.getElementById('monthly-breakdown');
-  const ybCard = document.getElementById('yearly-breakdown');
-  if (mode==='year') {
-    mbCard.style.display='block'; ybCard.style.display='none';
-    document.getElementById('breakdown-year').textContent = selectedYear;
-    const byMonth = {};
-    transactions.filter(t=>parseParts(t.date).year===selectedYear).forEach(t => {
-      const {month} = parseParts(t.date);
-      if (!byMonth[month]) byMonth[month]=[];
-      byMonth[month].push(t);
-    });
-    document.getElementById('monthly-breakdown-rows').innerHTML =
-      Object.entries(byMonth).sort((a,b)=>a[0]-b[0]).map(([m,txs])=>{
-        const ms = computeSummary(txs);
-        const net = ms.gardenNet+ms.tapperNet;
-        return `<div class="bk-row">
-          <span class="bk-mo">${MONTHS_TH[m-1]}</span>
-          <span style="color:#2d6a4f;">${fmt(ms.totalIncome)}</span>
-          <span style="color:#c0392b;">${fmt(ms.totalExpense)}</span>
-          <span style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))}</span>
-        </div>`;
-      }).join('') || '<div class="empty-msg">ไม่มีข้อมูลเดือนนี้</div>';
-  } else if (mode==='all') {
-    mbCard.style.display='none'; ybCard.style.display='block';
-    const byYear = {};
-    transactions.forEach(t => {
-      const {year} = parseParts(t.date);
-      if (!byYear[year]) byYear[year]=[];
-      byYear[year].push(t);
-    });
-    document.getElementById('yearly-breakdown-rows').innerHTML =
-      Object.entries(byYear).sort((a,b)=>a[0]-b[0]).map(([y,txs])=>{
-        const ys = computeSummary(txs);
-        const net = ys.gardenNet+ys.tapperNet;
-        const td  = ys.gardenDebt+ys.tapperDebt;
-        return `<div class="ybk-row">
-          <div class="ybk-top">
-            <span class="ybk-year">ปี ${y}</span>
-            <span class="ybk-net" style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))} บ.</span>
-          </div>
-          <div class="ybk-tags">
-            <span class="ybk-tag" style="color:#2d6a4f;background:#e8f5e9;">รายได้ ${fmt(ys.totalIncome)}</span>
-            <span class="ybk-tag" style="color:#c0392b;background:#fce4ec;">รายจ่าย ${fmt(ys.totalExpense)}</span>
-            ${td>0?`<span class="ybk-tag" style="color:#c05621;background:#fff3e0;font-weight:800;">⚠️ หนี้ ${fmt(td)}</span>`:''}
-          </div>
-        </div>`;
-      }).join('') || '<div class="empty-msg">ไม่มีข้อมูล</div>';
-  } else {
-    mbCard.style.display='none'; ybCard.style.display='none';
-  }
+  // breakdowns
+  const mbC=document.getElementById('monthly-breakdown'), ybC=document.getElementById('yearly-breakdown');
+  if(mode==='year'){
+    mbC.style.display='block'; ybC.style.display='none';
+    document.getElementById('breakdown-year').textContent=selectedYear;
+    const bm={};
+    transactions.filter(t=>parseParts(t.date).year===selectedYear).forEach(t=>{const{month}=parseParts(t.date);if(!bm[month])bm[month]=[];bm[month].push(t);});
+    document.getElementById('monthly-breakdown-rows').innerHTML=Object.entries(bm).sort((a,b)=>a[0]-b[0]).map(([m,txs])=>{
+      const ms=computeSummary(txs); const net=ms.gardenNet+ms.tapperNet;
+      return `<div class="bk-row"><span class="bk-mo">${MONTHS_TH[m-1]}</span><span style="color:#2d6a4f">${fmt(ms.totalIncome)}</span><span style="color:#c0392b">${fmt(ms.totalExpense)}</span><span style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))}</span></div>`;
+    }).join('')||'<div class="empty-msg">ไม่มีข้อมูล</div>';
+  } else if(mode==='all'){
+    mbC.style.display='none'; ybC.style.display='block';
+    const by={};
+    transactions.forEach(t=>{const{year}=parseParts(t.date);if(!by[year])by[year]=[];by[year].push(t);});
+    document.getElementById('yearly-breakdown-rows').innerHTML=Object.entries(by).sort((a,b)=>a[0]-b[0]).map(([y,txs])=>{
+      const ys=computeSummary(txs); const net=ys.gardenNet+ys.tapperNet; const td=ys.gardenDebt+ys.tapperDebt;
+      return `<div class="ybk-row"><div class="ybk-top"><span class="ybk-year">ปี ${y}</span><span class="ybk-net" style="color:${net>=0?'#2d6a4f':'#c0392b'}">${net>=0?'+':'-'}${fmt(Math.abs(net))} บ.</span></div>
+      <div class="ybk-tags"><span class="ybk-tag" style="color:#2d6a4f;background:#e8f5e9;">รายได้ ${fmt(ys.totalIncome)}</span><span class="ybk-tag" style="color:#c0392b;background:#fce4ec;">รายจ่าย ${fmt(ys.totalExpense)}</span>${td>0?`<span class="ybk-tag" style="color:#c05621;background:#fff3e0;font-weight:800;">⚠️ หนี้ ${fmt(td)}</span>`:''}</div></div>`;
+    }).join('')||'<div class="empty-msg">ไม่มีข้อมูล</div>';
+  } else { mbC.style.display='none'; ybC.style.display='none'; }
 
-  // Recent list
-  const recentEl = document.getElementById('recent-list');
-  const recent = filtered.slice().reverse().slice(0,6);
-  recentEl.innerHTML = recent.length ? recent.map(tx => txRowHTML(tx)).join('') : '<div class="empty-msg">ยังไม่มีรายการ</div>';
+  // recent list
+  const recentEl=document.getElementById('recent-list');
+  const recent=filtered.slice().reverse().slice(0,6);
+  recentEl.innerHTML=recent.length?recent.map(tx=>txRowHTML(tx)).join(''):'<div class="empty-msg">ยังไม่มีรายการ</div>';
 }
 
 function txRowHTML(tx) {
-  const isIncome = tx.type==='income';
-  const {day,month,year} = parseParts(tx.date);
-  const icon   = isIncome?'💰':tx.party==='shared'?'🤝':tx.party==='garden'?'🏡':'🔪';
-  const iconBg = isIncome?'#e8f5e9':'#fce4ec';
-  const name   = tx.label||tx.note||'ขายยาง';
-  const amtCol = isIncome?'#2d6a4f':'#c0392b';
-  const amtStr = (isIncome?'+':'-')+fmt(tx.amount);
+  const isIncome=tx.type==='income';
+  const {day,month,year}=parseParts(tx.date);
+  const icon=isIncome?'💰':tx.party==='shared'?'🤝':tx.party==='garden'?'🏡':'🔪';
+  const iconBg=isIncome?'#e8f5e9':'#fce4ec';
+  const name=tx.label||tx.note||'ขายยาง';
+  const amtCol=isIncome?'#2d6a4f':'#c0392b';
   return `<div class="tx-row">
     <div class="tx-icon" style="background:${iconBg}">${icon}</div>
-    <div class="tx-info">
-      <div class="tx-name">${escHtml(name)}</div>
-      <div class="tx-date">${day}/${month}/${year}</div>
-    </div>
-    <div class="tx-amount">
-      <div class="amt" style="color:${amtCol}">${amtStr}</div>
-      <div class="unit">บาท</div>
-    </div>
+    <div class="tx-info"><div class="tx-name">${esc(name)}</div><div class="tx-date">${day}/${month}/${year}</div></div>
+    <div class="tx-amount"><div class="amt" style="color:${amtCol}">${isIncome?'+':'-'}${fmt(tx.amount)}</div><div class="unit">บาท</div></div>
     <div class="tx-actions">
       <button class="tx-btn" onclick="editTx('${tx.id}')">✏️</button>
       <button class="tx-btn" onclick="askDelete('${tx.id}')">🗑️</button>
@@ -807,22 +748,107 @@ function txRowHTML(tx) {
   </div>`;
 }
 
+// ── Tapper view ──────────────────────────────────────────────
+function renderTapper() {
+  const pending = getPendingDebts();
+  const totalPending = pending.reduce((s,d)=>s+d.remain,0);
+
+  // banner
+  const bannerEl = document.getElementById('tapper-pending-banner');
+  if(totalPending>0){
+    bannerEl.innerHTML=`<div class="pending-banner">
+      <div class="pb-title">⚠️ ค่าใช้จ่ายที่ยังค้างหักจากคนตัดยาง</div>
+      <div class="pb-amount">${fmt(totalPending)} บ.</div>
+      <div class="pb-sub">รวม ${pending.length} รายการ — จะถูกแจ้งเตือนตอนบันทึกขายยางครั้งถัดไป</div>
+    </div>`;
+  } else {
+    bannerEl.innerHTML=`<div style="background:#e8f5e9;border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;"><span style="font-size:24px;">✅</span><div><div style="font-size:15px;font-weight:800;color:#2d6a4f;">ไม่มีค่าใช้จ่ายค้างอยู่</div><div style="font-size:13px;color:#666;">คนตัดยางได้รับเงินครบทุกรายการแล้ว</div></div></div>`;
+  }
+
+  // pending items
+  const allTapperEx = getTapperExpenses().map(ex=>{
+    const total=getTapperShareOf(ex); const paid=getPaidForExpense(ex.id); const remain=Math.max(0,total-paid);
+    return {...ex, tapperTotal:total, paid, remain};
+  });
+  const listEl = document.getElementById('tapper-pending-list');
+  if(allTapperEx.length===0){ listEl.innerHTML=''; }
+  else {
+    listEl.innerHTML = `<div style="font-size:15px;font-weight:800;color:#1b4332;margin-bottom:10px;">📋 รายการค่าใช้จ่ายทั้งหมด</div>`+
+    allTapperEx.map(ex=>{
+      const statusClass = ex.remain===0?'done':ex.paid>0?'partial':'pending';
+      const statusLabel = ex.remain===0?'หักครบแล้ว ✅':ex.paid>0?`เหลือ ${fmt(ex.remain)} บ.`:'ยังไม่ได้หัก';
+      return `<div class="pending-item${ex.remain===0?' fully-paid':''}">
+        <div class="pi-top">
+          <div><div class="pi-name">${esc(ex.label||ex.note||'ค่าใช้จ่าย')}</div><div class="pi-date">${parseParts(ex.date).day}/${parseParts(ex.date).month}/${parseParts(ex.date).year} — ${ex.party==='shared'?'จ่ายร่วมกัน':'ฝั่งคนตัด'}</div></div>
+          <span class="pi-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="pi-amounts">
+          <span class="pi-total">ส่วนคนตัด ${fmt(ex.tapperTotal)} บ.</span>
+          <span class="pi-paid">หักไปแล้ว ${fmt(ex.paid)} บ.</span>
+          ${ex.remain>0?`<span class="pi-remain">ค้าง ${fmt(ex.remain)} บ.</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // rounds — income transactions with settlement info
+  const incomes = transactions.filter(t=>t.type==='income').slice().reverse();
+  const roundsEl = document.getElementById('tapper-rounds-list');
+  if(incomes.length===0){ roundsEl.innerHTML='<div class="empty-msg">ยังไม่มีงวดขาย</div>'; return; }
+  roundsEl.innerHTML = incomes.map((tx,idx)=>{
+    const {day,month,year}=parseParts(tx.date);
+    const tapperShare = tx.amount*0.5;
+    const deductions  = tx.deductions||[];
+    const totalDeduct = deductions.reduce((s,d)=>s+(d.amount||0),0);
+    const tapperGets  = tapperShare - totalDeduct;
+    const roundNum    = incomes.length - idx;
+
+    let deductHTML='';
+    if(deductions.length>0){
+      deductHTML=`<div class="round-deductions"><div class="rd-title">หักค่าใช้จ่าย:</div>
+      ${deductions.map(d=>{
+        const ex=transactions.find(t=>String(t.id)===String(d.expenseId));
+        const exName=ex?(ex.label||ex.note||'ค่าใช้จ่าย'):'ค่าใช้จ่าย';
+        return `<span class="deduction-tag">✂️ ${esc(exName)} ${fmt(d.amount)} บ.</span>`;
+      }).join('')}</div>`;
+    }
+
+    return `<div class="round-card">
+      <div class="round-header">
+        <div><div class="round-num">งวดที่ ${roundNum}</div><div class="round-date">${day}/${month}/${year}</div></div>
+        <div class="round-income"><div class="ri-label">ยอดขาย</div><div class="ri-val">${fmt(tx.amount)} บ.</div></div>
+      </div>
+      <div class="round-body">
+        <div class="round-row"><span class="rr-label">ส่วนแบ่งคนตัด (50%)</span><span class="rr-val col-blue">+${fmt(tapperShare)} บ.</span></div>
+        ${deductions.map(d=>{
+          const ex=transactions.find(t=>String(t.id)===String(d.expenseId));
+          const exName=ex?(ex.label||ex.note||'ค่าใช้จ่าย'):'ค่าใช้จ่าย';
+          return `<div class="round-row"><span class="rr-label" style="color:#c0392b;">✂️ หัก${esc(exName)}</span><span class="rr-val col-red">-${fmt(d.amount)} บ.</span></div>`;
+        }).join('')}
+        <div class="round-total"><span class="rt-label">💵 คนตัดรับเงิน</span><span class="rt-val">${fmt(tapperGets)} บ.</span></div>
+        ${tx.note?`<div class="round-note">📝 ${esc(tx.note)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── History render ───────────────────────────────────────────
 function renderHistory(filtered, periodLabel) {
   document.getElementById('history-period').textContent = periodLabel;
   const s = computeSummary(filtered);
   const rows = filtered.slice().reverse();
   document.getElementById('history-tbody').innerHTML = rows.length
-    ? rows.map((tx,i) => {
-        const isIncome = tx.type==='income';
-        const {day,month,year} = parseParts(tx.date);
-        let ga=0, ta=0;
-        if (isIncome) { ga=tx.amount/2; ta=tx.amount/2; }
-        else if (tx.party==='shared') { ga=-tx.amount/2; ta=-tx.amount/2; }
-        else if (tx.party==='garden') ga=-tx.amount;
+    ? rows.map(tx=>{
+        const isIncome=tx.type==='income';
+        const {day,month,year}=parseParts(tx.date);
+        let ga=0,ta=0;
+        if(isIncome){ga=tx.amount/2;ta=tx.amount/2;}
+        else if(tx.party==='shared'){ga=-tx.amount/2;ta=-tx.amount/2;}
+        else if(tx.party==='garden') ga=-tx.amount;
         else ta=-tx.amount;
         return `<tr>
           <td style="font-size:12px;white-space:nowrap;">${day}/${month}/${String(year).slice(-2)}</td>
-          <td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(tx.label||tx.note||'ขายยาง')}</td>
+          <td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(tx.label||tx.note||'ขายยาง')}</td>
           <td><span class="tag ${isIncome?'tag-in':'tag-ex'}">${isIncome?'รายได้':tx.party==='shared'?'ร่วม':tx.party==='garden'?'สวน':'ตัด'}</span></td>
           <td style="font-weight:700;color:${isIncome?'#2d6a4f':'#c0392b'};white-space:nowrap;">${isIncome?'+':'-'}${fmt(tx.amount)}</td>
           <td style="color:${ga>=0?'#2d6a4f':'#c0392b'};font-weight:600;white-space:nowrap;">${ga>=0?'+':''}${fmt(Math.abs(ga))}</td>
@@ -830,217 +856,270 @@ function renderHistory(filtered, periodLabel) {
           <td style="white-space:nowrap;">
             <button class="tx-btn" onclick="editTx('${tx.id}')" style="font-size:15px;">✏️</button>
             <button class="tx-btn" onclick="askDelete('${tx.id}')" style="font-size:15px;">🗑️</button>
-          </td>
-        </tr>`;
+          </td></tr>`;
       }).join('')
     : `<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">ไม่มีรายการ</td></tr>`;
-  document.getElementById('history-tfoot').innerHTML = `
+  document.getElementById('history-tfoot').innerHTML=`
     <td colspan="3">รวม</td>
     <td style="color:#2d6a4f;">+${fmt(s.totalIncome)}</td>
     <td style="color:${s.gardenNet>=0?'#2d6a4f':'#c0392b'}">${s.gardenNet>=0?'+':''}${fmt(Math.abs(s.gardenNet))}</td>
-    <td style="color:${s.tapperNet>=0?'#1a759f':'#c0392b'}">${s.tapperNet>=0?'+':''}${fmt(Math.abs(s.tapperNet))}</td>
-    <td></td>`;
+    <td style="color:${s.tapperNet>=0?'#1a759f':'#c0392b'}">${s.tapperNet>=0?'+':''}${fmt(Math.abs(s.tapperNet))}</td><td></td>`;
 }
 
-function escHtml(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function showDashboard() {
-  document.getElementById('dashboard-view').classList.add('active');
-  document.getElementById('history-view').classList.remove('open');
-  document.getElementById('form-view').style.display = 'none';
-  document.getElementById('bottom-bar').style.display = 'flex';
-  document.getElementById('header').style.display = 'block';
-  document.getElementById('sync-bar').style.display = 'flex';
+function refreshAll() {
+  updatePickerHeader();
   render();
-}
-function showHistory() {
-  document.getElementById('dashboard-view').classList.remove('active');
-  document.getElementById('history-view').classList.add('open');
-  document.getElementById('form-view').style.display = 'none';
-  document.getElementById('bottom-bar').style.display = 'flex';
-  document.getElementById('header').style.display = 'block';
-  document.getElementById('sync-bar').style.display = 'flex';
-  renderHistory(getFiltered(), getModeLabel());
-}
-function toggleHistory() {
-  document.getElementById('history-view').classList.contains('open') ? showDashboard() : showHistory();
-}
-function showFormView() {
-  document.getElementById('dashboard-view').classList.remove('active');
-  document.getElementById('history-view').classList.remove('open');
-  document.getElementById('form-view').style.display = 'block';
-  document.getElementById('bottom-bar').style.display = 'none';
-  document.getElementById('header').style.display = 'none';
-  document.getElementById('sync-bar').style.display = 'none';
+  if (document.getElementById('tapper-view').classList.contains('open')) renderTapper();
+  if (document.getElementById('history-view').classList.contains('open')) renderHistory(getFiltered(),getModeLabel());
 }
 
-// expose
+// ── Navigation ───────────────────────────────────────────────
+function hideAll() {
+  document.getElementById('dashboard-view').classList.remove('active');
+  document.getElementById('tapper-view').classList.remove('open');
+  document.getElementById('history-view').classList.remove('open');
+  document.getElementById('form-view').style.display='none';
+}
+function showChrome(show) {
+  document.getElementById('bottom-bar').style.display=show?'flex':'none';
+  document.getElementById('header').style.display=show?'block':'none';
+  document.getElementById('sync-bar').style.display=show?'flex':'none';
+}
+function showDashboard() { hideAll(); showChrome(true); document.getElementById('dashboard-view').classList.add('active'); render(); }
+function showTapper()    { hideAll(); showChrome(true); document.getElementById('tapper-view').classList.add('open'); renderTapper(); }
+function showHistory()   { hideAll(); showChrome(true); document.getElementById('history-view').classList.add('open'); renderHistory(getFiltered(),getModeLabel()); }
+function toggleHistory() { document.getElementById('history-view').classList.contains('open')?showDashboard():showHistory(); }
+function showFormView()  { hideAll(); showChrome(false); document.getElementById('form-view').style.display='block'; }
+
 window.showDashboard = showDashboard;
+window.showTapper    = showTapper;
 window.showHistory   = showHistory;
 window.toggleHistory = toggleHistory;
 
-// ============================================================
-// ADD / EDIT
-// ============================================================
+// ── Settlement panel (in income form) ───────────────────────
+function buildSettlementPanel(tapperShare) {
+  const panel = document.getElementById('settlement-panel');
+  const pending = getPendingDebts();
+  settlementInputs = {};
+
+  document.getElementById('sett-tapper-share').textContent = fmt(tapperShare)+' บ.';
+
+  if(pending.length===0){
+    panel.classList.remove('show');
+    document.getElementById('sett-pending-items').innerHTML='<div class="no-pending">✅ ไม่มีค่าใช้จ่ายค้างอยู่</div>';
+    document.getElementById('sett-summary').style.display='none';
+    return;
+  }
+  panel.classList.add('show');
+
+  document.getElementById('sett-pending-items').innerHTML = pending.map(d=>{
+    const {day,month,year}=parseParts(d.date);
+    return `<div class="pending-debt-item">
+      <div class="pdi-header">
+        <div>
+          <div class="pdi-name">${esc(d.label||d.note||'ค่าใช้จ่าย')}</div>
+          <div class="pdi-date">${day}/${month}/${year} — ${d.party==='shared'?'จ่ายร่วม':'ฝั่งคนตัด'}</div>
+        </div>
+        <span class="pdi-remain">ค้าง ${fmt(d.remain)} บ.</span>
+      </div>
+      <div class="pdi-input-row">
+        <span class="pdi-input-label">หักงวดนี้</span>
+        <input type="number" class="pdi-input" id="sett-inp-${d.id}" placeholder="0" inputmode="decimal"
+          min="0" max="${d.remain}" value="0" oninput="onSettlementInput()">
+        <button class="pdi-max-btn" onclick="setMaxDeduction('${d.id}',${d.remain})">เต็ม</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('sett-summary').style.display='block';
+  onSettlementInput();
+}
+
+function onSettlementInput() {
+  const pending = getPendingDebts();
+  let totalDeduct = 0;
+  pending.forEach(d=>{
+    const inp = document.getElementById('sett-inp-'+d.id);
+    if(inp){ const v=parseFloat(inp.value)||0; settlementInputs[d.id]=Math.min(v,d.remain); totalDeduct+=settlementInputs[d.id]; }
+  });
+  const amt = parseFloat(document.getElementById('f-amount').value)||0;
+  const tapperShare = amt*0.5;
+  const tapperGets = tapperShare - totalDeduct;
+  document.getElementById('ss-share').textContent   = '+'+fmt(tapperShare)+' บ.';
+  document.getElementById('ss-deduct').textContent  = '-'+fmt(totalDeduct)+' บ.';
+  document.getElementById('ss-total').textContent   = fmt(Math.max(0,tapperGets))+' บ.';
+  document.getElementById('ss-total').style.color   = tapperGets>=0?'#fff':'#ffb3b3';
+}
+function setMaxDeduction(id, remain) {
+  const inp = document.getElementById('sett-inp-'+id);
+  if(inp){ inp.value=remain; onSettlementInput(); }
+}
+window.onSettlementInput = onSettlementInput;
+window.setMaxDeduction   = setMaxDeduction;
+
+// ── Form ─────────────────────────────────────────────────────
 function openAddIncome() {
   formType='income'; editingId=null;
-  document.getElementById('form-title').textContent = '💰 เพิ่มรายได้จากขายยาง';
-  document.getElementById('f-date').value = todayStr();
-  document.getElementById('f-amount').value = '';
-  document.getElementById('f-amount').style.color = '#2d6a4f';
-  document.getElementById('f-amount-label').textContent = 'ยอดขายยาง (บาท)';
-  document.getElementById('f-label-field').style.display = 'none';
-  document.getElementById('f-party-field').style.display = 'none';
-  document.getElementById('f-note').value = '';
+  document.getElementById('form-title').textContent='💰 เพิ่มรายได้จากขายยาง';
+  document.getElementById('f-date').value=todayStr();
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-amount').style.color='#2d6a4f';
+  document.getElementById('f-amount-label').textContent='ยอดขายยาง (บาท)';
+  document.getElementById('f-label-field').style.display='none';
+  document.getElementById('f-party-field').style.display='none';
+  document.getElementById('f-note').value='';
   document.getElementById('split-preview').classList.remove('show');
   document.getElementById('expense-preview').classList.remove('show');
-  document.getElementById('save-btn').disabled = false;
+  document.getElementById('settlement-panel').classList.remove('show');
+  document.getElementById('save-btn').disabled=false;
+  document.getElementById('save-btn').textContent='✅ บันทึก';
   showFormView();
 }
 function openAddExpense() {
   formType='expense'; editingId=null; selectedParty='';
-  document.getElementById('form-title').textContent = '💸 เพิ่มค่าใช้จ่าย';
-  document.getElementById('f-date').value = todayStr();
-  document.getElementById('f-amount').value = '';
-  document.getElementById('f-amount').style.color = '#c0392b';
-  document.getElementById('f-amount-label').textContent = 'จำนวนเงิน (บาท)';
-  document.getElementById('f-label-field').style.display = 'block';
-  document.getElementById('f-label').value = '';
-  document.getElementById('f-party-field').style.display = 'block';
-  document.getElementById('f-note').value = '';
+  document.getElementById('form-title').textContent='💸 เพิ่มค่าใช้จ่าย';
+  document.getElementById('f-date').value=todayStr();
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-amount').style.color='#c0392b';
+  document.getElementById('f-amount-label').textContent='จำนวนเงิน (บาท)';
+  document.getElementById('f-label-field').style.display='block';
+  document.getElementById('f-label').value='';
+  document.getElementById('f-party-field').style.display='block';
+  document.getElementById('f-note').value='';
   document.getElementById('split-preview').classList.remove('show');
   document.getElementById('expense-preview').classList.remove('show');
-  document.getElementById('save-btn').disabled = false;
-  ['shared','garden','tapper'].forEach(p => document.getElementById('party-'+p).className='party-btn');
+  document.getElementById('settlement-panel').classList.remove('show');
+  document.getElementById('save-btn').disabled=false;
+  document.getElementById('save-btn').textContent='✅ บันทึก';
+  ['shared','garden','tapper'].forEach(p=>document.getElementById('party-'+p).className='party-btn');
   showFormView();
 }
 function editTx(id) {
-  const tx = transactions.find(t => String(t.id)===String(id));
-  if (!tx) return;
-  editingId = tx.id;
-  formType  = tx.type;
-  if (tx.type==='income') {
-    document.getElementById('form-title').textContent = '✏️ แก้ไขรายได้';
-    document.getElementById('f-amount-label').textContent = 'ยอดขายยาง (บาท)';
-    document.getElementById('f-amount').style.color = '#2d6a4f';
-    document.getElementById('f-label-field').style.display = 'none';
-    document.getElementById('f-party-field').style.display = 'none';
+  const tx=transactions.find(t=>String(t.id)===String(id));
+  if(!tx) return;
+  editingId=tx.id; formType=tx.type;
+  if(tx.type==='income'){
+    document.getElementById('form-title').textContent='✏️ แก้ไขรายได้';
+    document.getElementById('f-amount-label').textContent='ยอดขายยาง (บาท)';
+    document.getElementById('f-amount').style.color='#2d6a4f';
+    document.getElementById('f-label-field').style.display='none';
+    document.getElementById('f-party-field').style.display='none';
   } else {
-    document.getElementById('form-title').textContent = '✏️ แก้ไขค่าใช้จ่าย';
-    document.getElementById('f-amount-label').textContent = 'จำนวนเงิน (บาท)';
-    document.getElementById('f-amount').style.color = '#c0392b';
-    document.getElementById('f-label-field').style.display = 'block';
-    document.getElementById('f-label').value = tx.label||'';
-    document.getElementById('f-party-field').style.display = 'block';
-    selectParty(tx.party, false);
+    document.getElementById('form-title').textContent='✏️ แก้ไขค่าใช้จ่าย';
+    document.getElementById('f-amount-label').textContent='จำนวนเงิน (บาท)';
+    document.getElementById('f-amount').style.color='#c0392b';
+    document.getElementById('f-label-field').style.display='block';
+    document.getElementById('f-label').value=tx.label||'';
+    document.getElementById('f-party-field').style.display='block';
+    selectParty(tx.party,false);
   }
-  document.getElementById('f-date').value   = tx.date;
-  document.getElementById('f-amount').value = tx.amount;
-  document.getElementById('f-note').value   = tx.note||'';
-  document.getElementById('save-btn').disabled = false;
-  updatePreview();
+  document.getElementById('f-date').value=tx.date;
+  document.getElementById('f-amount').value=tx.amount;
+  document.getElementById('f-note').value=tx.note||'';
+  document.getElementById('save-btn').disabled=false;
+  document.getElementById('save-btn').textContent='✅ บันทึก';
+  onAmountInput();
   showFormView();
 }
-function selectParty(p, upd=true) {
-  selectedParty = p;
-  ['shared','garden','tapper'].forEach(k => {
-    document.getElementById('party-'+k).className = 'party-btn'+(k===p?' sel-'+k:'');
-  });
-  if (upd) updatePreview();
+function selectParty(p,upd=true){
+  selectedParty=p;
+  ['shared','garden','tapper'].forEach(k=>document.getElementById('party-'+k).className='party-btn'+(k===p?' sel-'+k:''));
+  if(upd) updateExpensePreview();
 }
-function updatePreview() {
-  const amt = parseFloat(document.getElementById('f-amount').value)||0;
-  if (formType==='income') {
-    const sp = document.getElementById('split-preview');
-    if (amt>0) {
-      sp.classList.add('show');
-      document.getElementById('sp-garden').textContent = fmt(amt/2)+' บ.';
-      document.getElementById('sp-tapper').textContent = fmt(amt/2)+' บ.';
-    } else sp.classList.remove('show');
+function updateExpensePreview(){
+  const amt=parseFloat(document.getElementById('f-amount').value)||0;
+  const ep=document.getElementById('expense-preview');
+  if(amt>0&&selectedParty){
+    ep.classList.add('show');
+    let msg='';
+    if(selectedParty==='shared') msg=`🏡 ฝั่งสวนจ่าย ${fmt(amt/2)} บ. &nbsp;&nbsp; 🔪 คนตัดจ่าย ${fmt(amt/2)} บ.`;
+    else if(selectedParty==='garden') msg=`🏡 ฝั่งสวนจ่ายทั้งหมด ${fmt(amt)} บ.`;
+    else msg=`🔪 คนตัดจ่ายทั้งหมด ${fmt(amt)} บ.`;
+    document.getElementById('ep-val').innerHTML=msg;
+  } else ep.classList.remove('show');
+}
+function onAmountInput(){
+  const amt=parseFloat(document.getElementById('f-amount').value)||0;
+  if(formType==='income'){
     document.getElementById('expense-preview').classList.remove('show');
+    const sp=document.getElementById('split-preview');
+    if(amt>0){
+      sp.classList.add('show');
+      document.getElementById('sp-garden').textContent=fmt(amt/2)+' บ.';
+      document.getElementById('sp-tapper').textContent=fmt(amt/2)+' บ.';
+      buildSettlementPanel(amt*0.5);
+    } else {
+      sp.classList.remove('show');
+      document.getElementById('settlement-panel').classList.remove('show');
+    }
   } else {
     document.getElementById('split-preview').classList.remove('show');
-    const ep = document.getElementById('expense-preview');
-    if (amt>0 && selectedParty) {
-      ep.classList.add('show');
-      let msg = '';
-      if (selectedParty==='shared') msg=`🏡 ฝั่งสวนจ่าย ${fmt(amt/2)} บ. &nbsp;&nbsp; 🔪 คนตัดจ่าย ${fmt(amt/2)} บ.`;
-      else if (selectedParty==='garden') msg=`🏡 ฝั่งสวนจ่ายทั้งหมด ${fmt(amt)} บ.`;
-      else msg=`🔪 คนตัดจ่ายทั้งหมด ${fmt(amt)} บ.`;
-      document.getElementById('ep-val').innerHTML = msg;
-    } else ep.classList.remove('show');
+    document.getElementById('settlement-panel').classList.remove('show');
+    updateExpensePreview();
   }
 }
-async function saveForm() {
-  const date   = document.getElementById('f-date').value;
-  const amount = parseFloat(document.getElementById('f-amount').value);
-  const note   = document.getElementById('f-note').value.trim();
-  if (!date)               return alert('กรุณาใส่วันที่');
-  if (!amount||amount<=0) return alert('กรุณาใส่จำนวนเงิน');
+async function saveForm(){
+  const date=document.getElementById('f-date').value;
+  const amount=parseFloat(document.getElementById('f-amount').value);
+  const note=document.getElementById('f-note').value.trim();
+  if(!date) return alert('กรุณาใส่วันที่');
+  if(!amount||amount<=0) return alert('กรุณาใส่จำนวนเงิน');
   let tx;
-  if (formType==='expense') {
-    if (!selectedParty) return alert('กรุณาเลือกว่าใครจ่าย');
-    const label = document.getElementById('f-label').value.trim();
-    if (!label) return alert('กรุณาใส่ชื่อรายการ');
-    tx = { id: editingId||Date.now(), date, type:'expense', amount, label, party:selectedParty, note };
+  if(formType==='expense'){
+    if(!selectedParty) return alert('กรุณาเลือกว่าใครจ่าย');
+    const label=document.getElementById('f-label').value.trim();
+    if(!label) return alert('กรุณาใส่ชื่อรายการ');
+    tx={id:editingId||Date.now(),date,type:'expense',amount,label,party:selectedParty,note};
   } else {
-    tx = { id: editingId||Date.now(), date, type:'income', amount, note, party:'shared' };
+    // collect deductions from settlement panel
+    const pending=getPendingDebts();
+    const deductions=[];
+    pending.forEach(d=>{
+      const v=parseFloat(document.getElementById('sett-inp-'+d.id)?.value)||0;
+      if(v>0) deductions.push({expenseId:d.id, amount:Math.min(v,d.remain)});
+    });
+    tx={id:editingId||Date.now(),date,type:'income',amount,note,party:'shared',deductions};
   }
-  const btn = document.getElementById('save-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ กำลังบันทึก...';
-  await fbSave(tx);  // Firestore → onSnapshot will update UI
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true; btn.textContent='⏳ กำลังบันทึก...';
+  await fbSave(tx);
   showDashboard();
-  btn.textContent = '✅ บันทึก';
+  btn.textContent='✅ บันทึก';
 }
 
-// ============================================================
-// DELETE
-// ============================================================
-function askDelete(id) {
-  deletePendingId = id;
-  const tx = transactions.find(t=>String(t.id)===String(id));
-  document.getElementById('modal-item-name').textContent = tx ? (tx.label||tx.note||'ขายยาง')+' — '+fmt(tx.amount)+' บ.' : '';
+// ── Delete ───────────────────────────────────────────────────
+function askDelete(id){
+  deletePendingId=id;
+  const tx=transactions.find(t=>String(t.id)===String(id));
+  document.getElementById('modal-item-name').textContent=tx?(tx.label||tx.note||'ขายยาง')+' — '+fmt(tx.amount)+' บ.':'';
   document.getElementById('modal-overlay').classList.add('open');
 }
-function closeModal() {
-  deletePendingId = null;
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-async function confirmDelete() {
-  if (deletePendingId !== null) {
-    const id = deletePendingId;
+function closeModal(){ deletePendingId=null; document.getElementById('modal-overlay').classList.remove('open'); }
+async function confirmDelete(){
+  if(deletePendingId!==null){
+    const id=deletePendingId;
     document.getElementById('modal-overlay').classList.remove('open');
-    deletePendingId = null;
-    await fbDelete(id);  // Firestore → onSnapshot will update UI
+    deletePendingId=null;
+    await fbDelete(id);
   }
 }
 
-// expose all onclick handlers
+// expose all window handlers
 window.openAddIncome  = openAddIncome;
 window.openAddExpense = openAddExpense;
 window.editTx         = editTx;
 window.selectParty    = selectParty;
-window.updatePreview  = updatePreview;
+window.onAmountInput  = onAmountInput;
 window.saveForm       = saveForm;
 window.askDelete      = askDelete;
 window.closeModal     = closeModal;
 window.confirmDelete  = confirmDelete;
 
-// ============================================================
-// INIT
-// ============================================================
+// ── Init ─────────────────────────────────────────────────────
 updatePickerHeader();
-render(); // show empty state immediately
-startSync(); // then load from Firebase
-
-window.addEventListener('online',  () => { setSyncStatus('syncing'); startSync(); });
-window.addEventListener('offline', () => setSyncStatus('offline'));
+render();
+startSync();
+window.addEventListener('online',  ()=>{ setSyncStatus('syncing'); startSync(); });
+window.addEventListener('offline', ()=>setSyncStatus('offline'));
 </script>
 </body>
 </html>
